@@ -131,12 +131,12 @@ public class GV
         {
             gameData.Equipments = new List<int>();
             // 仮で全装備を ID + 1 所持している状態にする
-            var equipments = EquipmentManager.getEquipmentList();
+            /*var equipments = EquipmentManager.getEquipmentList();
             foreach (var equipment in equipments) {
                 for (int i = 0; i <= equipment.ID; ++i) {
                     gameData.Equipments.Add(equipment.ID);
                 }
-            }
+            }*/
         }
 
         // プレイヤーの仮作成
