@@ -6,8 +6,8 @@ using UnityEngine.UI;
 public class StatusWindow : MonoBehaviour {
 
     [SerializeField]
-    private PlayerManager playerManager;
-    private PlayerManager.PlayerParameters[] playerList = new PlayerManager.PlayerParameters[4];    //  キャラクター情報
+    private PlayerManagerCSV playerManager;
+    private PlayerManagerCSV.PlayerParameters[] playerList = new PlayerManagerCSV.PlayerParameters[4];    //  キャラクター情報
 
     //表示部分
     private Slider HP;
@@ -80,7 +80,7 @@ public class StatusWindow : MonoBehaviour {
         }
     }
 
-    void SelectPlayer(PlayerManager.PlayerParameters player)
+    void SelectPlayer(PlayerManagerCSV.PlayerParameters player)
     {
         //DisplaySlider(HP, player.HP);
         //DisplaySlider(MP, player.MP);

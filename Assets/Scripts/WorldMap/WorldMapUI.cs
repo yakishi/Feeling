@@ -58,7 +58,7 @@ public class WorldMapUI : MonoBehaviour {
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.Return) && ItemWindows[choiceElement] != null) {
+        if (Input.GetKeyDown(KeyCode.Return)) {
             
             isOpen = true;
         }
