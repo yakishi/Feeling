@@ -4,12 +4,16 @@ using UnityEngine;
 
 public class WorldMapUI : MonoBehaviour {
 
-    private GameObject[] dungeons = new GameObject[4];
-    private GameObject[] dungeonDetail = new GameObject[4];
-    private GameObject[] dungeonList = new GameObject[4];
+    private GameObject[] dungeons = new GameObject[6];
+    private GameObject[] dungeonList = new GameObject[6];
+    //private GameObject[] dungeonDetail = new GameObject[6];
+    private GameObject dungeonDetail;
+    private GameObject[] goOrBack = new GameObject[2];
 
-    private GameObject choiceMarker;
+    private Vector3 defScale;
+    private Vector3 choiceMap;
 
+    int goBack;
     int choiceElement;
     private bool isOpen;
 
@@ -32,19 +36,29 @@ public class WorldMapUI : MonoBehaviour {
             dungeonList[i] = GameObject.Find("DungeonList" + (i + 1));
         }
 
-        
+        dungeonDetail = GameObject.Find("Detail");
 
-        choiceMarker = GameObject.Find("choice");
+        goOrBack[0] = GameObject.Find("Go");
+        goOrBack[1] = GameObject.Find("Back");
+
+        defScale = dungeons[0].transform.localScale;
+        choiceMap = defScale * 1.4f;
 
         choiceElement = 0;
+        goBack = 0;
         isOpen = false;
 
-        choiceMarker.transform.position = dungeons[choiceElement].transform.position;
+        dungeonDetail.SetActive(false);
 	}
 
     // Update is called once per frame
     void Update () {
-
+        if (isOpen) {
+            Detail();
+            return;
+        }
+        
+        
         UIController.ChangeChoice(dungeonList, choiceElement);
 
         if (MyInput.isButtonDown()) {
@@ -59,15 +73,48 @@ public class WorldMapUI : MonoBehaviour {
         }
 
         if (Input.GetKeyDown(KeyCode.Return)) {
-            
+            dungeonDetail.SetActive(true);
+
             isOpen = true;
         }
 
-        choiceMap();
+        ChoiceMap();
     }
 
-    void choiceMap()
+    void Detail()
     {
-        choiceMarker.transform.position = dungeons[choiceElement].transform.position;
+        UIController.ChangeChoice(goOrBack, goBack);
+
+        if (MyInput.isButtonDown()) {
+            goBack += (int)MyInput.direction(false).x;
+
+            if (goBack < 0) {
+                goBack = 0;
+            }
+            if (goBack >= goOrBack.Length) {
+                goBack = goOrBack.Length - 1;
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.Return)) {
+
+            if (goBack == 1) {
+                dungeonDetail.SetActive(false);
+                isOpen = false;
+                goBack = 0;
+            }
+        }
     }
+
+    void ChoiceMap()
+    {
+        dungeons[choiceElement].transform.localScale = choiceMap;
+
+        for(int i = 0; i < dungeons.Length; i++) {
+            if(i != choiceElement) {
+                dungeons[i].transform.localScale = defScale;
+            }
+        }
+    }
+
 }
