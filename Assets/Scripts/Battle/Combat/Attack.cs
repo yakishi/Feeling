@@ -92,23 +92,37 @@ public class Attack /*: Combat !注意 : extends すると二回呼び出され�
 	/// <param name="currentAttackName">敵の現在の行動順</param>
 	private void ApplyDamageHp( int playersIndex, BattleEnemyGenerate generate, int currentAttackName ) {
 		try {
-			// 敵側からプレイヤー側へのダメージ量算出式ではなく, プレイヤー側から敵側へのダメージ計算式になっているので将来的に変更します TODO
-			// ダメージ量算出式 = 攻撃力の二乗×Level÷敵の防御力×威力×（0.9～1.1）
-			PlayerManagerSaveData.State state = fluctuationVal.CurrentState[ playersIndex ];
-			float sum1 = float.Parse( generate.GetEnemyStatusData( myCombatState[ currentAttackName ].id.gameObject.name + "_DEF" ) );
-			float sum = ( ( state.Atk * 2.0f * state.Lv ) / ( sum1 * state.Atk * UnityEngine.Random.Range( 0.9f, 1.1f ) ) );
+			if( myCombatState[ currentAttackName ].id != null ) {
+				// 敵側からプレイヤー側へのダメージ量算出式ではなく, プレイヤー側から敵側へのダメージ計算式になっているので将来的に変更します TODO
+				// ダメージ量算出式 = 攻撃力の二乗(敵)×Level(敵)÷プレイヤーの防御力×1.0×乱数（0.9～1.1）
+				PlayerManagerSaveData.State state = fluctuationVal.CurrentState[ playersIndex ];
+				//float sum1 = float.Parse( generate.GetEnemyStatusData( myCombatState[ currentAttackName ].id.gameObject.name + "_DEF" ) );
+				//float sum = ( ( state.Atk * 2.0f * state.Lv ) / ( sum1 * state.Atk * UnityEngine.Random.Range( 0.9f, 1.1f ) ) );
 
-			// TODO
-			// 仮で CSV 側の固定値 - sum ( ダメージ値 ) ( 変動値 ) で算出しています
-			// 将来的に, CSV 側の固定値ではなく, player manager savedata class の変動値に変えます
-			float hpLeftovers = PlayerManagerCSV.GetPlayers[ playersIndex ].HP - sum;
+				/////////////////////////////////////////////////////////////////////////////////////////////////////////
+				// TODO 編集中コード
+				float enemyAtk = float.Parse( generate.GetEnemyStatusData( myCombatState[ currentAttackName ].id.gameObject.name  + "_ATK" ) );
+				float enemyLv = float.Parse( generate.GetEnemyStatusData( myCombatState[ currentAttackName ].id.gameObject.name  + "_LV" ) );
+				float playerDef = state.Def;
+				float rnd = UnityEngine.Random.Range( 0.9f, 1.1f );
+				float sum = ( ( enemyAtk * 2.0f * enemyLv ) / ( playerDef * 1.0f * rnd ) );
+				/////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-			Debug.Log( "<color='red'>通常攻撃ダメージ量 : " + ( int )sum + "</color>" );
-			if( ( int )hpLeftovers > 0 ) {
-				myCombatState[ playersIndex ].HP = ( int )hpLeftovers; // 現在のプレイヤー行動ステートを更新する ( HP )
-				HUD_BattleScene.ApplyCharaHP( playersIndex, ( int )hpLeftovers ); // HUD ( HP ) を更新する
 
-			} else myCombatState[ playersIndex ].playerIsDead = true; // 残り HP が 0 の時, 死亡
+				// TODO
+				// 仮で CSV 側の固定値 - sum ( ダメージ値 ) で算出しています
+				// 将来的に, CSV 側は, 固定値ではなく, player manager savedata class の変動値に変えます
+				float hpLeftovers = PlayerManagerCSV.GetPlayers[ playersIndex ].HP - sum;
+
+				Debug.Log( "<color='red'>通常攻撃ダメージ量 : " + ( int )sum + ", 乱数 : " + rnd +  "</color>" );
+
+				if( ( int )hpLeftovers > 0 ) {
+					myCombatState[ playersIndex ].HP = ( int )hpLeftovers; // 現在のプレイヤー行動ステートを更新する ( HP )
+					HUD_BattleScene.ApplyCharaHP( playersIndex, ( int )hpLeftovers ); // HUD ( HP ) を更新する
+
+				} else myCombatState[ playersIndex ].playerIsDead = true; // 残り HP が 0 の時, 死亡
+
+			}
 
 		} catch( DivideByZeroException ) {
 			// https://docs.microsoft.com/ja-jp/dotnet/csharp/language-reference/operators/
@@ -130,6 +144,7 @@ public class Attack /*: Combat !注意 : extends すると二回呼び出され�
 	private void Sleep( int index ) {
 		Debug.Log( "<color='red'>index : " + index + "</color>" );
 		myCombatState[ index + 1 ].isAction = true; // 次の順番が行動できるようにする
+		Debug.Log( "<color='red'>index : " + myCombatState[ index + 1 ].id.name + "</color>" );
 
 
 	}
@@ -169,6 +184,7 @@ public class Attack /*: Combat !注意 : extends すると二回呼び出され�
 			if ( Combat.GetCombatState[ i ].isAction ) {
 				Debug.Log( i + "番目が行動可能状態です。" );
 				Combat.GetCombatState[ i ].isAction = false; // 攻撃コマンドが押されたら行動終了とする
+				// TODO 上の Sleep 関数のようにする
 				Combat.GetCombatState[ i + 1 ].isAction = true; // 攻撃コマンドが押された時に次ぎの人に回す
 
 				break; // i がカウントされ続けるので抜ける

@@ -95,7 +95,6 @@ public class UI_BattleScene : EnemyManager {
 				}
 
 			}
-			Debug.Log( "上條美佳" );
 
 		}
 

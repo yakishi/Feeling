@@ -58,7 +58,7 @@ public class HUD_BattleScene : PlayerManagerCSV {
 		updateValHp = new float[ ] { Player1.HP, Player2.HP, Player3.HP, Player4.HP };
 		updateValMp = new float[ ] { Player1.MP, Player2.MP, Player3.MP, Player4.MP };
 		// キャラクター画像の読み込み
-		myHudImg = Resources.LoadAll<Sprite>( "Images/Character/HUD/" );
+		myHudImg = Resources.LoadAll<Sprite>( "Images/BattleScene/Character/HUD/" );
 		// キャラクターステータス HUD の作成
 		myHudObj = CreateCharacterStatusHUD( -150.0f, -250.0f, 3 );
 		for( int i = 0; i < myHudObj.Length; i++ ) {
@@ -214,7 +214,7 @@ public class HUD_BattleScene : PlayerManagerCSV {
 	/// <param name="index">読み込ませる画像,通常0～3を指定</param>
 	static public void ApplyStandPictureSprite( float posX, float posY, float scaleX, float scaleY, int index ) {
 		// 立ち絵画像を読み込みます
-		mySpImg = Resources.LoadAll<Sprite>( "Images/Character/StandPicture/" );
+		mySpImg = Resources.LoadAll<Sprite>( "Images/BattleScene/Character/StandPicture/" );
 		// sprite 画像の改造度が分からないため以下で対応させる ( 位置およびスケール )
 		mySpObj.transform.transform.localPosition = new Vector3( posX, posY, 0.0f);
 		mySpObj.transform.GetChild( 0 ).transform.localScale = new Vector3( scaleX, scaleY, 0.0f );

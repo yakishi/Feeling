@@ -42,7 +42,7 @@ public class BattleEnemyGenerate : EnemyManager {
 	/// <summary>初期化</summary>
 	new void Initialize( ) {
 		// 敵画像の読み込み
-		myEnemyImg = Resources.LoadAll<Sprite>( "Images/Enemy/" );
+		myEnemyImg = Resources.LoadAll<Sprite>( "Images/BattleScene/Enemy/" );
 		// 敵の数をランダムに生成
 		for ( rndCnt = 0; rndCnt < Random.Range( 1.0f, MAX_ENEMY ); rndCnt++ ) {
 			// 0 ～ CSV から読み込まれた ID をカウントした範囲の数値がランダムで入る
