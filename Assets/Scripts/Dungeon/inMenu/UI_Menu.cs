@@ -38,6 +38,9 @@ public class UI_Menu : MonoBehaviour {
     {
         ItemWindows[1] = GameObject.Find("StatusWindow");
         ItemWindows[1].SetActive(false);
+        ItemWindows[2] = GameObject.Find("EquipmentWindow");
+        ItemWindows[2].SetActive(false);
+
     }
 
     void OnEnable()
