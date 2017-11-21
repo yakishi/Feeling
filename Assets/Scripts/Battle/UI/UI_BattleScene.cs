@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UniRx;
+using UnityEngine;
 using UnityEngine.UI;
 
 /*===============================================================*/
@@ -10,25 +12,30 @@ public class UI_BattleScene : EnemyManager {
 	[SerializeField, TooltipAttribute( "ゲームキャンバス" )]
 	private GameObject canvasUi;
 
-	/*===============================================================*/
-	// コマンドフレームプレハブを操作するための変数の準備
-	static private Selectable[ , ] slv;
-	private int slvCnt = 0;
-	private int commandFrameImgCnt = -1;
-	private int pocketElement = 0; // スクロールバーの pocket 何番目を操作できるようにするか
-	/*===============================================================*/
+	/// <summary>スキル関係変数</summary>
+	struct SkillAd {
+		public bool skillMessageFlg; // スキル ( 攻撃名 ) 表示フラグを格納するための変数の準備
+		public SkillLoader mySkill; // スキルローダークラスの型宣言のみ ( インスタンスは, Start( ) で生成 )
 
-	// 各種 bool 変数の準備
-	bool skillMessageFlg = false; // スキル ( 攻撃名 ) 表示フラグを格納するための変数の準備
-	//bool enemyArrowFlg = false; // 攻撃が選択されたときフラグを有効にして敵を選択できるようにする
+	} SkillAd mySkillAd;
 
+	/// <summary>コマンド選択関係変数</summary>
+	struct CommandSelect {
+		static public Selectable[ , ] slv;
+		static public List<Selectable> mySlv = new List<Selectable>( );
+		public int slvCnt;
+		public int commandFrameImgCnt;
+		public int pocketElement; // スクロールバーの pocket 何番目を操作できるようにするか
+
+	} CommandSelect myCommandSelect;
+
+	/// <summary>敵選択矢印操作系変数</summary>
 	struct EnemyArrow {
 		public bool enemyArrowFlg; // 攻撃が選択されたときフラグを有効にして敵を選択できるようにする
 		public int enemyArrowFlgCnt; // カウント用変数
 		public bool noCancel; // キャンセルボタン押せないようにするフラグ
 
-	}
-	static private EnemyArrow myEnemyArrow;
+	} static private EnemyArrow myEnemyArrow;
 
 	// セッターおよびゲッター定義部
 	/// <summary>EnemyArrowフラグが有効か否かgetします</summary>
@@ -41,32 +48,73 @@ public class UI_BattleScene : EnemyManager {
 	/// <summary>初期化</summary>
 	void Start( ) {
 		// スキル ( button text )
-		string[ ] btnTextSkill = { "いあいぎり", "ぶんなぐる", "あなをほる", "火炎切り", "あてみなげ", "ギガブレイク", "タイキック", "ケツバット"  };
+		string[ ] btnTextSkill = { "" }; //new string[ mySkill.GetPlayer1Skill.Count ];
 		// 入れ替え ( button text )
 		string[ ] btnTextChange = { "キャラ①", "キャラ②", "キャラ③", "キャラ④", "キャラ⑤", "キャラ⑥"  };
 		// アイテム ( button text )
 		string[ ] btnTextItem = { "傷薬", "毒消し草", "ティアラの薬", "EPチャージII", "ゼラムカプセル", "精霊香", "絶縁テープ", "軟化リキッド", "シールドポーション", "抹茶ぺっきー" };
-		// コマンド生成
-		slv = CreateCommandFrame( -140.0f, -55.0f, 3, btnTextSkill.Length, btnTextSkill, 4, btnTextChange.Length, btnTextChange, 5, btnTextItem.Length, btnTextItem  );
 
-		ApplyScrollBarBtnTxt( );
+		// コマンド生成
+		CommandSelect.slv = CreateCommandFrame( -140.0f, -55.0f, 3, btnTextSkill.Length, btnTextSkill, 4, btnTextChange.Length, btnTextChange, 5, btnTextItem.Length, btnTextItem  );
 
 		// 構造体の初期化
 		myEnemyArrow.enemyArrowFlgCnt = -1;
-		//myEnemyArrow.enemyArrowFlg = false;
 		myEnemyArrow.noCancel = false;
+		myCommandSelect.slvCnt = 0;
+		myCommandSelect.commandFrameImgCnt = -1;
+		myCommandSelect.pocketElement = 0;
+		mySkillAd.skillMessageFlg = false;
+		mySkillAd.mySkill = new SkillLoader( ); // スキルローダークラスのインスタンスの生成
+		//次のフレームで実行する
+		Observable.NextFrame( )
+			.Subscribe( _ => SkillLoad( ) );
 
 
 	}
 	/*===============================================================*/
 
 	/*===============================================================*/
-	static public void ApplyScrollBarBtnTxt( ) {
+	/// <summary>スキル読込クラスのインスタンスの生成後に1フレーム間を置かないと読み込めない</summary>
+	private void SkillLoad( ) {
+		// コマンドのボタン生成を関数で行えるようにする（スキルがCSVから読み込めないので) TODO
+		for ( int i = 0; i < SkillLoader.GetPlayersSkills.GetLength( 1 ); i++ ) {
+			/*if( commandFrameImgCnt == 2 /*( スキル )*/ /*)*/
+			// 仮でプレイヤー 4 のスキル情報をぶち込んでおく
+			CommandSelect.mySlv.Add( ScrollBarAddBtn( 0, SkillLoader.GetPlayersSkills[ 3, i ].NAME ) );
+
+		}
+
+
+	}
+	/*===============================================================*/
+
+	///////////////////////////////////////////////////////////////////
+	// ScrollBarDeleteBtn もつくる TODO
+	///////////////////////////////////////////////////////////////////
+
+	/*===============================================================*/
+	static public Selectable ScrollBarAddBtn( int pocket, string btnSeName, string btnName = "このボタンは見えないです" ) {
 		// TODO
 		// combat インスタンスの各ポケット生成処理に関しての案
 		// 各ポケットのボタンオブジェクトのインスタンスを複製する
 		// ボタンの複製, ホタンの削除をそれぞれ一括で行えるようにする
-		//Debug.Log( "<color='red'>ApplyScrollBarBtnTxt : " + slv[ 1, 0 ].transform.GetChild( 0 ) + "</color>" );
+		Button btn = CommandSelect.slv[ pocket /* pocket */, 0 /* btn 項目 変更しないこと！ */ ].GetComponent<Button>( );
+		GameObject btnPar = btn.transform.parent.gameObject;
+		GameObject instance = ( GameObject )Instantiate( btn.gameObject );
+		Button instanceBtn = instance.GetComponent<Button>( );
+		VerticalLayoutGroup vlg = btnPar.GetComponent<VerticalLayoutGroup>( );
+		instanceBtn.transform.SetParent( vlg.transform, false );
+		Text initBtnTxt = btn.transform.GetChild( 0 ).GetComponent<Text>( );
+		Text instanceBtnTxt = instanceBtn.transform.GetChild( 0 ).GetComponent<Text>( );
+		initBtnTxt.text = btnName;
+		instanceBtnTxt.text = btnSeName;
+		Selectable instanceSel = instanceBtn.GetComponent<Selectable>( );
+		//次のフレームで実行する
+		Observable.NextFrame( )
+			.Subscribe( _ => btn.gameObject.SetActive( false ) ); // 1 frame ないと全てのボタンが非アクティブになってしまう
+		Debug.Log( "<color='red'>ApplyScrollBarBtnTxt : " + btn.transform.GetChild( 0 ).GetComponent<Text>( ).text + "</color>" );
+		Debug.Log( "<color='red'>ApplyScrollBarBtnTxt : " + instanceSel.transform.parent.parent.parent.gameObject + "</color>" );
+		return instanceSel;
 
 	}
 	/*===============================================================*/
@@ -77,8 +125,8 @@ public class UI_BattleScene : EnemyManager {
 		// インプットイベント関数を呼びます
 		InputEvent( );
 		if( myEnemyArrow.enemyArrowFlg ) {
-			if( commandFrameImgCnt == 0 ) {
-				commandFrameImgCnt = -1;
+			if( myCommandSelect.commandFrameImgCnt == 0 ) {
+				myCommandSelect.commandFrameImgCnt = -1;
 				ApplyCmdBtnIsActive( false );
 				// 適生存数が 0 の時フラグを戻し, コマンドを選択出来ないようにする
 				for ( int i = 0; i < BattleEnemyGenerate.EnemyNumber; i++ ) {
@@ -167,7 +215,7 @@ public class UI_BattleScene : EnemyManager {
 		}
 		// 攻撃コマンドなどに対するクリック処理を付加
 		for( int i = 0; i < prefabObj.transform.GetChild( 0 ).childCount; i++ ) {
-			prefabObj.transform.GetChild( 0 ).GetChild( i ).gameObject.GetComponent<Button>( ).onClick.AddListener( ( ) => MyOnClick( slv[ 0, 0 ].transform.parent.parent.parent.parent.GetChild( 0 ).GetChild( commandFrameImgCnt ).GetChild( 0 ).gameObject ) );
+			prefabObj.transform.GetChild( 0 ).GetChild( i ).gameObject.GetComponent<Button>( ).onClick.AddListener( ( ) => MyOnClick( CommandSelect.slv[ 0, 0 ].transform.parent.parent.parent.parent.GetChild( 0 ).GetChild( myCommandSelect.commandFrameImgCnt ).GetChild( 0 ).gameObject ) );
 
 		}
 		// 各ポケットの button obj を二次元配列に入れる
@@ -198,30 +246,36 @@ public class UI_BattleScene : EnemyManager {
 		if( Input.GetKeyDown( KeyCode.DownArrow ) ) {
 			/*===============================================================*/
 			// スクロールバーの操作処理
-			if( slvCnt < slv[ pocketElement, slvCnt ].gameObject.transform.parent.childCount - 1 ) slvCnt++;
-			// スクロールバー要素の操作 例 : slv[ 0 /* 操作したいスクロールバー 0 ~ 2 の数値 */, slvCnt ]
-			slv[ pocketElement, slvCnt ].Select( );
-			slv[ pocketElement, slvCnt ].gameObject.transform.parent.parent.parent.GetChild( 2 ).GetComponent<Scrollbar>( ).value -= 0.2f;
-			//Debug.Log( slvCnt > 0 && slvCnt < slv[ pocketElement, slvCnt ].gameObject.transform.parent.childCount );
+			//mySlv[ slvCnt ].Select( );
+			if( CommandSelect.mySlv[ 0 ].transform.parent.parent.parent.gameObject.activeSelf ) { // スクロールバーを開く前に下矢印キーを押すとエラーに対処
+				if( myCommandSelect.slvCnt < CommandSelect.mySlv.Count - 1 ) myCommandSelect.slvCnt++;
+				CommandSelect.mySlv[ myCommandSelect.slvCnt ].Select( );
+				if( myCommandSelect.slvCnt > 0 ) { // ボタンの文字が見えなくなるのに対処
+					CommandSelect.mySlv[ 0 ].transform.parent.parent.parent.transform.GetChild( 2 ).GetComponent<Scrollbar>( ).value -= 0.2f;
+				
+				}
+
+			}
 			/*===============================================================*/
 
 		}
 		if( Input.GetKeyDown( KeyCode.UpArrow ) ) {
 			/*===============================================================*/
 			// スクロールバーの操作処理
-			if( slvCnt > 0 && slvCnt < slv[ pocketElement, slvCnt ].gameObject.transform.parent.childCount ) slvCnt--;
-			// スクロールバー要素の操作 例 : slv[ 0 /* 操作したいスクロールバー 0 ~ 2 の数値 */, slvCnt ]
-			slv[ pocketElement, slvCnt ].Select( );
-			slv[ pocketElement, slvCnt ].gameObject.transform.parent.parent.parent.GetChild( 2 ).GetComponent<Scrollbar>( ).value += 0.2f;
-			//Debug.Log( slvCnt > 0 && slvCnt < slv[ pocketElement, slvCnt ].gameObject.transform.parent.childCount );
+			if( myCommandSelect.slvCnt != -1 ) { // スクロールバーを開いた後に上矢印キーを押すとエラーに対処
+				if( myCommandSelect.slvCnt > 0 && myCommandSelect.slvCnt < CommandSelect.mySlv.Count ) myCommandSelect.slvCnt--;
+				CommandSelect.mySlv[ myCommandSelect.slvCnt ].Select( );
+				CommandSelect.mySlv[ 0 ].transform.parent.parent.parent.transform.GetChild( 2 ).GetComponent<Scrollbar>( ).value += 0.2f;
+
+			}
 			/*===============================================================*/
 
 		}
 		if( Input.GetKeyDown( KeyCode.RightArrow ) ) {
 			/*===============================================================*/
 			// Combat の操作処理
-			if ( commandFrameImgCnt < slv[ 0, 0 ].transform.parent.parent.parent.parent.GetChild( 0 ).childCount - 1 ) commandFrameImgCnt++;
-			CommandFrameImg( slv[ 0, 0 ], commandFrameImgCnt );
+			if ( myCommandSelect.commandFrameImgCnt < CommandSelect.slv[ 0, 0 ].transform.parent.parent.parent.parent.GetChild( 0 ).childCount - 1 ) myCommandSelect.commandFrameImgCnt++;
+			CommandFrameImg( CommandSelect.slv[ 0, 0 ], myCommandSelect.commandFrameImgCnt );
 			/*===============================================================*/
 
 			/*===============================================================*/
@@ -261,8 +315,8 @@ public class UI_BattleScene : EnemyManager {
 		if( Input.GetKeyDown( KeyCode.LeftArrow ) ) {
 			/*===============================================================*/
 			// Combat の操作処理
-			if ( commandFrameImgCnt != -1 && commandFrameImgCnt > 0 && commandFrameImgCnt < slv[ 0, 0 ].transform.parent.parent.parent.parent.GetChild( 0 ).childCount ) commandFrameImgCnt--;
-			CommandFrameImg( slv[ 0, 0 ], commandFrameImgCnt );
+			if ( myCommandSelect.commandFrameImgCnt != -1 && myCommandSelect.commandFrameImgCnt > 0 && myCommandSelect.commandFrameImgCnt < CommandSelect.slv[ 0, 0 ].transform.parent.parent.parent.parent.GetChild( 0 ).childCount ) myCommandSelect.commandFrameImgCnt--;
+			CommandFrameImg( CommandSelect.slv[ 0, 0 ], myCommandSelect.commandFrameImgCnt );
 			/*===============================================================*/
 
 			/*===============================================================*/
@@ -295,9 +349,9 @@ public class UI_BattleScene : EnemyManager {
 		if( Input.GetKeyDown( KeyCode.Backspace ) ) {
 			/*===============================================================*/
 			// back space 時, スクロールバーの出現否か問わず閉じる
-			slv[ 0, 0 ].transform.parent.parent.parent.parent.GetChild( 3 ).gameObject.SetActive( false );
-			slv[ 0, 0 ].transform.parent.parent.parent.parent.GetChild( 4 ).gameObject.SetActive( false );
-			slv[ 0, 0 ].transform.parent.parent.parent.parent.GetChild( 5 ).gameObject.SetActive( false );
+			CommandSelect.slv[ 0, 0 ].transform.parent.parent.parent.parent.GetChild( 3 ).gameObject.SetActive( false );
+			CommandSelect.slv[ 0, 0 ].transform.parent.parent.parent.parent.GetChild( 4 ).gameObject.SetActive( false );
+			CommandSelect.slv[ 0, 0 ].transform.parent.parent.parent.parent.GetChild( 5 ).gameObject.SetActive( false );
 			/*===============================================================*/
 
 			if( myEnemyArrow.noCancel ) { // 敵殲滅時には反応しないようにする
@@ -341,8 +395,9 @@ public class UI_BattleScene : EnemyManager {
 		switch( combat.GetComponent<Text>( ).text ) {
 			default : {
 				// スキル ( 攻撃名 ) 表示
-				if( skillMessageFlg ) {
-					HUD_BattleScene.ApplyMessageText( combat.GetComponent<Text>( ).text );
+				if( mySkillAd.skillMessageFlg ) {
+					HUD_BattleScene.ApplyMessageText( CommandSelect.mySlv[ 0 ].transform.GetChild( 0 ).GetComponent<Text>( ).text );
+					Debug.Log( CommandSelect.mySlv[ 0 ].transform.GetChild( 0 ).GetComponent<Text>( ).text );
 					// 攻撃が選択されたときフラグを有効にして敵を選択できるようにする
 					myEnemyArrow.enemyArrowFlg = true;
 
@@ -352,37 +407,17 @@ public class UI_BattleScene : EnemyManager {
 			}
 			case "攻撃" : {
 				HUD_BattleScene.ApplyMessageText( "攻撃" );
-				skillMessageFlg = false; // 元に戻す
-
+				mySkillAd.skillMessageFlg = false; // 元に戻す
 				// 攻撃が選択されたときフラグを有効にして敵を選択できるようにする
 				myEnemyArrow.enemyArrowFlg = true;
-
 				BattleEnemyGenerate.ApplyEnemyArrowVisible( 0, true );
-
-				//for( int i = 0; i < Combat.GetCombatState.Count; i++ ) {
-				//	if( Combat.GetCombatState[ i ].isAction ) {
-				//		Debug.Log( i + "番目が行動可能状態です。" );
-				//		Combat.GetCombatState[ i ].isAction = false; // 攻撃コマンドが押されたら行動終了とする
-				//		Combat.GetCombatState[ i+ 1 ].isAction = true; // 攻撃コマンドが押された時に次ぎの人に回す
-
-				//		break; // i がカウントされ続けるので抜ける
-
-				//	}
-
-				//}
-				/////////////////////////////////////////////////
-				/// TODO 攻勢チェンジテスト
-				//Combat.GetCombatState[ 0 ].isAction = false;
-				//Combat.GetCombatState[ 1 ].isAction = true;
-				/////////////////////////////////////////////////
-			
 				break;
 
 			}
 			case "防御" : {
 				// エフェクト再生関数を呼ぶ
 				EnemyEffect.SetEffectPlay( 0, "IsSpear", 1.0f, 1.0f, 0.0f, -0.5f );
-				skillMessageFlg = false; // 元に戻す
+				mySkillAd.skillMessageFlg = false; // 元に戻す
 				break;
 
 			}
@@ -393,11 +428,15 @@ public class UI_BattleScene : EnemyManager {
 				// スクロールバーを出現させる
 				combat.transform.parent.parent.parent.GetChild( 3 ).gameObject.SetActive( true );
 				// スキルスクロールバーを操作できるようにする
-				pocketElement = 0;
+				myCommandSelect.pocketElement = 0;
 				// カウント変数の初期化
-				slvCnt = 0;
+				myCommandSelect.slvCnt = 0;
 				// スキル ( 攻撃名 ) を表示できるようにする
-				skillMessageFlg = true;
+				mySkillAd.skillMessageFlg = true;
+				// スクロールバーを最所から選択できるようにする
+				myCommandSelect.slvCnt = -1;
+				// スクロールバーを一番上に戻す
+				CommandSelect.mySlv[ 0 ].transform.parent.parent.parent.transform.GetChild( 2 ).GetComponent<Scrollbar>( ).value = 1.0f;
 				break;
 
 			}
@@ -408,10 +447,14 @@ public class UI_BattleScene : EnemyManager {
 				// スクロールバーを出現させる
 				combat.transform.parent.parent.parent.GetChild( 4 ).gameObject.SetActive( true );
 				// 入れ替えスクロールバーを操作できるようにする
-				pocketElement = 1;
+				myCommandSelect.pocketElement = 1;
 				// カウント変数の初期化
-				slvCnt = 0;
-				skillMessageFlg = false; // 元に戻す
+				myCommandSelect.slvCnt = 0;
+				mySkillAd.skillMessageFlg = false; // 元に戻す
+				// スクロールバーを最所から選択できるようにする
+				myCommandSelect.slvCnt = -1;
+				// スクロールバーを一番上に戻す
+				CommandSelect.mySlv[ 0 ].transform.parent.parent.parent.transform.GetChild( 2 ).GetComponent<Scrollbar>( ).value = 1.0f;
 				break;
 
 			}
@@ -422,10 +465,14 @@ public class UI_BattleScene : EnemyManager {
 				// スクロールバーを出現させる
 				combat.transform.parent.parent.parent.GetChild( 5 ).gameObject.SetActive( true );
 				// アイテムスクロールバーを操作できるようにする
-				pocketElement = 2;
+				myCommandSelect.pocketElement = 2;
 				// カウント変数の初期化
-				slvCnt = 0;
-				skillMessageFlg = false; // 元に戻す
+				myCommandSelect.slvCnt = 0;
+				mySkillAd.skillMessageFlg = false; // 元に戻す
+				// スクロールバーを最所から選択できるようにする
+				myCommandSelect.slvCnt = -1;
+				// スクロールバーを一番上に戻す
+				CommandSelect.mySlv[ 0 ].transform.parent.parent.parent.transform.GetChild( 2 ).GetComponent<Scrollbar>( ).value = 1.0f;
 				break;
 
 			}
@@ -457,7 +504,7 @@ public class UI_BattleScene : EnemyManager {
 	/// <param name="isBtnActive">true:選択可能,false:選択不可能</param>
 	static public void ApplyCmdBtnIsActive( bool isBtnActive ) {
 		// 根本 gameobject を起点とする
-		GameObject root = slv[ 0, 0 ].transform.parent.parent.parent.parent.gameObject;
+		GameObject root = CommandSelect.slv[ 0, 0 ].transform.parent.parent.parent.parent.gameObject;
 		// ボタンを選択できるか否かを決定する
 		for( int i = 0; i < root.transform.GetChild( 0 ).childCount; i++ ) {
 			// 攻撃・防御・・・部分のボタンコンポーネント取得

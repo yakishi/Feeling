@@ -93,21 +93,14 @@ public class Attack /*: Combat !注意 : extends すると二回呼び出され�
 	private void ApplyDamageHp( int playersIndex, BattleEnemyGenerate generate, int currentAttackName ) {
 		try {
 			if( myCombatState[ currentAttackName ].id != null ) {
-				// 敵側からプレイヤー側へのダメージ量算出式ではなく, プレイヤー側から敵側へのダメージ計算式になっているので将来的に変更します TODO
-				// ダメージ量算出式 = 攻撃力の二乗(敵)×Level(敵)÷プレイヤーの防御力×1.0×乱数（0.9～1.1）
 				PlayerManagerSaveData.State state = fluctuationVal.CurrentState[ playersIndex ];
-				//float sum1 = float.Parse( generate.GetEnemyStatusData( myCombatState[ currentAttackName ].id.gameObject.name + "_DEF" ) );
-				//float sum = ( ( state.Atk * 2.0f * state.Lv ) / ( sum1 * state.Atk * UnityEngine.Random.Range( 0.9f, 1.1f ) ) );
 
-				/////////////////////////////////////////////////////////////////////////////////////////////////////////
-				// TODO 編集中コード
+				// ダメージ量算出式 = 攻撃力の二乗(敵)×Level(敵)÷プレイヤーの防御力×1.0×乱数（0.9～1.1）
 				float enemyAtk = float.Parse( generate.GetEnemyStatusData( myCombatState[ currentAttackName ].id.gameObject.name  + "_ATK" ) );
 				float enemyLv = float.Parse( generate.GetEnemyStatusData( myCombatState[ currentAttackName ].id.gameObject.name  + "_LV" ) );
 				float playerDef = state.Def;
 				float rnd = UnityEngine.Random.Range( 0.9f, 1.1f );
 				float sum = ( ( enemyAtk * 2.0f * enemyLv ) / ( playerDef * 1.0f * rnd ) );
-				/////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 				// TODO
 				// 仮で CSV 側の固定値 - sum ( ダメージ値 ) で算出しています
@@ -164,6 +157,20 @@ public class Attack /*: Combat !注意 : extends すると二回呼び出され�
 			// 等しい時の敵ステータス情報を管理する
 			if( myCombatState[ i ].id != null ) {
 				subIdentifier = myCombatState[ i ].id.gameObject.transform.GetChild( 2 ).name;
+				Debug.Log( myCombatState[ i ].id );
+
+
+				/////////////////////////////////////////////////////////////////////////////////////////////////////////
+				// TODO 編集中コード 行動プレイヤーによるスキル切替処理テスト
+				if ( myCombatState[ i ].id.name == "Character2" ){
+					for( int piyo = 0; piyo < SkillLoader.GetPlayersSkills.GetLength( 1 ); piyo++ ) {
+						// 仮でプレイヤー 3 のスキルデータをぶち込んでおく
+						UI_BattleScene.ScrollBarAddBtn( 0, SkillLoader.GetPlayersSkills[ 2, piyo ].NAME );
+
+					}
+				}
+				/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 				if ( subIdentifier == UI_BattleScene.GetEnemyArrowChoice.ToString( ) ) {
 					Debug.Log( "<color='red'>行動番目 : " + i + ", 実際の敵選択矢印選択番目 : " + subIdentifier + "番目のステータス情報</color>" );

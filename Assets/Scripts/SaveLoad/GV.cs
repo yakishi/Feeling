@@ -156,9 +156,9 @@ public class GV
                 newPlayer.Mgr = ( i + 1 ) * 7/*PlayerManagerCSV.GetPlayers[ i ].MDEF*/;
                 newPlayer.Agl = ( i + 1 ) * 8/*PlayerManagerCSV.GetPlayers[ i ].SPD*/;
                 newPlayer.Luc = ( i + 1 ) * 9/*PlayerManagerCSV.GetPlayers[ i ].LUCKY*/;
-				newPlayer.StatusPoint = ( i + 1 ) * 11;
-                
-                gameData.Players.Add(newPlayer);
+				newPlayer.StatusPoint = 5; // 経験値が溜まってレベルがあがると5ポイントのステータスポイントが獲得できる。この5ポイントは固定
+
+				gameData.Players.Add(newPlayer);
 
             }
 
