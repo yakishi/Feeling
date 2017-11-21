@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UniRx;
 using UnityEngine;
 
@@ -144,7 +145,11 @@ public class Attack /*: Combat !注意 : extends すると二回呼び出され�
 	private void Sleep( int index ) {
 		Debug.Log( "<color='red'>index : " + index + "</color>" );
 		myCombatState[ index + 1 ].isAction = true; // 次の順番が行動できるようにする
-		Debug.Log( "<color='red'>index : " + myCombatState[ index + 1 ].id.name + "</color>" );
+        if (myCombatState[index + 1].id == null) {
+            return;
+        }
+
+        Debug.Log( "<color='red'>index : " + myCombatState[ index + 1 ].id.name + "</color>" );
 
 
 	}
@@ -160,27 +165,28 @@ public class Attack /*: Combat !注意 : extends すると二回呼び出され�
 		string subIdentifier;
 
 		for( int i = 0; i < myCombatState.Count; i++ ) {
-			// combat state の i 番目の 副識別子 gameobject name と選択された gameobject name
-			// 等しい時の敵ステータス情報を管理する
-			if( myCombatState[ i ].id != null ) {
-				subIdentifier = myCombatState[ i ].id.gameObject.transform.GetChild( 2 ).name;
+            // combat state の i 番目の 副識別子 gameobject name と選択された gameobject name
+            // 等しい時の敵ステータス情報を管理する
+            if (myCombatState[i].id == null) continue;
 
-				if ( subIdentifier == UI_BattleScene.GetEnemyArrowChoice.ToString( ) ) {
-					Debug.Log( "<color='red'>行動番目 : " + i + ", 実際の敵選択矢印選択番目 : " + subIdentifier + "番目のステータス情報</color>" );
-					// エフェクト再生関数を呼ぶ
-					EnemyEffect.SetEffectPlay( UI_BattleScene.GetEnemyArrowChoice, "IsSword", 1.0f, 1.0f, 0.0f, 0.0f );
-					// 試しにゲームオブジェクトを消してみる
-					UnityEngine.Object.Destroy( myCombatState[ i ].id.gameObject/*, 1.0f*/ );
-					myCombatState[ i ].enemyIsDead = true;
-					break;
 
-				}
+            subIdentifier = myCombatState[ i ].id.gameObject.transform.GetChild( 2 ).name;
 
-			}
+            if (subIdentifier == UI_BattleScene.GetEnemyArrowChoice.ToString()) {
+                Debug.Log("<color='red'>行動番目 : " + i + ", 実際の敵選択矢印選択番目 : " + subIdentifier + "番目のステータス情報</color>");
+                // エフェクト再生関数を呼ぶ
+                EnemyEffect.SetEffectPlay(UI_BattleScene.GetEnemyArrowChoice, "IsSword", 1.0f, 1.0f, 0.0f, 0.0f);
 
-		}
+                // 試しにゲームオブジェクトを消してみる
+                UnityEngine.Object.Destroy(myCombatState[i].id.gameObject/*, 1.0f*/ );
+                myCombatState[i].id = null;
+                myCombatState[i].enemyIsDead = true;
+                break;
 
-		for ( int i = 0; i < Combat.GetCombatState.Count; i++ ) {
+            }
+        }
+
+        for ( int i = 0; i < Combat.GetCombatState.Count; i++ ) {
 			if ( Combat.GetCombatState[ i ].isAction ) {
 				Debug.Log( i + "番目が行動可能状態です。" );
 				Combat.GetCombatState[ i ].isAction = false; // 攻撃コマンドが押されたら行動終了とする
