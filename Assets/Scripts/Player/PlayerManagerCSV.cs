@@ -67,110 +67,140 @@ public class PlayerManagerCSV : MonoBehaviour {
 
 		// Player1 に対するパラメーターの初期化
 		Player1._Player1 = GetPlayerStatusData( "Character01_ID" );
+		Player1.LV = int.Parse( GetPlayerStatusData( "Character01_LV" ) );
+		Player1.NEXTLVEXP = int.Parse( GetPlayerStatusData( "Character01_NEXTLVEXP" ) );
 		Player1.HP = int.Parse( GetPlayerStatusData( "Character01_HP" ) );
 		Player1.MP = int.Parse( GetPlayerStatusData( "Character01_MP" ) );
 		Player1.ATK = int.Parse( GetPlayerStatusData( "Character01_ATK" ) );
+		Player1.WEAPONATK = int.Parse( GetPlayerStatusData( "Character01_WEAPONATK" ) );
 		Player1.MATK = int.Parse( GetPlayerStatusData( "Character01_MATK" ) );
 		Player1.DEF = int.Parse( GetPlayerStatusData( "Character01_DEF" ) );
 		Player1.MDEF = int.Parse( GetPlayerStatusData( "Character01_MDEF" ) );
+		Player1.EQUIPMENTDEF = int.Parse( GetPlayerStatusData( "Character01_EQUIPMENTDEF" ) );
 		Player1.SPD = int.Parse( GetPlayerStatusData( "Character01_SPD" ) );
-		Player1.LUCKY = int.Parse( GetPlayerStatusData( "Character01_lucky" ) );
+		Player1.LUCKY = int.Parse( GetPlayerStatusData( "Character01_LUCKY" ) );
 		Player1.INT = int.Parse( GetPlayerStatusData( "Character01_INT" ) );
-		Player1.WEAPON01 = GetPlayerStatusData( "Character01_Weapon01" );
-		Player1.WEAPON02 = GetPlayerStatusData( "Character01_Weapon02" );
-		Player1.FEELING = GetPlayerStatusData( "Character01_Feeling" );
-		Player1.SKILL = GetPlayerStatusData( "Character01_Skill" );
-		Player1.OverDrive = GetPlayerStatusData( "Character01_OverDrive" );
+		Player1.WEAPON01 = GetPlayerStatusData( "Character01_WEAPON01" );
+		Player1.WEAPON02 = GetPlayerStatusData( "Character01_WEAPON02" );
+		Player1.FEELING = GetPlayerStatusData( "Character01_FEELING" );
+		Player1.FEELINGVALUE = int.Parse( GetPlayerStatusData( "Character01_FEELINGVALUE" ) );
+		Player1.SKILL = GetPlayerStatusData( "Character01_SKILL" );
+		Player1.OverDrive = GetPlayerStatusData( "Character01_OVERDRIVE" );
 
 
 		// Player2 に対するパラメーターの初期化
 		Player2._Player2 = GetPlayerStatusData( "Character02_ID" );
+		Player2.LV = int.Parse( GetPlayerStatusData( "Character02_LV" ) );
+		Player2.NEXTLVEXP = int.Parse( GetPlayerStatusData( "Character02_NEXTLVEXP" ) );
 		Player2.HP = int.Parse( GetPlayerStatusData( "Character02_HP" ) );
 		Player2.MP = int.Parse( GetPlayerStatusData( "Character02_MP" ) );
 		Player2.ATK = int.Parse( GetPlayerStatusData( "Character02_ATK" ) );
+		Player2.WEAPONATK = int.Parse( GetPlayerStatusData( "Character02_WEAPONATK" ) );
 		Player2.MATK = int.Parse( GetPlayerStatusData( "Character02_MATK" ) );
 		Player2.DEF = int.Parse( GetPlayerStatusData( "Character02_DEF" ) );
 		Player2.MDEF = int.Parse( GetPlayerStatusData( "Character02_MDEF" ) );
+		Player2.EQUIPMENTDEF = int.Parse( GetPlayerStatusData( "Character02_EQUIPMENTDEF" ) );
 		Player2.SPD = int.Parse( GetPlayerStatusData( "Character02_SPD" ) );
-		Player2.LUCKY = int.Parse( GetPlayerStatusData( "Character02_lucky" ) );
+		Player2.LUCKY = int.Parse( GetPlayerStatusData( "Character02_LUCKY" ) );
 		Player2.INT = int.Parse( GetPlayerStatusData( "Character02_INT" ) );
-		Player2.WEAPON01 = GetPlayerStatusData( "Character02_Weapon01" );
-		Player2.WEAPON02 = GetPlayerStatusData( "Character02_Weapon02" );
-		Player2.FEELING = GetPlayerStatusData( "Character02_Feeling" );
-		Player2.SKILL = GetPlayerStatusData( "Character02_Skill" );
-		Player2.OverDrive = GetPlayerStatusData( "Character02_OverDrive" );
+		Player2.WEAPON01 = GetPlayerStatusData( "Character02_WEAPON01" );
+		Player2.WEAPON02 = GetPlayerStatusData( "Character02_WEAPON02" );
+		Player2.FEELING = GetPlayerStatusData( "Character02_FEELING" );
+		Player2.FEELINGVALUE = int.Parse( GetPlayerStatusData( "Character02_FEELINGVALUE" ) );
+		Player2.SKILL = GetPlayerStatusData( "Character02_SKILL" );
+		Player2.OverDrive = GetPlayerStatusData( "Character02_OVERDRIVE" );
 
 
 		// Player3 に対するパラメーターの初期化
 		Player3._Player3 = GetPlayerStatusData( "Character03_ID" );
+		Player3.LV = int.Parse( GetPlayerStatusData( "Character03_LV" ) );
+		Player3.NEXTLVEXP = int.Parse( GetPlayerStatusData( "Character03_NEXTLVEXP" ) );
 		Player3.HP = int.Parse( GetPlayerStatusData( "Character03_HP" ) );
 		Player3.MP = int.Parse( GetPlayerStatusData( "Character03_MP" ) );
 		Player3.ATK = int.Parse( GetPlayerStatusData( "Character03_ATK" ) );
+		Player3.WEAPONATK = int.Parse( GetPlayerStatusData( "Character03_WEAPONATK" ) );
 		Player3.MATK = int.Parse( GetPlayerStatusData( "Character03_MATK" ) );
 		Player3.DEF = int.Parse( GetPlayerStatusData( "Character03_DEF" ) );
 		Player3.MDEF = int.Parse( GetPlayerStatusData( "Character03_MDEF" ) );
+		Player3.EQUIPMENTDEF = int.Parse( GetPlayerStatusData( "Character03_EQUIPMENTDEF" ) );
 		Player3.SPD = int.Parse( GetPlayerStatusData( "Character03_SPD" ) );
-		Player3.LUCKY = int.Parse( GetPlayerStatusData( "Character03_lucky" ) );
+		Player3.LUCKY = int.Parse( GetPlayerStatusData( "Character03_LUCKY" ) );
 		Player3.INT = int.Parse( GetPlayerStatusData( "Character03_INT" ) );
-		Player3.WEAPON01 = GetPlayerStatusData( "Character03_Weapon01" );
-		Player3.WEAPON02 = GetPlayerStatusData( "Character03_Weapon02" );
-		Player3.FEELING = GetPlayerStatusData( "Character03_Feeling" );
-		Player3.SKILL = GetPlayerStatusData( "Character03_Skill" );
-		Player3.OverDrive = GetPlayerStatusData( "Character03_OverDrive" );
+		Player3.WEAPON01 = GetPlayerStatusData( "Character03_WEAPON01" );
+		Player3.WEAPON02 = GetPlayerStatusData( "Character03_WEAPON02" );
+		Player3.FEELING = GetPlayerStatusData( "Character03_FEELING" );
+		Player3.FEELINGVALUE = int.Parse( GetPlayerStatusData( "Character03_FEELINGVALUE" ) );
+		Player3.SKILL = GetPlayerStatusData( "Character03_SKILL" );
+		Player3.OverDrive = GetPlayerStatusData( "Character03_OVERDRIVE" );
 
 
 		// Player4 に対するパラメーターの初期化
 		Player4._Player4 = GetPlayerStatusData( "Character04_ID" );
+		Player4.LV = int.Parse( GetPlayerStatusData( "Character04_LV" ) );
+		Player4.NEXTLVEXP = int.Parse( GetPlayerStatusData( "Character04_NEXTLVEXP" ) );
 		Player4.HP = int.Parse( GetPlayerStatusData( "Character04_HP" ) );
 		Player4.MP = int.Parse( GetPlayerStatusData( "Character04_MP" ) );
 		Player4.ATK = int.Parse( GetPlayerStatusData( "Character04_ATK" ) );
+		Player4.WEAPONATK = int.Parse( GetPlayerStatusData( "Character04_WEAPONATK" ) );
 		Player4.MATK = int.Parse( GetPlayerStatusData( "Character04_MATK" ) );
 		Player4.DEF = int.Parse( GetPlayerStatusData( "Character04_DEF" ) );
 		Player4.MDEF = int.Parse( GetPlayerStatusData( "Character04_MDEF" ) );
+		Player4.EQUIPMENTDEF = int.Parse( GetPlayerStatusData( "Character04_EQUIPMENTDEF" ) );
 		Player4.SPD = int.Parse( GetPlayerStatusData( "Character04_SPD" ) );
-		Player4.LUCKY = int.Parse( GetPlayerStatusData( "Character04_lucky" ) );
+		Player4.LUCKY = int.Parse( GetPlayerStatusData( "Character04_LUCKY" ) );
 		Player4.INT = int.Parse( GetPlayerStatusData( "Character04_INT" ) );
-		Player4.WEAPON01 = GetPlayerStatusData( "Character04_Weapon01" );
-		Player4.WEAPON02 = GetPlayerStatusData( "Character04_Weapon02" );
-		Player4.FEELING = GetPlayerStatusData( "Character04_Feeling" );
-		Player4.SKILL = GetPlayerStatusData( "Character04_Skill" );
-		Player4.OverDrive = GetPlayerStatusData( "Character04_OverDrive" );
+		Player4.WEAPON01 = GetPlayerStatusData( "Character04_WEAPON01" );
+		Player4.WEAPON02 = GetPlayerStatusData( "Character04_WEAPON02" );
+		Player4.FEELING = GetPlayerStatusData( "Character04_FEELING" );
+		Player4.FEELINGVALUE = int.Parse( GetPlayerStatusData( "Character04_FEELINGVALUE" ) );
+		Player4.SKILL = GetPlayerStatusData( "Character04_SKILL" );
+		Player4.OverDrive = GetPlayerStatusData( "Character04_OVERDRIVE" );
 
 
 		// Player5 に対するパラメーターの初期化
 		Player5._Player5 = GetPlayerStatusData( "Character05_ID" );
+		Player5.LV = int.Parse( GetPlayerStatusData( "Character05_LV" ) );
+		Player5.NEXTLVEXP = int.Parse( GetPlayerStatusData( "Character05_NEXTLVEXP" ) );
 		Player5.HP = int.Parse( GetPlayerStatusData( "Character05_HP" ) );
 		Player5.MP = int.Parse( GetPlayerStatusData( "Character05_MP" ) );
 		Player5.ATK = int.Parse( GetPlayerStatusData( "Character05_ATK" ) );
+		Player5.WEAPONATK = int.Parse( GetPlayerStatusData( "Character05_WEAPONATK" ) );
 		Player5.MATK = int.Parse( GetPlayerStatusData( "Character05_MATK" ) );
 		Player5.DEF = int.Parse( GetPlayerStatusData( "Character05_DEF" ) );
 		Player5.MDEF = int.Parse( GetPlayerStatusData( "Character05_MDEF" ) );
+		Player5.EQUIPMENTDEF = int.Parse( GetPlayerStatusData( "Character05_EQUIPMENTDEF" ) );
 		Player5.SPD = int.Parse( GetPlayerStatusData( "Character05_SPD" ) );
-		Player5.LUCKY = int.Parse( GetPlayerStatusData( "Character05_lucky" ) );
+		Player5.LUCKY = int.Parse( GetPlayerStatusData( "Character05_LUCKY" ) );
 		Player5.INT = int.Parse( GetPlayerStatusData( "Character05_INT" ) );
-		Player5.WEAPON01 = GetPlayerStatusData( "Character05_Weapon01" );
-		Player5.WEAPON02 = GetPlayerStatusData( "Character05_Weapon02" );
-		Player5.FEELING = GetPlayerStatusData( "Character05_Feeling" );
-		Player5.SKILL = GetPlayerStatusData( "Character05_Skill" );
-		Player5.OverDrive = GetPlayerStatusData( "Character05_OverDrive" );
+		Player5.WEAPON01 = GetPlayerStatusData( "Character05_WEAPON01" );
+		Player5.WEAPON02 = GetPlayerStatusData( "Character05_WEAPON02" );
+		Player5.FEELING = GetPlayerStatusData( "Character05_FEELING" );
+		Player5.FEELINGVALUE = int.Parse( GetPlayerStatusData( "Character05_FEELINGVALUE" ) );
+		Player5.SKILL = GetPlayerStatusData( "Character05_SKILL" );
+		Player5.OverDrive = GetPlayerStatusData( "Character05_OVERDRIVE" );
 
 
 		// Player6 に対するパラメーターの初期化
 		Player6._Player6 = GetPlayerStatusData( "Character06_ID" );
+		Player6.LV = int.Parse( GetPlayerStatusData( "Character06_LV" ) );
+		Player6.NEXTLVEXP = int.Parse( GetPlayerStatusData( "Character06_NEXTLVEXP" ) );
 		Player6.HP = int.Parse( GetPlayerStatusData( "Character06_HP" ) );
 		Player6.MP = int.Parse( GetPlayerStatusData( "Character06_MP" ) );
 		Player6.ATK = int.Parse( GetPlayerStatusData( "Character06_ATK" ) );
+		Player6.WEAPONATK = int.Parse( GetPlayerStatusData( "Character06_WEAPONATK" ) );
 		Player6.MATK = int.Parse( GetPlayerStatusData( "Character06_MATK" ) );
 		Player6.DEF = int.Parse( GetPlayerStatusData( "Character06_DEF" ) );
 		Player6.MDEF = int.Parse( GetPlayerStatusData( "Character06_MDEF" ) );
+		Player6.EQUIPMENTDEF = int.Parse( GetPlayerStatusData( "Character06_EQUIPMENTDEF" ) );
 		Player6.SPD = int.Parse( GetPlayerStatusData( "Character06_SPD" ) );
-		Player6.LUCKY = int.Parse( GetPlayerStatusData( "Character06_lucky" ) );
+		Player6.LUCKY = int.Parse( GetPlayerStatusData( "Character06_LUCKY" ) );
 		Player6.INT = int.Parse( GetPlayerStatusData( "Character06_INT" ) );
-		Player6.WEAPON01 = GetPlayerStatusData( "Character06_Weapon01" );
-		Player6.WEAPON02 = GetPlayerStatusData( "Character06_Weapon02" );
-		Player6.FEELING = GetPlayerStatusData( "Character06_Feeling" );
-		Player6.SKILL = GetPlayerStatusData( "Character06_Skill" );
-		Player6.OverDrive = GetPlayerStatusData( "Character06_OverDrive" );
+		Player6.WEAPON01 = GetPlayerStatusData( "Character06_WEAPON01" );
+		Player6.WEAPON02 = GetPlayerStatusData( "Character06_WEAPON02" );
+		Player6.FEELING = GetPlayerStatusData( "Character06_FEELING" );
+		Player6.FEELINGVALUE = int.Parse( GetPlayerStatusData( "Character06_FEELINGVALUE" ) );
+		Player6.SKILL = GetPlayerStatusData( "Character06_SKILL" );
+		Player6.OverDrive = GetPlayerStatusData( "Character06_OVERDRIVE" );
 
 		// List に格納する
 		players.Add( Player1 );
@@ -189,35 +219,17 @@ public class PlayerManagerCSV : MonoBehaviour {
 	/// @brief プレイヤーの ID 属性
 	/// </summary>
 	public class PlayerId {
-
-		/// <summary>
-		/// プレイヤー ID1
-		/// </summary>
+		/// <summary>プレイヤーID1</summary>
 		public string _Player1;
-
-		/// <summary>
-		/// プレイヤー ID2
-		/// </summary>
+		/// <summary>プレイヤーID2</summary>
 		public string _Player2;
-
-		/// <summary>
-		/// プレイヤー ID3
-		/// </summary>
+		/// <summary>プレイヤーID3</summary>
 		public string _Player3;
-
-		/// <summary>
-		/// プレイヤー ID4
-		/// </summary>
+		/// <summary>プレイヤーID4</summary>
 		public string _Player4;
-
-		/// <summary>
-		/// プレイヤー ID5
-		/// </summary>
+		/// <summary>プレイヤーID5</summary>
 		public string _Player5;
-
-		/// <summary>
-		/// プレイヤー ID6
-		/// </summary>
+		/// <summary>プレイヤーID6</summary>
 		public string _Player6;
 
 
@@ -229,75 +241,43 @@ public class PlayerManagerCSV : MonoBehaviour {
 	/// @brief プレイヤーの現在のステータス 型は暫定的です
 	/// </summary>
 	public class PlayerParameters : PlayerId {
-	
-		/// <summary>
-		/// ヒットポイント
-		/// </summary>
+		/// <summary>レベル</summary>
+		public int LV;
+		/// <summary>次のレベルまで必要経験値量</summary>
+		public int NEXTLVEXP;
+		/// <summary>ヒットポイント</summary>
 		public int HP;
-
-		/// <summary>
-		/// マジックポイント
-		/// </summary>
+		/// <summary>マジックポイント</summary>
 		public int MP;
-
-		/// <summary>
-		/// 攻撃力
-		/// </summary>
+		/// <summary>攻撃力</summary>
 		public int ATK;
-
-		/// <summary>
-		/// 魔法攻撃力
-		/// </summary>
+		/// <summary>武器攻撃力(装備している武器の合計)</summary>
+		public int WEAPONATK;
+		/// <summary>魔法攻撃力</summary>
 		public int MATK;
-
-		/// <summary>
-		/// 防御力
-		/// </summary>
+		/// <summary>防御力</summary>
 		public int DEF;
-
-		/// <summary>
-		/// 魔法防御力
-		/// </summary>
+		/// <summary>魔法防御力</summary>
 		public int MDEF;
-
-		/// <summary>
-		/// 素早さ
-		/// </summary>
+		/// <summary>防具防御力(装備している防具の合計)</summary>
+		public int EQUIPMENTDEF;
+		/// <summary>素早さ</summary>
 		public int SPD;
-
-		/// <summary>
-		/// 運
-		/// </summary>
+		/// <summary>運</summary>
 		public int LUCKY;
-
-		/// <summary>
-		/// 知性,知力
-		/// </summary>
+		/// <summary>知性,知力</summary>
 		public int INT;
-
-		/// <summary>
-		/// 手装備01
-		/// </summary>
+		/// <summary>手装備01</summary>
 		public string WEAPON01;
-
-		/// <summary>
-		/// 手装備02
-		/// </summary>
+		/// <summary>手装備02</summary>
 		public string WEAPON02;
-
-		/// <summary>
-		/// 感情
-		/// </summary>
+		/// <summary>(感情)キャラによって上がりやすい感情値を設定しておく（怒が上がりやすいキャラだと、怒が＋5上がる技を使用したらプラスで2増える→合計7増える）</summary>
 		public string FEELING;
-
-		/// <summary>
-		/// スキル
-		/// </summary>
+		/// <summary>感情値(仮)一定以上の感情値で技を覚えるため値を保持する</summary>
+		public int FEELINGVALUE;
+		/// <summary>スキル</summary>
 		public string SKILL;
-
-		/// <summary>
-		/// オーバードライブ
-		/// </summary>
+		/// <summary>オーバードライブ</summary>
 		public string OverDrive;
 
 
@@ -305,11 +285,9 @@ public class PlayerManagerCSV : MonoBehaviour {
 	/*===============================================================*/
 
 	/*===============================================================*/
-	/// <summary>
-	/// @brief Player のキーデータを元にキーに対するデータを取得します
-	/// @param string 例：Character01_IDなどを指定します
-	/// @return GetPlayerStatusData 例:Character01_IDに対するデータ
-	/// </summary>
+	/// <summary>Playerのキーデータを元にキーに対するデータを取得します</summary>
+	/// <param name="key">例:Character01_IDなどを指定します</param>
+	/// <returns>例:Character01_IDに対するデータ</returns>
 	private string GetPlayerStatusData( string key ) {
 		// data を格納する変数
 		string str = "";
