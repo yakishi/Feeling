@@ -51,7 +51,13 @@ public class GameManager : MonoBehaviour {
 		test.LoadPlayer( );
 		// 読込例
 		Debug.Log( "Player1のHP : " + test.CurrentState[ 0 ].HP );
+		Debug.Log( "Player1のステータスポイント : " + test.CurrentState[ 0 ].StatusPoint );
+		if( PlayerManagerCSV.GetPlayers[ 5 ].LV == 2 ) {
+			Debug.Log( "TEST : " + PlayerManagerCSV.GetPlayers[ 5 ].NEXTLVEXP );
+
+		}
 		//////////////////////////////////////////////////////
+		//SkillLoader mySkillLoader = new SkillLoader( );
 
 
 	}
