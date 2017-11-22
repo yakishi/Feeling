@@ -102,8 +102,13 @@ public class GV
         gameData.Players = new List<PlayerParam>();
         var player = new PlayerParam();
         gameData.Players.Add(player);
+        SData.usedSave[slot - 1] = true;
 
+        SaveData.setSlot(0);
+        SaveData.setClass("SystemData", SData);
+        SaveData.save();
 
+        SaveData.setSlot(slot);
         SaveData.setClass("GameData", GData);
         SaveData.save();
     }
@@ -113,8 +118,6 @@ public class GV
         SaveData.setSlot(slot);
         SaveData.load();
         gameData = SaveData.getClass<GameData>("GameData", null);
-
-        Debug.Log(gameData.playTime);
     }
 
     /// <summary>
