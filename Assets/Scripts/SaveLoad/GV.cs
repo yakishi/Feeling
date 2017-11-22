@@ -66,15 +66,20 @@ public class GV
     [Serializable]
     public class SystemData
     {
-        public int saveCount;
+        public bool[] usedSave;
+        public SystemData()
+        {
+            usedSave = new bool[SaveData.SaveSlotCount];
+        }
     }
+
     static SystemData systemData;
     static public SystemData SData
     {
         get {
             if (systemData == null)
             {
-                newGame();
+                gameAwake();
             }
             return systemData;
         }
@@ -84,8 +89,6 @@ public class GV
 
     #region Properties
     #endregion
-
-    #region Methods
 
     /// <summary>
     /// GameData をセーブする
@@ -113,18 +116,27 @@ public class GV
 
         Debug.Log(gameData.playTime);
     }
-    #endregion
+
+    /// <summary>
+    /// ゲーム起動時に呼び出し
+    /// </summary>
+    static public void gameAwake()
+    {
+        // SystemDataの読み込み
+        SaveData.setSlot(0);
+        SaveData.load();
+        systemData = SaveData.getClass<SystemData>("SystemData", null);
+        if (systemData == null) {
+            systemData = new SystemData();
+        }
+    }
 
     /// <summary>
     /// ゲームを新しく始めるときに呼び出される関数
     /// </summary>
     static public void newGame()
     {
-        // SystemDataの読み込み
-        SaveData.setSlot(0);
-        SaveData.load();
-        systemData = SaveData.getClass<SystemData>("SystemData", null);
-        
+
         gameData = new GameData();
 
         // 装備の仮データ読み込み
