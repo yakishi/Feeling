@@ -32,13 +32,13 @@ public class Title : MonoBehaviour
             .Subscribe(_ => {
                 GV.newGame();
                 // TODO: 仮でワールドマップに遷移
-                SceneManager.LoadScene(SceneName.WorldMap);
+                //SceneManager.LoadScene(SceneName.WorldMap);
+                SaveLoad.CreateUI(SaveLoad.Type.Save, gameObject);
             })
             .AddTo(this);
         loadGameButton.OnClickAsObservable()
             .Subscribe(_ => {
-                // TODO: 仮でワールドマップに遷移
-                SceneManager.LoadScene(SceneName.WorldMap);
+                SaveLoad.CreateUI(SaveLoad.Type.Load, gameObject);
             })
             .AddTo(this);
         exitButton.OnClickAsObservable()
