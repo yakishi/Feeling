@@ -34,6 +34,7 @@ using UnityEngine;
 public class SaveData
 {
     const int MaxData = 4;
+    public const int SaveSlotCount = MaxData - 1;
     static SaveBase[] saveBase;
     static SaveBase[] SaveObj
     {
