@@ -44,7 +44,7 @@ public class BattleEnemyGenerate : EnemyManager {
 		// 敵画像の読み込み
 		myEnemyImg = Resources.LoadAll<Sprite>( "Images/BattleScene/Enemy/" );
 		// 敵の数をランダムに生成
-		for ( rndCnt = 0; rndCnt < Random.Range( 1.0f, MAX_ENEMY ); rndCnt++ ) {
+		for ( rndCnt = 0; rndCnt < Random.Range( 5.0f, MAX_ENEMY ); rndCnt++ ) {
 			// 0 ～ CSV から読み込まれた ID をカウントした範囲の数値がランダムで入る
 			rnd = Random.Range( 0, CSVLoader.csvId );
 			// バトルシーン開始時に敵を生成
