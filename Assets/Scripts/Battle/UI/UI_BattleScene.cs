@@ -285,7 +285,7 @@ public class UI_BattleScene : EnemyManager {
 				int NumberOfSurvivors = 0;
 				for ( int i = 0; i < BattleEnemyGenerate.EnemyNumber; i++ ) {
 					if ( BattleEnemyGenerate.Enemy[ i ] != null) {
-						Debug.Log( "active sum : " + i );
+						//Debug.Log( "active sum : " + i );
 						NumberOfSurvivors = i;
 
 					}
@@ -321,20 +321,32 @@ public class UI_BattleScene : EnemyManager {
 
 			/*===============================================================*/
 			// 敵選択 Arrow の操作処理
-			if ( myEnemyArrow.enemyArrowFlg && myEnemyArrow.enemyArrowFlgCnt != -1 ) { // 敵選択フラグが有効なとき
+			if( myEnemyArrow.enemyArrowFlg && myEnemyArrow.enemyArrowFlgCnt != -1 ) { // 敵選択フラグが有効なとき
 				if( myEnemyArrow.enemyArrowFlgCnt >= 1 ) myEnemyArrow.enemyArrowFlgCnt--;
-					for( int i = 0; i < BattleEnemyGenerate.EnemyNumber; i++ ) { // Destroy された分だけ引く
-						if( myEnemyArrow.enemyArrowFlgCnt >= 1 ) {
-							if( BattleEnemyGenerate.Enemy[ myEnemyArrow.enemyArrowFlgCnt ] == null ) myEnemyArrow.enemyArrowFlgCnt--;
-
-						}
-						//if( myEnemyArrow.enemyArrowFlgCnt == 0 ) myEnemyArrow.enemyArrowFlgCnt++;
+				//Debug.Log( myEnemyArrow.enemyArrowFlgCnt );
+				int tmp = 0;
+				for( int i = 0; i < BattleEnemyGenerate.EnemyNumber; i++ ) {
+					// null 番目の index を取得
+					if( BattleEnemyGenerate.Enemy[ i ] != null ) {
+						//Debug.Log( "index : " + i );
+						tmp = i;
+						break;
 
 					}
 
-				//}
+				}
+
+				for( int i = 0; i < BattleEnemyGenerate.EnemyNumber; i++ ) { // Destroy された分だけ引く
+					if( myEnemyArrow.enemyArrowFlgCnt >= 1 ) {
+						if( BattleEnemyGenerate.Enemy[ myEnemyArrow.enemyArrowFlgCnt ] == null ) myEnemyArrow.enemyArrowFlgCnt--;
+
+					} 
+					// 左方向キーを 1 回以上押すと 0 に鳴ってしまう問題に対処
+					else if( myEnemyArrow.enemyArrowFlgCnt == 0 && tmp > 0 ) myEnemyArrow.enemyArrowFlgCnt = tmp;
+
+				}
 				if( myEnemyArrow.enemyArrowFlgCnt >= 0 && myEnemyArrow.enemyArrowFlgCnt < BattleEnemyGenerate.EnemyNumber ) {
-					for( int i = 0; i < BattleEnemyGenerate.EnemyNumber; i++ ) {
+					for( int i = tmp + 1 /* 生きている ( 敵 ) の index + 1 番目 */; i < BattleEnemyGenerate.EnemyNumber; i++ ) {
 						BattleEnemyGenerate.ApplyEnemyArrowVisible( i, false );
 
 					}
