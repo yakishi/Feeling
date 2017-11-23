@@ -1,6 +1,11 @@
 fileFormatVersion: 2
+<<<<<<< HEAD:Assets/Resources/Prefabs/StatusWindow.prefab.meta
+guid: e807ec9f6175a0c40b6f288a5927279e
+timeCreated: 1509326243
+=======
 guid: 557ff7546b14489488034c8815521f89
 timeCreated: 1511353060
+>>>>>>> Master/master:Assets/Resources/Prefabs/Title/TitleCanvas.prefab.meta
 licenseType: Free
 NativeFormatImporter:
   externalObjects: {}
