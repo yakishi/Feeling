@@ -2278,6 +2278,13 @@ public class LTDescr
 
 		return this;
 	}
+
+    public LTDescr skip()
+    {
+        passed = time;
+        loopType = LeanTweenType.once;
+        return this;
+    }
 }
 
 //}
