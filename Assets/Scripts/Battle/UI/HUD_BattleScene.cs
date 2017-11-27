@@ -206,6 +206,24 @@ public class HUD_BattleScene : PlayerManagerCSV {
 	/*===============================================================*/
 
 	/*===============================================================*/
+	/// <summary>生成されたMessageプレハブのテキストを更新します</summary>
+	/// <param name="message">適用したい文字列を入れます</param>
+	/// <param name="isVisible">MessageUIを表示するか否か,true:表示,false:非表示</param>
+	/// <param name="ms">メッセージを表示したい時間(ミリ秒単位)</param>
+	static public void ApplyMessageText( string message, bool isVisible, int ms ) {
+		myMessageObj.transform.GetChild( 0 ).GetChild( 0 ).GetComponent<Text>( ).text = message/* + "の攻撃"*/;
+		myMessageObj.gameObject.SetActive( isVisible );
+		if( isVisible ) {
+			// n ミリ秒後に自分自身を呼ぶ
+			Observable.Timer( TimeSpan.FromMilliseconds( ms ) )
+				.Subscribe( _ => ApplyMessageText( "", false /* 非表示状態にする */ ) );
+
+		}
+
+	}
+	/*===============================================================*/
+
+	/*===============================================================*/
 	/// <summary>生成された立ち絵プレハブの画像を更新します</summary>
 	/// <param name="posX">RootGameobject自身の位置(X軸)</param>
 	/// <param name="posY">RootGameObject自身の位置(Y軸)</param>
