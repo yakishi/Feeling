@@ -37,12 +37,13 @@ public class UI_BattleScene : EnemyManager {
 
 	} static private EnemyArrow myEnemyArrow;
 
+	bool mouseClickFlg = true; // ハイライト維持するためのフラグ
+
 	// セッターおよびゲッター定義部
 	/// <summary>EnemyArrowフラグが有効か否かgetします</summary>
 	static public bool GetEnemyArrowFlg { get { return myEnemyArrow.enemyArrowFlg; } }
 	/// <summary>EnemyArrowの何番目を選択しているかをgetします</summary>
 	static public int GetEnemyArrowChoice { get { return myEnemyArrow.enemyArrowFlgCnt; } }
-
 
 	/*===============================================================*/
 	/// <summary>初期化</summary>
@@ -68,6 +69,8 @@ public class UI_BattleScene : EnemyManager {
 		//次のフレームで実行する
 		Observable.NextFrame( )
 			.Subscribe( _ => SkillLoad( ) );
+
+		CustomStandaloneInput.MouseEnable( 1 ); // ここでは, マウスを無効化する
 
 
 	}
@@ -393,6 +396,27 @@ public class UI_BattleScene : EnemyManager {
 				}
 
 			}
+
+		}
+		// left, right, middle : mouse event ( pressed )
+		if( Input.GetMouseButtonDown( 0 ) || Input.GetMouseButtonDown( 1 ) || Input.GetMouseButtonDown( 2 ) && mouseClickFlg ) {
+			if( Cursor.lockState == CursorLockMode.Locked ) {
+				// マウスイベントによるハイライト維持処理
+				if( CommandSelect.mySlv[ 0 ].transform.parent.parent.parent.gameObject.activeSelf ) {
+					if( myCommandSelect.slvCnt > -1 ) CommandSelect.mySlv[ myCommandSelect.slvCnt ].Select( );
+
+				} else if( !CommandSelect.mySlv[ 0 ].transform.parent.parent.parent.gameObject.activeSelf ) {
+					CommandFrameImg( CommandSelect.slv[ 0, 0 ], myCommandSelect.commandFrameImgCnt );
+
+				}
+
+			}
+			mouseClickFlg = false;
+
+		}
+		// left, right, middle : mouse event ( pressed up )
+		if( Input.GetMouseButtonUp( 0 ) || Input.GetMouseButtonUp( 1 ) || Input.GetMouseButtonUp( 2 ) ) {
+			mouseClickFlg = true;
 
 		}
 

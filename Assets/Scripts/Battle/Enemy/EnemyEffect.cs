@@ -29,6 +29,7 @@ public class EnemyEffect {
 		transform.localScale = new Vector3( scaleX, scaleY, 0.0f );
 		transform.localPosition = new Vector3( positionX, positionY, 0.0f );
 		//Debug.Log( "<color='red'>SwordEffect : " + EnemyObj[ 0 ].transform.GetChild( 1 ) + "</color>" );
+		Debug.Log( "<color='red'>敵エフェクト関数が呼ばれました。</color>" );
 
 
 	}

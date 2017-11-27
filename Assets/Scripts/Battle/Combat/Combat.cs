@@ -67,13 +67,8 @@ public class Combat : MonoBehaviour {
 
 		generate = thisObj.GetComponent<BattleEnemyGenerate>( );
 		hud = thisObj.GetComponent<HUD_BattleScene>( );
-
-		playersSpeed[ 0 ] = hud.Player1.SPD;
-		playersSpeed[ 1 ] = hud.Player2.SPD;
-		playersSpeed[ 2 ] = hud.Player3.SPD;
-		playersSpeed[ 3 ] = hud.Player4.SPD;
-		//playersSpeed[ 4 ] = hud.Player5.SPD;
-		//playersSpeed[ 5 ] = hud.Player6.SPD;
+		// 四人分の Character の素早さで初期化
+		for( int i = 0; i < startingLineup; i++ ) playersSpeed[ i ] = PlayerManagerCSV.GetPlayers[ i ].SPD;
 
 		InitializeTurn = false; // 戦闘シーン開始じに初期化される
 
@@ -101,13 +96,16 @@ public class Combat : MonoBehaviour {
 
 		}
 		// 戦闘終了処理 ( 敵側を殲滅した時 )
+		int tmp = 0;
 		for( int i = 0; i < ActionState.Count; i++ ) {
 			if( ActionState[ i ].enemyIsDead ) {
-				if( i == BattleEnemyGenerate.EnemyNumber ) {
+				if( tmp == BattleEnemyGenerate.EnemyNumber ) {
 					Debug.Log( "<color='red'>敵を殲滅しました！</color>" );
 					HUD_BattleScene.ApplyMessageText( "敵を殲滅しました！" );
 
 				}
+				tmp++; // 敵側が何体死んだか数える
+				Debug.Log( "<color='red'>敵死亡数 : " + tmp + "</color>" );
 
 			}
 

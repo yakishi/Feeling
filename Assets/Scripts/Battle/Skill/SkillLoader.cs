@@ -156,7 +156,7 @@ class SkillLoader {
 		// 出力の仕方 ( 例 ) 6 人分のプレイヤーのスキルを吐き出す
 		for( int i = 0; i < PlayersSkillsTest.GetLength( 0 ); i++ ) {
 			for( int j = 0; j < PlayersSkillsTest.GetLength( 1 ); j++ ) {
-				Debug.Log( "Player" + i + "のスキル : " + PlayersSkillsTest[ i, j ].NAME );
+				//Debug.Log( "Player" + i + "のスキル : " + PlayersSkillsTest[ i, j ].NAME );
 
 			}
 
