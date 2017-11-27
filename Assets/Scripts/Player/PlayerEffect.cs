@@ -48,7 +48,7 @@ public class PlayerEffect {
 		animator.SetTrigger( triggerName );
 		transform.localScale = new Vector3( scaleX, scaleY, 0.0f );
 		transform.localPosition = new Vector3( positionX, positionY, 0.0f );
-		Debug.Log( "<color='red'>エフェクト関数が呼ばれました。</color>" );
+		Debug.Log( "<color='red'>プレイヤーエフェクト関数が呼ばれました。</color>" );
 
 
 	}

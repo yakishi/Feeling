@@ -9,6 +9,12 @@ public class BattleScene : MonoBehaviour {
 	// "directory : BattleScene/CanvasGame/Back"
 	private GameObject imgBack; // 戦闘シーン背景
 
+	struct FadeBGM {
+		public Color clr;
+		public bool once;
+
+	} FadeBGM myFadeBGM;
+
 	/*===============================================================*/
 	/// <summary>UnityEngineライフサイクルによる初期化</summary>
 	void Awake( ) {
@@ -27,6 +33,9 @@ public class BattleScene : MonoBehaviour {
 		color.a = 0.0f; /* 透明にしておく */
 		renderer.color = color; // 変更した色情報に変更
 
+		myFadeBGM.clr.a = 0.0f;
+		myFadeBGM.once = true;
+
 
 	}
 	/*===============================================================*/
@@ -35,7 +44,12 @@ public class BattleScene : MonoBehaviour {
 	/// <summary>UnityEngineライフサイクルによって毎フレーム呼ばれます</summary>
 	void Update ( ) {
 		// 場面転換関数を呼ぶ
-		GameManager.FadeIn( imgBack.GetComponent<SpriteRenderer>( ) );
+		if( myFadeBGM.clr.a <= 1.0 ) myFadeBGM.clr = GameManager.FadeIn( imgBack.GetComponent<SpriteRenderer>( ) );
+		if( myFadeBGM.clr.a >= 1.0f && myFadeBGM.once ) {
+			BattleAudio.PlayBGM( 0 );
+			myFadeBGM.once = false;
+
+		}
 
 
 	}

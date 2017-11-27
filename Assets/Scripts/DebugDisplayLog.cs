@@ -26,14 +26,13 @@ public class DebugDisplayLog : MonoBehaviour {
 				UnityEditor.EditorApplication.isPlaying = false;
 
 			}
+			// 特定キーが押されたときにカーソルを有効にする
+			if ( Input.GetKey( KeyCode.C ) ) {
+				//DebugDisplayLog.displayLog.Clear( );
+				CustomStandaloneInput.MouseEnable( 3 );
+
+			}
 		#endif 
-
-		// 特定キーが押されたときにログを消す
-		if ( Input.GetKey( KeyCode.C ) ) {
-			DebugDisplayLog.displayLog.Clear( );
-
-		}
-
 
 			// FPS
 			if ( this.oneSecondTime >= 1f ) {

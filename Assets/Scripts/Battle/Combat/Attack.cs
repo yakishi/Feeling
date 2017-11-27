@@ -35,7 +35,7 @@ public class Attack /*: Combat !注意 : extends すると二回呼び出され�
 	/*===============================================================*/
 
 	/*===============================================================*/
-	/// <summary>攻撃コマンド時の敵AI処理,ダメージなどはまだあたえられない</summary>
+	/// <summary>攻撃コマンド時の敵AI処理</summary>
 	/// <param name="generate"></param>
 	public void EnemyAttack( BattleEnemyGenerate generate ) {
 		Debug.Log( "EnemyAttack Function Call." );
@@ -49,17 +49,19 @@ public class Attack /*: Combat !注意 : extends すると二回呼び出され�
 				// 誰が ( 敵側 ) 攻撃しているか分かるようにメッセージを出す
 				HUD_BattleScene.ApplyMessageText( generate.GetEnemyStatusData
 					( myCombatState[ i ].id.gameObject.name + "_NAME" ) + "の攻撃" );
+
+				int sleep = i; // i を一時的に格納します i は 行動順番目
+
+				// 1.8 秒後に出す ( 攻撃エフェクト終了直前 ) 
+				Observable.Timer( TimeSpan.FromMilliseconds( 1800 ) )
+					.Subscribe( _ => BattleAudio.PlaySE( myCombatState[ sleep ].id.gameObject.name, myCombatState[ sleep ].id.transform.GetChild( 3 ).GetComponent<AudioSource>( ) ) );
+
 				// 敵側からの攻撃 → Player 側への攻撃エフェクト表示をする
 				// エフェクト再生関数を呼ぶ
 				// 2 秒後に出す
-				// TODO
-				// 現状, 敵側がプレイヤー側に攻撃するエフェクトがないので
-				// 将来的に, 変更します。
 				Observable.Timer( TimeSpan.FromMilliseconds( 2000 ) )
 					.Subscribe( _ => new
-						 PlayerEffect( ).SetEffectPlay( rnd/* ランダムに攻撃 */, "IsTest", 36.0f, 36.0f, 0.0f, -70.0f ) );
-
-				int sleep = i; // i を一時的に格納します
+						 PlayerEffect( ).SetEffectPlay( rnd/* ランダムに攻撃 */, myCombatState[ sleep ].id.gameObject.name, 36.0f, 36.0f, 0.0f, -70.0f ) );
 
 				// 2.5 秒後に出す ( 攻撃エフェクトが表示し終わった後 )
 				Observable.Timer( TimeSpan.FromMilliseconds( 2500 ) )
@@ -109,9 +111,12 @@ public class Attack /*: Combat !注意 : extends すると二回呼び出され�
 
 				Debug.Log( "<color='red'>通常攻撃ダメージ量 : " + ( int )sum + ", 乱数 : " + rnd +  "</color>" );
 
+				myCombatState[ playersIndex ].HP -= ( int )hpLeftovers; // 現在のプレイヤー行動ステートを更新する ( HP )
+				HUD_BattleScene.ApplyCharaHP( playersIndex, ( int )hpLeftovers ); // HUD ( HP ) を更新する
+
 				if( ( int )hpLeftovers > 0 ) {
 					myCombatState[ playersIndex ].HP = ( int )hpLeftovers; // 現在のプレイヤー行動ステートを更新する ( HP )
-					HUD_BattleScene.ApplyCharaHP( playersIndex, ( int )hpLeftovers ); // HUD ( HP ) を更新する
+					HUD_BattleScene.ApplyCharaHP( playersIndex,  ( int )hpLeftovers ); // HUD ( HP ) を更新する
 
 				} else myCombatState[ playersIndex ].playerIsDead = true; // 残り HP が 0 の時, 死亡
 
@@ -135,22 +140,66 @@ public class Attack /*: Combat !注意 : extends すると二回呼び出され�
 	/// <summary>次の行動者に移行するまでの時間稼ぎ</summary>
 	/// <param name="index">myCombatState[i].isActionが真の時の行動番目</param>
 	private void Sleep( int index ) {
-		//Debug.Log( "<color='red'>index : " + index + "</color>" );
+		Debug.Log( "<color='red'>Sleep( index ) : " + index + "</color>" );
 		//myCombatState[ index + 1 ].isAction = true; // 次の順番が行動できるようにする
 		//Debug.Log( "<color='red'>index : " + myCombatState[ index + 1 ].id.name + "</color>" );
-		for( int i = 0; i < myCombatState.Count; i++ ) {
-			if( myCombatState[ i ].id == null ) {
-				Debug.Log( "<color='red'>死亡index : ( " + i + " ) " + myCombatState[ i ].id.name + "</color>" );
-				Debug.Log( "<color='red'>死亡数index : " + i + "</color>" );
+		//int tmp = 0;
+		//for( int i = 0; i < myCombatState.Count; i++ ) {
+		//	if( myCombatState[ i ].id == null ) {
+		//		//Debug.Log( "<color='red'>死亡index : ( " + i + " ) " + myCombatState[ i ].id.name + "</color>" );
+		//		Debug.Log( "<color='red'>死亡者index : " + i + "</color>" );
+		//		tmp = i; // 死亡者 index 番号を格納する
+
+		//	}
+		//	if( myCombatState[ i ].id != null && tmp == 0 ) {
+		//		Debug.Log( "<color='red'>生存index : ( " + i + " ) " + myCombatState[ i ].id.name + "</color>" );
+		//		Debug.Log( "<color='red'>生存者index : " + i + "</color>" );
+		//		Combat.GetCombatState[ index + 1 ].isAction = true; // 攻撃者 ( 敵側 ) 生きている時に次ぎの人に回す
+
+		//	} else if( tmp > 0 ) {
+		//		// 攻撃者 ( 敵側 ) 死んでいる時, 死んでいる index 番号 + 1 次ぎの人に回す
+		//		//Combat.GetCombatState[ tmp + 1 ].isAction = true;
+		//		//if( i + 1 != tmp ) Combat.GetCombatState[ index + 1 ].isAction = true;
+		//		//else if( i + 2 != tmp ) Combat.GetCombatState[ index + 2 ].isAction = true;
+
+		//	}
+
+		//}
+
+		foreach( Combat.CombatState item in myCombatState ) {
+			if( item.id == null /*&& item.isAction*/ ) {
+				myCombatState.Remove( item );
+				break;
 
 			}
-			if( myCombatState[ i ].id != null ) {
-				Debug.Log( "<color='red'>生存index : ( " + i + " ) " + myCombatState[ i ].id.name + "</color>" );
-				Debug.Log( "<color='red'>生存数index : " + i + "</color>" );
+			if( item.id != null ) {
+				Debug.Log( "Remove After : " + item.id );
 
 			}
 
 		}
+		Debug.Log( "Remove After Count : " + myCombatState.Count );
+
+		if( index + 1 < myCombatState.Count ) {
+			if( myCombatState[ index + 1 ].id == null ) {
+				myCombatState[ index ].isAction = true;
+				Debug.Log( "Remove After GameObject Null : " + myCombatState[ index ].id.name );
+
+			}
+			else if( myCombatState[ index + 1 ].id != null ) {
+				myCombatState[ index + 1 ].isAction = true;
+				Debug.Log( "Remove After GameObject !Null : " + myCombatState[ index + 1 ].id.name );
+
+			}
+
+		} else if( index + 1 > myCombatState.Count ) {
+			myCombatState[ index - 1 ].isAction = true;
+			Debug.Log( "Remove After GameObject OutOfRangeEX : " + myCombatState[ index - 1 ].id.name );
+
+		}
+		
+
+		//Debug.Log( "Remove After GameObject : " + myCombatState[ index + 1 ].id.name );
 
 
 	}
@@ -186,13 +235,19 @@ public class Attack /*: Combat !注意 : extends すると二回呼び出され�
 
 
 				if ( subIdentifier == UI_BattleScene.GetEnemyArrowChoice.ToString( ) ) {
-					Debug.Log( "<color='red'>行動番目 : " + i + ", 実際の敵選択矢印選択番目 : " + subIdentifier + "番目のステータス情報</color>" );
+					//Debug.Log( "<color='red'>行動番目 : " + i + ", 実際の敵選択矢印選択番目 : " + subIdentifier + "番目のステータス情報</color>" );
 					// エフェクト再生関数を呼ぶ
-					EnemyEffect.SetEffectPlay( UI_BattleScene.GetEnemyArrowChoice, "IsSword", 1.0f, 1.0f, 0.0f, 0.0f );
+					EnemyEffect.SetEffectPlay( UI_BattleScene.GetEnemyArrowChoice, UnityEngine.Random.Range( 0, 5 ).ToString( ), 1.0f, 1.0f, 0.0f, 0.0f );
+
+					// 2 秒後に出す
+					// 敵を倒すのが早いとエフェクトが表示できないので関数を呼ぶ
+					Observable.Timer( TimeSpan.FromMilliseconds( 2000 ) )
+						.Subscribe( _ => EnemyDestroy( i, subIdentifier ) );
+
 					// 試しにゲームオブジェクトを消してみる
-					myCombatState[ i ].enemyIsDead = true;
-					UnityEngine.Object.Destroy( myCombatState[ i ].id.gameObject/*, 1.0f*/ );
-					myCombatState[ i ].id = null;
+					//myCombatState[ i ].enemyIsDead = true;
+					//UnityEngine.Object.Destroy( myCombatState[ i ].id.gameObject/*, 1.0f*/ );
+					//myCombatState[ i ].id = null;
 					break;
 
 				}
@@ -203,16 +258,60 @@ public class Attack /*: Combat !注意 : extends すると二回呼び出され�
 
 		for ( int i = 0; i < Combat.GetCombatState.Count; i++ ) {
 			if ( Combat.GetCombatState[ i ].isAction ) {
-				Debug.Log( i + "番目が行動可能状態です。" );
+				//Debug.Log( myCombatState[ i ].id.name + "番目が行動可能状態です。" );
 				Combat.GetCombatState[ i ].isAction = false; // 攻撃コマンドが押されたら行動終了とする
 				// TODO 上の Sleep 関数のようにする
-				Combat.GetCombatState[ i + 1 ].isAction = true; // 攻撃コマンドが押された時に次ぎの人に回す
+				//Combat.GetCombatState[ i + 1 ].isAction = true; // 攻撃コマンドが押された時に次ぎの人に回す
+				int sleep = i; // i を一時的に格納します
 
+				// 5 秒後に次の行動者に移る
+				Observable.Timer( TimeSpan.FromMilliseconds( 2100 ) )
+					.Subscribe( _ => Sleep( sleep ) );
+
+				
+				//int tmp = 0;
+				//for( int death = 0; death < myCombatState.Count; death++ ) {
+				//	if( myCombatState[ death ].id == null ) {
+				//		//Debug.Log( "<color='red'>死亡index : ( " + i + " ) " + myCombatState[ i ].id.name + "</color>" );
+				//		Debug.Log( "<color='red'>死亡数index : " + death + "</color>" );
+				//		tmp = death; // 死亡者 index 番号を格納する
+
+				//	}
+				//	if( myCombatState[ death ].id != null && tmp == 0 ) {
+				//		Debug.Log( "<color='red'>生存index : ( " + death + " ) " + myCombatState[ death ].id.name + "</color>" );
+				//		Debug.Log( "<color='red'>生存数index : " + death + "</color>" );
+				//		Combat.GetCombatState[ i + 1 ].isAction = true; // 攻撃者 ( 敵側 ) 生きている時に次ぎの人に回す
+
+				//	} else if( tmp > 0 ) {
+				//		// 攻撃者 ( 敵側 ) 死んでいる時, 死んでいる index 番号 + 1 次ぎの人に回す
+				//		if( i + 1 != tmp ) Combat.GetCombatState[ i + 1 ].isAction = true;
+
+				//	}
+
+				//}
+				
+				
+				
 				break; // i がカウントされ続けるので抜ける
 
 			}
 
 		}
+
+
+	}
+	/*===============================================================*/
+
+	/*===============================================================*/
+	/// <summary>敵Destroy処理を行います</summary>
+	/// <param name="index">Destroyしようとしている敵GameObject</param>
+	/// <param name="identifier">敵側のサブ識別子</param>
+	private void EnemyDestroy( int index, string identifier ) {
+		Debug.Log( "<color='red'>" + "敵Destroy名 : " + myCombatState[ index ].id.name + ", ( index, サブ識別子 ) : ( " + index + ", " + identifier + " )</color>" );
+		// 試しにゲームオブジェクトを消してみる
+		myCombatState[ index ].enemyIsDead = true;
+		UnityEngine.Object.Destroy( myCombatState[ index ].id.gameObject/*, 1.0f*/ );
+		myCombatState[ index ].id = null;
 
 
 	}
