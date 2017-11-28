@@ -29,12 +29,15 @@ public class Combat : MonoBehaviour {
 	private GameObject[ ] actionTurnGameObj; // 初期化関数でゲームオブジェクトが入ります
 	// 現在のターン中の敵または味方の行動状態
 	static private List<CombatState> ActionState = new List<CombatState>( );
+	static private List<CombatStateEx> ActionStateEx = new List<CombatStateEx>( );
 	// 初期ターン終了判定
 	private bool InitializeTurn;
 
 	// セッターおよびゲッター定義部
 	/// <summary>現在のターン中の敵または味方の行動状態をgetします</summary>
 	static public List<CombatState> GetCombatState { get { return ActionState; } }
+	/// <summary>現在のターン中の敵または味方の行動順以外のStateをgetします</summary>
+	static public List<CombatStateEx> GetCombatStateEx { get { return ActionStateEx; } }
 
 	/*===============================================================*/
 	/// <summary>UnityEngineライフサイクルによる初期化</summary>
@@ -97,14 +100,16 @@ public class Combat : MonoBehaviour {
 		}
 		// 戦闘終了処理 ( 敵側を殲滅した時 )
 		int tmp = 0;
-		for( int i = 0; i < ActionState.Count; i++ ) {
-			if( ActionState[ i ].enemyIsDead ) {
-				if( tmp == BattleEnemyGenerate.EnemyNumber ) {
+		for( int i = 0; i < ActionStateEx.Count; i++ ) {
+			if( ActionStateEx[ i ].enemyIsDead ) {
+				tmp++; // 敵側が何体死んだか数える
+				if( tmp == BattleEnemyGenerate.EnemyNumber && !ActionStateEx[ ActionStateEx.Count - 1 ].enemyIsDead ) {
 					Debug.Log( "<color='red'>敵を殲滅しました！</color>" );
-					HUD_BattleScene.ApplyMessageText( "敵を殲滅しました！" );
+					HUD_BattleScene.ApplyMessageText( "敵を殲滅しました！", true, 60000 );
+					ActionStateEx[ ActionStateEx.Count - 1 ].enemyIsDead = true; // 使っていない領域を使う
 
 				}
-				tmp++; // 敵側が何体死んだか数える
+				//tmp++; // 敵側が何体死んだか数える
 				Debug.Log( "<color='red'>敵死亡数 : " + tmp + "</color>" );
 
 			}
@@ -124,6 +129,7 @@ public class Combat : MonoBehaviour {
 		for( int i = 0; i < actionTurnGameObj.GetLength( 0 ); i++ ) {
 			// 初期化
 			ActionState.Add( new CombatState( actionTurnGameObj[ i ], 1, false, false, false, false ) );
+			ActionStateEx.Add( new CombatStateEx( false, false ) );
 
 		}
 		// 一番目に行動可能とする
@@ -212,7 +218,7 @@ public class Combat : MonoBehaviour {
 				PlayerAnimator.StandPictureSlide( 1 );
 				// posX, posY プレイヤー側立ち絵が左側からくるので左側画面外に root object を配置する
 				HUD_BattleScene.ApplyStandPictureSprite( -700.0f, -600.0f, 200.0f, 150.0f, 0 );
-				if( !UI_BattleScene.GetEnemyArrowFlg ) UI_BattleScene.ApplyCmdBtnIsActive( true ); // 攻撃・防御・・・n 選択可能状態にする
+				if( UI_BattleScene.GetEnemyArrowFlg ) UI_BattleScene.ApplyCmdBtnIsActive( true ); // 攻撃・防御・・・n 選択可能状態にする
 				break;
 
 			}
@@ -220,7 +226,7 @@ public class Combat : MonoBehaviour {
 				Debug.Log( "<color='red'>Character2の行動ターンです。</color>" );
 				PlayerAnimator.StandPictureSlide( 1 );
 				HUD_BattleScene.ApplyStandPictureSprite( -700.0f, -600.0f, 200.0f, 150.0f, 1 );
-				if( !UI_BattleScene.GetEnemyArrowFlg ) UI_BattleScene.ApplyCmdBtnIsActive( true ); // 攻撃・防御・・・n 選択可能状態にする
+				if( UI_BattleScene.GetEnemyArrowFlg ) UI_BattleScene.ApplyCmdBtnIsActive( true ); // 攻撃・防御・・・n 選択可能状態にする
 				break;
 
 			}
@@ -228,7 +234,7 @@ public class Combat : MonoBehaviour {
 				Debug.Log( "<color='red'>Character3の行動ターンです。</color>" );
 				PlayerAnimator.StandPictureSlide( 1 );
 				HUD_BattleScene.ApplyStandPictureSprite( -700.0f, -600.0f, 200.0f, 150.0f, 2 );
-				if( !UI_BattleScene.GetEnemyArrowFlg ) UI_BattleScene.ApplyCmdBtnIsActive( true ); // 攻撃・防御・・・n 選択可能状態にする
+				if( UI_BattleScene.GetEnemyArrowFlg ) UI_BattleScene.ApplyCmdBtnIsActive( true ); // 攻撃・防御・・・n 選択可能状態にする
 				break;
 
 			}
@@ -236,7 +242,7 @@ public class Combat : MonoBehaviour {
 				Debug.Log( "<color='red'>Character4の行動ターンです。</color>" );
 				PlayerAnimator.StandPictureSlide( 1 );
 				HUD_BattleScene.ApplyStandPictureSprite( -700.0f, -600.0f, 200.0f, 150.0f, 3 );
-				if( !UI_BattleScene.GetEnemyArrowFlg ) UI_BattleScene.ApplyCmdBtnIsActive( true ); // 攻撃・防御・・・n 選択可能状態にする
+				if( UI_BattleScene.GetEnemyArrowFlg ) UI_BattleScene.ApplyCmdBtnIsActive( true ); // 攻撃・防御・・・n 選択可能状態にする
 				break;
 
 			}
@@ -292,7 +298,26 @@ public class Combat : MonoBehaviour {
 	/*===============================================================*/
 
 	/*===============================================================*/
-	/// <summary>現在のプレイヤーの行動ステートを管理します</summary>
+	/// <summary>現在のプレイヤーの行動ステートを管理します(Removeしない前提)</summary>
+	public class CombatStateEx {
+		/// <summary>Playerの生存状態</summary>
+		public bool playerIsDead;
+		/// <summary>敵の生存状態</summary>
+		public bool enemyIsDead;
+
+		public CombatStateEx( bool _playerIsDead, bool _enemyIsDead ) {
+			playerIsDead = _playerIsDead;
+			enemyIsDead = _enemyIsDead;
+
+
+		}
+
+
+	}
+	/*===============================================================*/
+
+	/*===============================================================*/
+	/// <summary>現在のプレイヤーの行動ステートを管理します(行動順管理専用)(Removeする前提)</summary>
 	public class CombatState : Params {
 		/// <summary>ID</summary>
 		public GameObject id;

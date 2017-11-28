@@ -131,17 +131,22 @@ public class UI_BattleScene : EnemyManager {
 			if( myCommandSelect.commandFrameImgCnt == 0 ) {
 				myCommandSelect.commandFrameImgCnt = -1;
 				ApplyCmdBtnIsActive( false );
-				// 適生存数が 0 の時フラグを戻し, コマンドを選択出来ないようにする
-				for ( int i = 0; i < BattleEnemyGenerate.EnemyNumber; i++ ) {
-					if ( BattleEnemyGenerate.Enemy[ i ] != null) {
-						Debug.Log( "active sum : " + i );
-						if( i == BattleEnemyGenerate.EnemyNumber ) {
-							//myEnemyArrow.enemyArrowFlg = false;
-							myEnemyArrow.noCancel = true; // キャンセルボタンを押せないようにする
+				//// 適生存数が 0 の時フラグを戻し, コマンドを選択出来ないようにする
+				//for ( int i = 0; i < BattleEnemyGenerate.EnemyNumber; i++ ) {
+				//	if ( BattleEnemyGenerate.Enemy[ i ] == null) {
+				//		Debug.Log( "active sum : " + i );
+				//		if( i == BattleEnemyGenerate.EnemyNumber ) {
+				//			//myEnemyArrow.enemyArrowFlg = false;
+				//			myEnemyArrow.noCancel = true; // キャンセルボタンを押せないようにする
 
-						}
+				//		}
 
-					}
+				//	}
+
+				//}
+				if( Combat.GetCombatStateEx[ Combat.GetCombatStateEx.Count - 1 ].enemyIsDead ) {
+					Debug.Log( "キャンセルボタンを押せないようにしました。" );
+					myEnemyArrow.noCancel = true; // キャンセルボタンを押せないようにする
 
 				}
 
@@ -372,18 +377,26 @@ public class UI_BattleScene : EnemyManager {
 			if( myEnemyArrow.noCancel ) { // 敵殲滅時には反応しないようにする
 				// キャンセルボタンが押されたとき敵選択 Arrow 選択できないようにする
 				myEnemyArrow.enemyArrowFlg = false;
-				myEnemyArrow.enemyArrowFlgCnt = 0;
+				myEnemyArrow.enemyArrowFlgCnt = -1;
 				for( int i = 0; i < BattleEnemyGenerate.EnemyNumber; i++ ) {
 					BattleEnemyGenerate.ApplyEnemyArrowVisible( i, false );
 
 				}
 				ApplyCmdBtnIsActive( false );
 
+			} else if( !myEnemyArrow.noCancel ) {
+				myEnemyArrow.enemyArrowFlg = false;
+				myEnemyArrow.enemyArrowFlgCnt = -1;
+				for( int i = 0; i < BattleEnemyGenerate.EnemyNumber; i++ ) {
+					BattleEnemyGenerate.ApplyEnemyArrowVisible( i, false );
+
+				}
+				ApplyCmdBtnIsActive( true );
+
 			}
 
 		}
 		if( Input.GetKeyDown( KeyCode.Return ) ) {
-			// キャンセルボタンが押されたとき敵選択 Arrow 選択できないようにする
 			//myEnemyArrow.enemyArrowFlg = false;
 			//myEnemyArrow.enemyArrowFlgCnt = 0;
 			if( myEnemyArrow.enemyArrowFlgCnt >= 0 ) {
@@ -452,7 +465,6 @@ public class UI_BattleScene : EnemyManager {
 			}
 			case "防御" : {
 				// エフェクト再生関数を呼ぶ
-				EnemyEffect.SetEffectPlay( 0, "IsSpear", 1.0f, 1.0f, 0.0f, -0.5f );
 				mySkillAd.skillMessageFlg = false; // 元に戻す
 				break;
 
