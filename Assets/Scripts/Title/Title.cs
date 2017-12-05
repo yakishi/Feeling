@@ -32,8 +32,7 @@ public class Title : MonoBehaviour
             .Subscribe(_ => {
                 GV.newGame();
                 // TODO: 仮でワールドマップに遷移
-                //SceneManager.LoadScene(SceneName.WorldMap);
-                SaveLoad.CreateUI(SaveLoad.Type.Save, gameObject);
+                SceneManager.LoadScene(SceneName.WorldMap);
             })
             .AddTo(this);
         loadGameButton.OnClickAsObservable()
@@ -46,11 +45,5 @@ public class Title : MonoBehaviour
                 Application.Quit();
             })
             .AddTo(this);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 }

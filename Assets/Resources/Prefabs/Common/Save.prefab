@@ -111,7 +111,7 @@ GameObject:
   - component: {fileID: 114212047143627360}
   - component: {fileID: 114685986965560132}
   m_Layer: 5
-  m_Name: SaveLoad
+  m_Name: Save
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
