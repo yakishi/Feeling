@@ -5,8 +5,8 @@ using UnityEngine;
 public class WorldMapUI : MonoBehaviour {
 
     private GameObject[] dungeons = new GameObject[6];
-    private GameObject[] dungeonList = new GameObject[6];
-    //private GameObject[] dungeonDetail = new GameObject[6];
+    private GameObject[] destinationList = new GameObject[7];
+    
     private GameObject dungeonDetail;
     private GameObject[] goOrBack = new GameObject[2];
 
@@ -33,8 +33,10 @@ public class WorldMapUI : MonoBehaviour {
     void Start () {
 		for(int i = 0;i < dungeons.Length;i++) {
             dungeons[i] = GameObject.Find("Dungeon" + (i + 1));
-            dungeonList[i] = GameObject.Find("DungeonList" + (i + 1));
+            destinationList[i] = GameObject.Find("DungeonList" + (i + 1));
         }
+
+        destinationList[6] = GameObject.Find("Base");
 
         dungeonDetail = GameObject.Find("Detail");
 
@@ -58,8 +60,7 @@ public class WorldMapUI : MonoBehaviour {
             return;
         }
         
-        
-        UIController.ChangeChoice(dungeonList, choiceElement);
+        UIController.ChangeChoice(destinationList, choiceElement);
 
         if (MyInput.isButtonDown()) {
             choiceElement -= (int)MyInput.direction().y;
@@ -67,14 +68,14 @@ public class WorldMapUI : MonoBehaviour {
             if (choiceElement < 0) {
                 choiceElement = 0;
             }
-            if (choiceElement >= dungeonList.Length) {
-                choiceElement = dungeonList.Length - 1;
+            if (choiceElement >= destinationList.Length) {
+                choiceElement = destinationList.Length - 1;
             }
         }
 
         if (Input.GetKeyDown(KeyCode.Return)) {
             dungeonDetail.SetActive(true);
-
+            
             isOpen = true;
         }
 
@@ -108,6 +109,8 @@ public class WorldMapUI : MonoBehaviour {
 
     void ChoiceMap()
     {
+        if (choiceElement == destinationList.Length - 1) return;
+
         dungeons[choiceElement].transform.localScale = choiceMap;
 
         for(int i = 0; i < dungeons.Length; i++) {
