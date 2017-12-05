@@ -93,7 +93,7 @@ GameObject:
   - component: {fileID: 114899404689170320}
   - component: {fileID: 114725569194310578}
   m_Layer: 5
-  m_Name: Save 1
+  m_Name: Load
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -328,7 +328,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9818cfe55784474bad4c58744504b0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: 0
+  type: 1
   saveSlots:
   - {fileID: 114516706662233868}
   - {fileID: 114803231629345374}

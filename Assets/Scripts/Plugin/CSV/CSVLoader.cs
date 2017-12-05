@@ -12,13 +12,16 @@ public class CSVLoader
 {
 	// GetCSV_Key_Record 関数で id 属性のカウントをする為の変数の準備
 	static private int idIndexCnt;
+	static private int headerCnt;
+	static private int recordAll;
 
 	// セッターおよびゲッター定義部
-	/// <summary>
-	/// @author Hironari Ushiyama
-	/// @biref GetCSV_Key_Record関数でカウントしたID属性をgetします
-	/// </summary>
+	/// <summary>GetCSV_Key_Record関数でカウントしたID属性をgetします</summary>
 	static public int csvId { get { return idIndexCnt; } }
+	/// <summary>GetCSV_Key_Record関数のHeaderカウント数をgetします</summary>
+	static public int csvHeader { get { return headerCnt; } }
+	/// <summary>GetCSV_Key_Record関数のCSVのデータ数をgetします</summary>
+	static public int csvRecordAll { get { return recordAll; } }
 
     /*===============================================================*/
     /**
@@ -37,6 +40,8 @@ public class CSVLoader
     public void Initialize ()
     {
 		idIndexCnt = 0;
+		recordAll = 0;
+		headerCnt = 0;
     }
     /*===============================================================*/
 
@@ -183,13 +188,10 @@ public class CSVLoader
 	/*===============================================================*/
 
 	/*===============================================================*/
-	/// <summary>
-	/// @author Hironari Ushiyama
-	/// @brief CSVを読み込み,CSVのID属性に対応したKey情報とKeyに対するデータを配列に格納するクラス
-	/// @param string CSVファイル名 拡張子は抜かす
-	/// @param string[] CSVキー内容格納配列
-	/// @return GetCSV_Key_Record Keyに対するデータ
-	/// </summary>
+	/// <summary>CSVを読み込み,CSVのID属性に対応したKey情報とKeyに対するデータを配列に格納するクラス</summary>
+	/// <param name="file">CSVファイル名,拡張子は抜かす</param>
+	/// <param name="keyArray">CSVキー内容格納配列</param>
+	/// <returns>Keyに対するデータ</returns>
 	public string[ ] GetCSV_Key_Record( string file, string[ ] keyArray ) {
 		// ローダーの生成
 		CSVLoader loader = new CSVLoader( );
@@ -199,6 +201,9 @@ public class CSVLoader
 		string name = "";
 		// CSV データを格納していく配列
 		string[ ] keyData = new string[ 1024 ];
+		// レコード数カウント用
+		int recordCnt = 0;
+
 		// CSV を読み込み, CSV のデータテーブルを生成
 		CSVTable csvTable = loader.LoadCSV( file );
 		foreach ( CSVRecord record in csvTable.Records ) {
@@ -217,7 +222,11 @@ public class CSVLoader
 				// 配列の入れ口をインクリメント
 				index++;
 
+				if( recordCnt == 0 ) headerCnt++;
+				recordAll++; // CSV 全体のデータ数
+
 			}
+			recordCnt++;
 
 		}
 		// Debug 出力 出力例 : ( KEY : KEY に対するデータ ) = ( 3_Feeling : 楽 )
@@ -231,6 +240,35 @@ public class CSVLoader
 		}
 		// データを格納した配列を返す
 		return keyData;
+
+
+	}
+	/*===============================================================*/
+
+	/*===============================================================*/
+	/// <summary>キーデータを元にキーに対するデータを取得します</summary>
+	/// <author>HironariUshiyama</author>
+	/// <param name="CSV_Key">配列:読み込んだキーを保存する</param>
+	/// <param name="CSV_KeyData">配列:読み込んだデータを保存する</param>
+	/// <param name="key">CSVLoader.cs:228行目をコメントアウトすることでキーを確認できます</param>
+	/// <returns>例:0_NAMEに対するデータ</returns>
+	public string GetCSVData( string[ ] CSV_Key, string[ ] CSV_KeyData, string key ) {
+		// data を格納する変数
+		string str = "";
+		// key を元に該当データを探し出す
+		for ( int i = 0; i < CSV_Key.Length; i++ ) {
+			// 引数 key と CSV_CharacterStatusKey の値が同じの場合
+			if ( CSV_Key[ i ] == key ) {
+				// data を str に格納する
+				str = CSV_KeyData[ i ];
+
+			}
+
+		}
+		// 戻り値が空の時
+		if ( str == "" ) Debug.LogError( "引数に対するデータが不正です。\nキーを確認して下さい。" );
+		// 格納したデータを返す
+		return str;
 
 
 	}

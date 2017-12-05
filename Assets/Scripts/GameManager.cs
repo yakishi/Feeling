@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -39,25 +40,33 @@ public class GameManager : MonoBehaviour {
 	/*===============================================================*/
 	/// <summary>brief 初期化</summary>
 	void Initialize( ) {
-		GV.newGame( ); // newGame することで newGame 先でテキトウな値で 6 人分のキャラクターが初期化される
+		//GV.newGame( ); // 必ず new Game 下後に変動値などの保存を行う
+
+		// セーブデータへの変動値保存 保存を実行した後にアンコメントアウトするとセーブされたのがロードされていると実感できます
+		//for( int i = 0; i < 6; i++ ) GV.PlayersSetHPSave( i, i + 10 * ( i + 10 ) );
+		//for( int i = 0; i < 6; i++ ) GV.PlayersSetMPSave( i, i + 20 * ( i + 10 ) );
+
+		// セーブデータからの変動値読込
+		//GV.GameDataLoad( );
+
+
+		//PlayerManagerSaveData.PlayerManager test = new PlayerManagerSaveData.PlayerManager( );
+		// players data を GV.GData.Players のデータから読み込みます
+		//test.LoadPlayer( );
+
+		//foreach( string items in SaveData.getKeys( ) ) {
+		//	Debug.Log( "------------------\nセーブデータキー :\n" + items + "\n------------------" );
+
+		//}
+		//int cnt = 0;
+		//foreach( PlayerManagerSaveData.State items in test.CurrentState ) {
+		//	Debug.Log( "------------------\nセーブデータ :\nプレイヤー " + cnt + " : " + items.HP + " ( ヒットポイント )\n" + items.MP + " ( マジックポイント)\n------------------" );
+		//	cnt++;
+
+		//}
+
 		Application.targetFrameRate = 60; // 60 FPS に設定
 		Debug.Log( "現在のシーン : " + state.ToString( ) );
-
-		//////////////////////////////////////////////////////
-		/// TODO : 取りあえずの処理
-		// インスタンスの作成を行います
-		PlayerManagerSaveData.PlayerManager test = new PlayerManagerSaveData.PlayerManager( );
-		// players data を GV.GData.Players のデータから読み込みます
-		test.LoadPlayer( );
-		// 読込例
-		Debug.Log( "Player1のHP : " + test.CurrentState[ 0 ].HP );
-		Debug.Log( "Player1のステータスポイント : " + test.CurrentState[ 0 ].StatusPoint );
-		if( PlayerManagerCSV.GetPlayers[ 5 ].LV == 2 ) {
-			Debug.Log( "TEST : " + PlayerManagerCSV.GetPlayers[ 5 ].NEXTLVEXP );
-
-		}
-		//////////////////////////////////////////////////////
-		//SkillLoader mySkillLoader = new SkillLoader( );
 
 
 	}
