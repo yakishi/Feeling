@@ -7,6 +7,9 @@ using UniRx;
 
 public class Title : MonoBehaviour
 {
+	
+	//GV myGV = GV.Instance; // Save/Load クラスのインスタンスを取得
+
     /// <summary>
     /// ゲームを新しく始めるボタン
     /// </summary>
@@ -28,9 +31,16 @@ public class Title : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        newGameButton.OnClickAsObservable()
+
+		newGameButton.transform.GetChild( 0 ).GetComponent<Text>( ).text = "New Game";
+		newGameButton.transform.GetChild( 0 ).GetComponent<Text>( ).fontSize = 32;
+		loadGameButton.transform.GetChild( 0 ).GetComponent<Text>( ).text = "Load Game";
+		loadGameButton.transform.GetChild( 0 ).GetComponent<Text>( ).fontSize = 32;
+		exitButton.transform.GetChild( 0 ).GetComponent<Text>( ).text = "Quit Game";
+		exitButton.transform.GetChild( 0 ).GetComponent<Text>( ).fontSize = 32;
+
+		newGameButton.OnClickAsObservable()
             .Subscribe(_ => {
-                GV.newGame();
                 // TODO: 仮でワールドマップに遷移
                 SceneManager.LoadScene(SceneName.WorldMap);
             })
@@ -42,7 +52,14 @@ public class Title : MonoBehaviour
             .AddTo(this);
         exitButton.OnClickAsObservable()
             .Subscribe(_ => {
-                Application.Quit();
+                // Quit パッケージ後の EXE で有効になる
+				#if !UNITY_EDITOR
+					Application.Quit( );
+				#endif
+				// Editor の Quit 処理
+				#if UNITY_EDITOR
+					UnityEditor.EditorApplication.isPlaying = false;
+				#endif
             })
             .AddTo(this);
     }

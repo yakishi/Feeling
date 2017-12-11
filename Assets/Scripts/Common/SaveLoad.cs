@@ -6,6 +6,9 @@ using UniRx;
 
 public class SaveLoad : MonoBehaviour
 {
+
+	GV myGV = GV.Instance; // Save/Load クラスのインスタンスを取得
+
     public enum Type
     {
         Save,
@@ -16,7 +19,8 @@ public class SaveLoad : MonoBehaviour
     /// セーブロードの種類
     /// </summary>
     [SerializeField]
-    Type type;
+    static Type type;
+	private static Type Category { set { type = value; } }
 
     /// <summary>
     /// セーブデータをロード
@@ -28,14 +32,14 @@ public class SaveLoad : MonoBehaviour
     {
         if (type == Type.Load) {
             openLoadUI();
-            return;
+			return;
         }
         openSaveUI();
-    }
+	}
 
     void openSaveUI()
     {
-        var usedSave = GV.SData.usedSave;
+        var usedSave = myGV.SData.usedSave;
         for (int i = 0; i < usedSave.Length; ++i) {
             var slot = saveSlots[i];
             var isUsed = usedSave[i];
@@ -46,8 +50,11 @@ public class SaveLoad : MonoBehaviour
             slot.OnClickAsObservable()
                 .Take(1)
                 .Subscribe(_ => {
-                    GV.save(slotIndex);
-                    Destroy(gameObject);
+					GV.slot = slotIndex; // GV 側へ通知
+					myGV.GameDataSave(slotIndex);
+					new ExampleTestSaveLoad( ).SaveTest( ); // 読込確認用
+					Debug.Log( "<color='red'>openSaveUI Function Called.</color>" );
+					Destroy(gameObject);
                 })
                 .AddTo(this);
         }
@@ -55,7 +62,7 @@ public class SaveLoad : MonoBehaviour
     void openLoadUI()
     {
 
-        var usedSave = GV.SData.usedSave;
+        var usedSave = myGV.SData.usedSave;
         for (int i = 0; i < usedSave.Length; ++i) {
             var slot = saveSlots[i];
             var isUsed = usedSave[i];
@@ -70,8 +77,11 @@ public class SaveLoad : MonoBehaviour
             slot.OnClickAsObservable()
                 .Take(1)
                 .Subscribe(_ => {
-                    GV.load(slotIndex);
-                    Destroy(this);
+					GV.slot = slotIndex; // GV 側へ通知
+                    myGV.GameDataLoad(slotIndex);
+					new ExampleTestSaveLoad( ).LoadTest( ); // 読込確認用
+					Debug.Log( "<color='red'>openLoadUI Function Called.</color>" );
+					Destroy(/*this*/gameObject);
                 })
                 .AddTo(this);
         }
@@ -114,8 +124,13 @@ public class SaveLoad : MonoBehaviour
     public static GameObject CreateUI(Type type, GameObject parent)
     {
         if (type == Type.Load) {
+			Category = Type.Load;
             return Instantiate(LoadPrefab, parent.transform, false);
         }
-        return Instantiate(SavePrefab, parent.transform, false);
-    }
+        else if( type == Type.Save ) {
+			Category = Type.Save;
+			return Instantiate(SavePrefab, parent.transform, false);
+		}
+		else return null;
+	}
 }
