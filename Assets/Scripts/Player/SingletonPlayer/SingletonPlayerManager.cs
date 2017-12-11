@@ -12,6 +12,7 @@ public sealed class SingltonPlayerManager {
 	//	ID と Key で読み込んでくる共通した機能・・・
 	//	シングルトンパターンで作りこみ
 	//	https://qiita.com/calmbooks/items/9cf32c6dd36b724b155e
+	//	Save は, 最後に呼ぶ slot 指定
 	/////////////////////////////////////////////////////////
 
 	private static SingltonPlayerManager mInstance = new SingltonPlayerManager( );
@@ -19,8 +20,10 @@ public sealed class SingltonPlayerManager {
 	private List<PlayerParameters> PlayerSaveList;
 	private List<PlayerParameters> PlayerCsvList;
 
-	/// <summary>セーブデータから読み込まれた敵パラメーターを取得します</summary>
-	public List<PlayerParameters> GetSaveDataPlayerState { get { return PlayerSaveList; } }
+	GV myGV;
+
+	/// <summary>セーブデータから読み込まれたプレイヤーパラメーターを取得またはセット</summary>
+	public List<PlayerParameters> SaveDataPlayerState { get { return PlayerSaveList; } set { PlayerSaveList = value; } }
 	/// <summary>CSVから読み込まれた敵パラメーターを取得します</summary>
 	public List<PlayerParameters> GetCsvDataPlayerState { get { return PlayerCsvList; } }
 	/// <summary>Singlton</summary>
@@ -51,19 +54,20 @@ public sealed class SingltonPlayerManager {
 	/// <summary>プレイヤーのパラメーター情報をなどを作ります</summary>
 	private void PlayerCreate( ) {
 
-		GV.newGame( ); // 必ず new Game 下後に変動値などの保存を行う
+		myGV = GV.Instance; // Save/Load クラスのインスタンスを取得
+		myGV.newGame( ); // 必ず new Game 下後に変動値などの保存を行う
 
 		// 人数分の player を生成する
-		for ( int i = 0; i < GV.GData.Players.Count; i++ ) {
+		for ( int i = 0; i < myGV.GData.Players.Count; i++ ) {
 			PlayerSaveList.Add( new PlayerParameters( ) );
 
 		}
 
-		LoadPlayer( ); // セーブデータの読込
+		LoadPlayer( GV.slot ); // セーブデータの読込
 
 		// 配列確保およびプレイヤー分用意
-		myCsvData = new CSVDATA[ GV.GData.Players.Count ];
-		for ( int players = 0; players < GV.GData.Players.Count; players++ ) {
+		myCsvData = new CSVDATA[ myGV.GData.Players.Count ];
+		for ( int players = 0; players < myGV.GData.Players.Count; players++ ) {
 			myCsvData[ players ] = new CSVDATA( );
 			myCsvData[ players ].data = new string[ 512 ];
 			myCsvData[ players ].key = new string[ 512 ];
@@ -78,37 +82,41 @@ public sealed class SingltonPlayerManager {
 
 	/*===============================================================*/
 	/// <summary>GV.PlayerParamからのデータ読込</summary>
-	private void LoadPlayer( ) {
+	/// <param name="loadSlot">ロードするセーブデータスロットを指定します</param>
+	public void LoadPlayer( int loadSlot ) {
 
-		GV.GameDataLoad( ); // セーブデータからの保存したデータを読み込みます
+		myGV.GameDataLoad( loadSlot ); // セーブデータからの保存したデータを読み込みます
 
 		int cnt = 0; // foreach カウント用変数
+		
+		if( myGV.GData != null ) {
+			// 読み込んだ値を入れていきます
+			foreach ( GV.PlayerParam item in myGV.GData.Players ) {
+				// GV.PlayerParam に定義されているメンバ変数を players に入れていく
+				PlayerSaveList[ cnt ].ID = item.ID;
+				PlayerSaveList[ cnt ].Lv = item.Lv;
+				PlayerSaveList[ cnt ].NextLvExp = -1; // item に存在しないのでテキトウな値を入れる
+				PlayerSaveList[ cnt ].HP = item.HP;
+				PlayerSaveList[ cnt ].MP = item.MP;
+				PlayerSaveList[ cnt ].Atk = item.Atk;
+				PlayerSaveList[ cnt ].WeaponAtk = -1; // item に存在しないのでテキトウな値を入れる
+				PlayerSaveList[ cnt ].Def = item.Def;
+				PlayerSaveList[ cnt ].EquipmentDef = -1; // item に存在しないのでテキトウな値を入れる
+				PlayerSaveList[ cnt ].Matk = -1; // item に存在しないのでテキトウな値を入れる
+				PlayerSaveList[ cnt ].Mgr = item.Mgr;
+				PlayerSaveList[ cnt ].Agl = item.Agl;
+				PlayerSaveList[ cnt ].Luc = item.Luc;
+				PlayerSaveList[ cnt ].Int = item.Int;
+				PlayerSaveList[ cnt ].Feeling = "about"; // item に存在しないのでテキトウな値を入れる
+				PlayerSaveList[ cnt ].FeelingValue = -1; // item に存在しないのでテキトウな値を入れる
+				PlayerSaveList[ cnt ].Skill = "about"; // item に存在しないのでテキトウな値を入れる
+				PlayerSaveList[ cnt ].StatusPoint = item.StatusPoint;
+				PlayerSaveList[ cnt ].OverDrive = "about"; // item に存在しないのでテキトウな値を入れる
+				PlayerSaveList[ cnt ].WEAPON01 = "about"; // item に存在しないのでテキトウな値を入れる
+				PlayerSaveList[ cnt ].WEAPON02 = "about"; // item に存在しないのでテキトウな値を入れる
+				cnt++;
 
-		// 読み込んだ値を入れていきます
-		foreach ( GV.PlayerParam item in GV.GData.Players ) {
-			// GV.PlayerParam に定義されているメンバ変数を players に入れていく
-			PlayerSaveList[ cnt ].ID = item.ID;
-			PlayerSaveList[ cnt ].Lv = item.Lv;
-			PlayerSaveList[ cnt ].NextLvExp = -1; // item に存在しないのでテキトウな値を入れる
-			PlayerSaveList[ cnt ].HP = item.HP;
-			PlayerSaveList[ cnt ].MP = item.MP;
-			PlayerSaveList[ cnt ].Atk = item.Atk;
-			PlayerSaveList[ cnt ].WeaponAtk = -1; // item に存在しないのでテキトウな値を入れる
-			PlayerSaveList[ cnt ].Def = item.Def;
-			PlayerSaveList[ cnt ].EquipmentDef = -1; // item に存在しないのでテキトウな値を入れる
-			PlayerSaveList[ cnt ].Matk = -1; // item に存在しないのでテキトウな値を入れる
-			PlayerSaveList[ cnt ].Mgr = item.Mgr;
-			PlayerSaveList[ cnt ].Agl = item.Agl;
-			PlayerSaveList[ cnt ].Luc = item.Luc;
-			PlayerSaveList[ cnt ].Int = item.Int;
-			PlayerSaveList[ cnt ].Feeling = "about"; // item に存在しないのでテキトウな値を入れる
-			PlayerSaveList[ cnt ].FeelingValue = -1; // item に存在しないのでテキトウな値を入れる
-			PlayerSaveList[ cnt ].Skill = "about"; // item に存在しないのでテキトウな値を入れる
-			PlayerSaveList[ cnt ].StatusPoint = item.StatusPoint;
-			PlayerSaveList[ cnt ].OverDrive = "about"; // item に存在しないのでテキトウな値を入れる
-			PlayerSaveList[ cnt ].WEAPON01 = "about"; // item に存在しないのでテキトウな値を入れる
-			PlayerSaveList[ cnt ].WEAPON02 = "about"; // item に存在しないのでテキトウな値を入れる
-			cnt++;
+			}
 
 		}
 
@@ -128,7 +136,7 @@ public sealed class SingltonPlayerManager {
 		myCsvData[ 4 ].data = myLoader.GetCSV_Key_Record( "CSV/PlayerStatus/CSV_Player5_LvOrder", myCsvData[ 4 ].key );
 		myCsvData[ 5 ].data = myLoader.GetCSV_Key_Record( "CSV/PlayerStatus/CSV_Player6_LvOrder", myCsvData[ 5 ].key );
 
-		PlayerArray = new PlayerParameters[ GV.GData.Players.Count, CSVLoader.csvId ];
+		PlayerArray = new PlayerParameters[ myGV.GData.Players.Count, CSVLoader.csvId ];
 
 		// 配列にデータを格納していく
 		for( int i = 0; i < PlayerArray.GetLength( 0 ); i++ ) { // Player 人数
@@ -177,7 +185,7 @@ public sealed class SingltonPlayerManager {
 	/*===============================================================*/
 	/// <summary>PlayerParameters</summary>
 	/// <remarks>パラメーターは,暫定的です</remarks>
-	[SerializeField]
+	[ System.Serializable ]
 	public class PlayerParameters {
 		/// <summary>ID</summary>
 		public int ID;

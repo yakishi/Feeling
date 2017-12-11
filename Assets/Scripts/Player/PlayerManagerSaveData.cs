@@ -92,12 +92,14 @@ public class PlayerManagerSaveData {
 	/// <summary>SaveLoad機能からプレイヤー情報を管理する</summary>
 	public class PlayerManager : Player {
 
+		GV myGV = GV.Instance;
+
 		/*===============================================================*/
 		/// <summary>コンストラクタ</summary>
 		public PlayerManager( ) {
 			Debug.Log( "Player Manager Class on the Constructor Function Call." );
 			// 人数分の player を生成する
-			for ( int i = 0; i < GV.GData.Players.Count; i++ ) {
+			for ( int i = 0; i < myGV.GData.Players.Count; i++ ) {
 				state.Add( new State( ) );
 
 			}
@@ -110,7 +112,7 @@ public class PlayerManagerSaveData {
 		/// <summary>GV.PlayerParamからのデータ読込</summary>
 		public void LoadPlayer( ) {
 			int cnt = 0; // foreach カウント用変数
-			foreach ( GV.PlayerParam item in GV.GData.Players ) {
+			foreach ( GV.PlayerParam item in myGV.GData.Players ) {
 				// item は GV.newGame( ) でファイルから読み込んでくるようですが・・・
 				// 現状, テキトウな値で初期化されています
 				// GV.PlayerParam に定義されているメンバ変数を players に入れていく
