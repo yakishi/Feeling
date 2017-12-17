@@ -50,7 +50,7 @@ public class SaveLoad : MonoBehaviour
             slot.OnClickAsObservable()
                 .Take(1)
                 .Subscribe(_ => {
-					GV.slot = slotIndex; // GV 側へ通知
+					myGV.slot = slotIndex; // GV 側へ通知
 					myGV.GameDataSave(slotIndex);
 					new ExampleTestSaveLoad( ).SaveTest( ); // 読込確認用
 					Debug.Log( "<color='red'>openSaveUI Function Called.</color>" );
@@ -77,8 +77,9 @@ public class SaveLoad : MonoBehaviour
             slot.OnClickAsObservable()
                 .Take(1)
                 .Subscribe(_ => {
-					GV.slot = slotIndex; // GV 側へ通知
-                    myGV.GameDataLoad(slotIndex);
+					myGV.slot = slotIndex; // GV 側へ通知
+					myGV.GameDataLoad(slotIndex);
+					myGV.SlotChangeParamUpdate( slotIndex );
 					new ExampleTestSaveLoad( ).LoadTest( ); // 読込確認用
 					Debug.Log( "<color='red'>openLoadUI Function Called.</color>" );
 					Destroy(/*this*/gameObject);

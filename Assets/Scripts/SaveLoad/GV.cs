@@ -15,9 +15,9 @@ public sealed class GV {
 	#region Classes
 
 	////////////////////////////////////////////
-	static int saveLoadSlot = 1;
+	int saveLoadSlot = 1; // 初期セーブスロット
 	/// <summary>Title.csのsaveおよびloadでのみ値セットするものとする</summary>
-	static public int slot { get { return saveLoadSlot; } set { saveLoadSlot = value; } }
+	public int slot { get { return saveLoadSlot; } set { saveLoadSlot = value; } }
 	///////////////////////////////////////////
 
 	static public DateTime[ ] oldPlayTime;
@@ -135,39 +135,56 @@ public sealed class GV {
                 }
             }*/
 		}
-
-		// プレイヤーの仮作成
-		{
-
-			for ( int i = 0; i < gameData.Players.Count; i++ ) {
-				gameData.Players[ i ].ID = 0;
-				gameData.Players[ i ].Lv = 0;
-				gameData.Players[ i ].HP = 0;
-				gameData.Players[ i ].MP = 0;
-				gameData.Players[ i ].Atk = 0;
-				gameData.Players[ i ].Def = 0;
-				gameData.Players[ i ].Int = 0;
-				gameData.Players[ i ].Mgr = 0;
-				gameData.Players[ i ].Agl = 0;
-				gameData.Players[ i ].Luc = 0;
-				gameData.Players[ i ].StatusPoint = 0;
-
-			}
-
-		}
 		
+		UpdatePlayTime( );
+
+
+	}
+
+	/*===============================================================*/
+	/// <summary>各,セーブスロットのプレイ時間更新を行います</summary>
+	/// <remarks>
+	/// newGame()または,saveで呼びます
+	/// </remarks>
+	private void UpdatePlayTime( ) {
+		Debug.Log( "<color='red'>UpdatePlayTime Function Called.</color>" );
+
+		Debug.Log( "<color='red'>セーブスロット : " + slot + "</color>" );
 		// slot 別の初期時間保存処理
 		if( SaveData.getString( slot + SaveDataKey.KEY_TIME_OLD, "-1" ) == "-1" ) {
 			SaveData.setString( slot + SaveDataKey.KEY_TIME_OLD, System.DateTime.Now.ToString( ) );
 			SaveData.setSlot( slot );
 			SaveData.save( );
-			Debug.Log( "<color='red'>oldPlayTime[ " + GV.slot + " ] : " + System.DateTime.Now + ", で保存されました。</color>" );
-			oldPlayTime[ GV.slot ] = System.DateTime.Now;
+			Debug.Log( "<color='red'>oldPlayTime[ " + slot + " ] : " + System.DateTime.Now + ", で保存されました。</color>" );
+			oldPlayTime[ slot ] = System.DateTime.Now;
 
-		} else oldPlayTime[ GV.slot ] = DateTime.Parse( SaveData.getString( slot + SaveDataKey.KEY_TIME_OLD, "-1" ) );
+		} else if( SaveData.getString( slot + SaveDataKey.KEY_TIME_OLD, "-1" ) != "-1" ) {
+			foreach( string items in SaveData.getKeys( ) ) {
+				if( items == slot + SaveDataKey.KEY_TIME_OLD ) {
+					oldPlayTime[ slot ] = DateTime.Parse( SaveData.getString( slot + SaveDataKey.KEY_TIME_OLD, "-1" ) );
+					Debug.Log( "<color='red'>初期時間が更新されました。</color>" );
+
+				}
+
+			}
+
+		}
 
 
 	}
+	/*===============================================================*/
+
+	/*===============================================================*/
+	/// <summary>TitleでのLoad時にパラメーターを読み込みます</summary>
+	/// <param name="slotIndex">ロードするスロット番号</param>
+	public void SlotChangeParamUpdate( int slotIndex ) {
+		Debug.Log( "<color='red'>各種パラメーターが更新されました。</color>" );
+		SingltonPlayerManager.Instance.LoadPlayer( slotIndex ); // slot を変えたときに値を更新する
+		SingltonEquipmentManager.Instance.LoadEquipment( slotIndex );
+
+
+	}
+	/*===============================================================*/
 
 	/*===============================================================*/
 	/// <summary>セーブデータに保存されているKEYのデバッグ出力を行います</summary>
@@ -196,7 +213,12 @@ public sealed class GV {
 
 	/*===============================================================*/
 	/// <summary>セットした変動値をセーブデータから読み込みます</summary>
-	/// <remarks>コンティニューなどに使います</remarks>
+	/// <remarks>
+	/// コンティニューなどに使います
+	/// (注意) gamemaneger classなどで最初にsave data を扱う,player singlton class および
+	/// equip singlton class のインスタンスを作成しておかないと各,singlton class
+	/// のloadで前の値が読み込まれる可能性があるので一括で作成するようにします。
+	/// </remarks>
 	/// <param name="loadSlot">ロードするセーブデータスロットを指定します</param>
 	public void GameDataLoad( int loadSlot ) {
 
@@ -228,7 +250,20 @@ public sealed class GV {
 
 		/*===============================================================*/
 		// 装備情報読込
+		List<SingltonEquipmentManager.PlayerEquipmentParam> myEquip = SaveData.getList<SingltonEquipmentManager.PlayerEquipmentParam>( GV.SaveDataKey.EQUIPMENT_PARAM );
 
+		for( int i = 0; i < gameData.Equipments.Count; i++ ) {
+			if ( myEquip != null ) {
+				gameData.Equipments[ i ].ID = myEquip[ i ].ID;
+				gameData.Equipments[ i ].Arms = myEquip[ i ].Arms;
+				gameData.Equipments[ i ].Head = myEquip[ i ].Head;
+				gameData.Equipments[ i ].Shoes = myEquip[ i ].Shoes;
+				gameData.Equipments[ i ].Accessory1 = myEquip[ i ].Accessory1;
+				gameData.Equipments[ i ].Accessory2 = myEquip[ i ].Accessory2;
+
+			}
+
+		}
 		/*===============================================================*/
 
 		/*===============================================================*/
@@ -261,12 +296,14 @@ public sealed class GV {
 		/*===============================================================*/
 		// セーブデータへの値セット部 START
 
-		SaveData.setList( GV.SaveDataKey.PRAYER_PARAM, SingltonPlayerManager.Instance.SaveDataPlayerState ); // プレイヤーパラメーター
+		SaveData.setList( SaveDataKey.PRAYER_PARAM, SingltonPlayerManager.Instance.SaveDataPlayerState ); // プレイヤーパラメーター
+		SaveData.setList( SaveDataKey.EQUIPMENT_PARAM, SingltonEquipmentManager.Instance.SaveDataPlayerEquipmentParam ); // プレイヤー装備ーパラメーター
 
 		// セーブデータへの値セット部 END
 		/*===============================================================*/
 		
-		SaveData.setString( saveSlot + GV.SaveDataKey.KEY_TIME, ( GV.oldPlayTime[ saveSlot ] - System.DateTime.Now ).Duration( ).ToString( ) );
+		UpdatePlayTime( );
+		SaveData.setString( saveSlot + SaveDataKey.KEY_TIME, ( oldPlayTime[ saveSlot ] - System.DateTime.Now ).Duration( ).ToString( ) );
 
 		SaveData.save( );
 
@@ -297,6 +334,8 @@ public sealed class GV {
 		public int Luc;
 		public int StatusPoint;
 		public int[ ] currentEquipment = new int[ 6 ];
+
+
 	}
 
 	/// <summary>
@@ -305,14 +344,18 @@ public sealed class GV {
 	/// </summary>
 	[Serializable]
 	public class EquipmentParam {
-		/// <summary>ID(0からの連番で管理)</summary>
+		/// <summary>プレイヤー識別ID(0からの連番で管理)</summary>
 		public int ID;
-		/// <summary>装備名</summary>
-		public string Name;
-		/// <summary>0:武器,1:盾,2:頭,3:体,4:靴,5:アクセサリー</summary>
-		public int Type;
-		/// <summary>(武器{0:片手剣,1:斧,2:短剣,3:杖,4:槍}),(頭{0:兜,1:帽子}),(体{0:鎧,1:ローブ})</summary>
-		public int Type2; 
+		/// <summary>武器(装備名)</summary>
+		public string Arms;
+		/// <summary>頭(装備名)</summary>
+		public string Head;
+		/// <summary>足(装備名)</summary>
+		public string Shoes;
+		/// <summary>アクセサリー1(装備名)</summary>
+		public string Accessory1;
+		/// <summary>アクセサリー2(装備名)</summary>
+		public string Accessory2;
 
 
 	}
