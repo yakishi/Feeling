@@ -63,7 +63,7 @@ public sealed class SingltonPlayerManager {
 
 		}
 
-		LoadPlayer( GV.slot ); // セーブデータの読込
+		LoadPlayer( myGV.slot ); // セーブデータの読込
 
 		// 配列確保およびプレイヤー分用意
 		myCsvData = new CSVDATA[ myGV.GData.Players.Count ];

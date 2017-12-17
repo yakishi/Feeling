@@ -4,6 +4,7 @@ using UnityEngine.UI;
 public class ExampleTestSaveLoadMono : MonoBehaviour {
 
 	public GameObject btn;
+	public GameObject btnCntReset;
 
 	ExampleTestSaveLoad my;
 
@@ -11,6 +12,7 @@ public class ExampleTestSaveLoadMono : MonoBehaviour {
 	void Start( ) {
 		//Initialize( );
 		btn.GetComponent<Button>( ).onClick.AddListener( ( ) => OnClick( btn ) );
+		btnCntReset.GetComponent<Button>( ).onClick.AddListener( ( ) => OnClick2( btnCntReset ) );
 
 
 		my = new ExampleTestSaveLoad( );
@@ -21,6 +23,13 @@ public class ExampleTestSaveLoadMono : MonoBehaviour {
 	public void OnClick( GameObject btn ) {
 
 		my.SaveTest( );
+
+
+	}
+
+	public void OnClick2( GameObject btn ) {
+
+		my.CountReset( );
 
 
 	}

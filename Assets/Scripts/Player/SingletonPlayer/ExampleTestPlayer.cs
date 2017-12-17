@@ -32,7 +32,7 @@ public class ExampleTestPlayer : MonoBehaviour {
 				SingltonPlayerManager.Instance.SaveDataPlayerState[ i ].MP = i + 200 * ( i + 10 );
 
 			}
-			myGV.GameDataSave( GV.slot ); // セーブを行います
+			myGV.GameDataSave( myGV.slot ); // セーブを行います
 
 		}
 
@@ -41,7 +41,7 @@ public class ExampleTestPlayer : MonoBehaviour {
 		foreach ( SingltonPlayerManager.PlayerParameters items in example1.SaveDataPlayerState ) {
 			Debug.Log( "-----------------------\nforeach ( セーブデータ ) 出力\nID : " + items.ID + "\nHP : " +
 				items.HP + "\nMP : " + items.MP + "\nプレイタイム : "
-					+ myGV.GData.playTime[ GV.slot ] + "\n-----------------------" );
+					+ myGV.GData.playTime[ myGV.slot ] + "\n-----------------------" );
 
 		}
 
@@ -71,7 +71,7 @@ public class ExampleTestPlayer : MonoBehaviour {
 			SingltonPlayerManager.Instance.SaveDataPlayerState[ i ].MP = i + 200 * ( i + saveTest );
 
 		}
-		myGV.GameDataSave( GV.slot ); // セーブを行います
+		myGV.GameDataSave( myGV.slot ); // セーブを行います
 
 
 	}
