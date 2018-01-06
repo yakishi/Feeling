@@ -40,8 +40,7 @@ public class ExampleTestPlayer : MonoBehaviour {
 
 		foreach ( SingltonPlayerManager.PlayerParameters items in example1.SaveDataPlayerState ) {
 			Debug.Log( "-----------------------\nforeach ( セーブデータ ) 出力\nID : " + items.ID + "\nHP : " +
-				items.HP + "\nMP : " + items.MP + "\nプレイタイム : "
-					+ myGV.GData.playTime[ myGV.slot ] + "\n-----------------------" );
+				items.HP + "\nMP : " + items.MP + "\n-----------------------" );
 
 		}
 
