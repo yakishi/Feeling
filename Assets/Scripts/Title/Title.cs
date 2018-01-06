@@ -8,7 +8,7 @@ using UniRx;
 public class Title : MonoBehaviour
 {
 	
-	//GV myGV = GV.Instance; // Save/Load クラスのインスタンスを取得
+	GV myGV = GV.Instance; // Save/Load クラスのインスタンスを取得
 
     /// <summary>
     /// ゲームを新しく始めるボタン
@@ -27,6 +27,9 @@ public class Title : MonoBehaviour
     /// </summary>
     [SerializeField]
     Button exitButton;
+
+	GameObject saveUiObj;
+	bool sceneLoadOnce;
     
     // Use this for initialization
     void Start()
@@ -39,10 +42,14 @@ public class Title : MonoBehaviour
 		exitButton.transform.GetChild( 0 ).GetComponent<Text>( ).text = "Quit Game";
 		exitButton.transform.GetChild( 0 ).GetComponent<Text>( ).fontSize = 32;
 
+		saveUiObj = newGameButton.gameObject; // 初期 null 回避
+
+		sceneLoadOnce = true; // update 中に 1 回だけ呼ばれるようにするフラグ
+
 		newGameButton.OnClickAsObservable()
             .Subscribe(_ => {
-                // TODO: 仮でワールドマップに遷移
-                SceneManager.LoadScene(SceneName.WorldMap);
+				// セーブスロット UI 表示
+				saveUiObj = SaveLoad.CreateUI( SaveLoad.Type.Save, gameObject );
             })
             .AddTo(this);
         loadGameButton.OnClickAsObservable()
@@ -63,4 +70,15 @@ public class Title : MonoBehaviour
             })
             .AddTo(this);
     }
+
+	void Update( ) {
+		// セーブスロット UI 表示 → 任意セーブスロット選択 → newGame → 任意セーブスロット削除 → SystemData 更新 → 遷移
+		if ( saveUiObj == null && sceneLoadOnce ) {
+			sceneLoadOnce = false;
+			myGV.newGame( );
+			// TODO: 仮でワールドマップに遷移
+			SceneManager.LoadScene(SceneName.WorldMap);
+
+		}
+	}
 }

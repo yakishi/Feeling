@@ -119,7 +119,7 @@ public class SaveData
     /// <param name="key">key</param>
     /// <param name="defaultValue">keyが見つからなかったときの値</param>
     /// <returns>見つかった値を返します</returns>
-    static public float getInt(string key, int defaultValue)
+    static public int getInt(string key, int defaultValue)
     {
         return SaveObj[saveSlot].getInt(key, defaultValue);
     }
@@ -193,11 +193,11 @@ public class SaveData
         SaveObj[saveSlot].remove(slot);
     }
 
-    /// <summary>
-    /// 指定した key を削除します
-    /// </summary>
-    /// <param name="key"></param>
-    static public void remove(string key)
+	/// <summary>
+	/// 指定した key を削除します
+	/// </summary>
+	/// <param name="key"></param>
+	static public void remove(string key)
     {
         SaveObj[saveSlot].remove(key);
     }
@@ -288,7 +288,7 @@ public class SaveData
         #endregion
 
         #region Getter
-        public float getInt(string key, int defaultValue)
+        public int getInt(string key, int defaultValue)
         {
             if (!saveData.ContainsKey(key)) {
                 return defaultValue;
@@ -373,11 +373,23 @@ public class SaveData
             return true;
         }
 
+		public void remove( ) {
+			//// ファイルを削除する
+			//System.IO.File.Delete( savePath_ + fileName_ );
+		}
+
         // TODO: 今後実装
         public void remove(int slot)
         {
+			GV.Instance.SData.usedSave[ slot - 1 ] = false;
 
-        }
+			SaveData.setSlot( 0 );
+			SaveData.setClass( "SystemData", GV.Instance.SData );
+			SaveData.save( );
+
+			// ファイルを削除する
+			System.IO.File.Delete( savePath_ + fileName_ );
+		}
 
         public void remove(string key)
         {

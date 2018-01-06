@@ -311,7 +311,7 @@ Prefab:
     - target: {fileID: 224876893780511890, guid: 557ff7546b14489488034c8815521f89,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: -83.333336
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224876893780511890, guid: 557ff7546b14489488034c8815521f89,
         type: 2}
@@ -336,7 +336,7 @@ Prefab:
     - target: {fileID: 224066300124157612, guid: 557ff7546b14489488034c8815521f89,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: -250
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224066300124157612, guid: 557ff7546b14489488034c8815521f89,
         type: 2}
@@ -361,7 +361,7 @@ Prefab:
     - target: {fileID: 224090649041915972, guid: 557ff7546b14489488034c8815521f89,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: -416.6667
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224090649041915972, guid: 557ff7546b14489488034c8815521f89,
         type: 2}
@@ -655,6 +655,11 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 918105443}
+--- !u!1 &1117116785 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 1523629710533974, guid: 557ff7546b14489488034c8815521f89,
+    type: 2}
+  m_PrefabInternal: {fileID: 273970258}
 --- !u!1 &1351234814
 GameObject:
   m_ObjectHideFlags: 0
@@ -750,6 +755,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   btn: {fileID: 350776139}
   btnCntReset: {fileID: 1801770981}
+  canvasTitle: {fileID: 1117116785}
 --- !u!114 &1351234820
 MonoBehaviour:
   m_ObjectHideFlags: 0
