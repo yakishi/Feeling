@@ -52,8 +52,7 @@ public class SaveLoad : MonoBehaviour
                 .Subscribe(_ => {
 					myGV.slot = slotIndex; // GV 側へ通知
 					myGV.GameDataSave(slotIndex);
-					new ExampleTestSaveLoad( ).SaveTest( ); // 読込確認用
-					Debug.Log( "<color='red'>openSaveUI Function Called.</color>" );
+					Debug.Log( "<color='red'>openSaveUI Function Called., saveSlot : " + slotIndex + "</color>" );
 					Destroy(gameObject);
                 })
                 .AddTo(this);
@@ -81,7 +80,7 @@ public class SaveLoad : MonoBehaviour
 					myGV.GameDataLoad(slotIndex);
 					myGV.SlotChangeParamUpdate( slotIndex );
 					new ExampleTestSaveLoad( ).LoadTest( ); // 読込確認用
-					Debug.Log( "<color='red'>openLoadUI Function Called.</color>" );
+					Debug.Log( "<color='red'>openLoadUI Function Called., loadSlot : " + slotIndex + "</color>" );
 					Destroy(/*this*/gameObject);
                 })
                 .AddTo(this);

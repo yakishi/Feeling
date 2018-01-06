@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UniRx;
 using UnityEngine;
 
 
@@ -20,8 +21,6 @@ public sealed class GV {
 	public int slot { get { return saveLoadSlot; } set { saveLoadSlot = value; } }
 	///////////////////////////////////////////
 
-	static public DateTime[ ] oldPlayTime;
-
 	private const int PLAYERS = 6;
 
 	private static GV mInstance = new GV( );
@@ -38,19 +37,34 @@ public sealed class GV {
 		gameData = new GameData( );
 
 		gameData.Players = new List<PlayerParam>( );
-		gameData.playTime = new string[ 4 ];
-		oldPlayTime = new DateTime[ 4 ];
 
 		gameData.Equipments = new List<EquipmentParam>( );
+
+		gameData.PlayersSkills = new List<SkillParam>( );
+
+		gameData.Items = new ItemParam( );
+		gameData.Items.Name = new List<string>( );
+		gameData.Items.Stock = new List<int>( );
 
 		for( int i = 0; i < PLAYERS /* !変更しない! */; i++ ) {
 			gameData.Players.Add( new PlayerParam( ) );
 			gameData.Equipments.Add( new EquipmentParam( ) );
+			gameData.PlayersSkills.Add( new SkillParam( ) );
+			gameData.PlayersSkills[ i ].Name = new List<string>( );
 
 		}
 
 		// データのロードを行う ( 前回のデータ保持 )
 		GameDataLoad( slot );
+
+		// 一秒ごとに, タイムカウントアップします
+		Observable
+			.Interval( TimeSpan.FromSeconds( 1 ) )
+			.Subscribe( x => {
+				TimeCountUp( );
+			}
+		);
+
 
 
 	}
@@ -62,11 +76,17 @@ public sealed class GV {
 	[Serializable]
 	public class GameData {
 		#region Other
-		public string[ ] playTime;
+		/// <summary>プレイ時間[秒]</summary>
+		/// <remarks>
+		/// TimeSpan example = new TimeSpan( 0, 0, timeSecond );
+		/// 上の様に変換しプレイ時間を取得します
+		/// </remarks>
+		public int timeSecond;
 		#endregion
 
 		#region Player
 		public List<PlayerParam> Players;
+		public List<SkillParam> PlayersSkills;
 		//public int PartyCount;
 		#endregion
 
@@ -74,6 +94,8 @@ public sealed class GV {
 		// 所持している装備のIDの配列
 		//public List<int> Equipments;
 		public List<EquipmentParam> Equipments;
+		/// <summary>現在所持しているアイテム一覧</summary>
+		public ItemParam Items;
 		#endregion
 	}
 
@@ -120,59 +142,35 @@ public sealed class GV {
 	/// <summary>
 	/// ゲームを新しく始めるときに呼び出される関数
 	/// </summary>
+	/// <remarks>Title.csのnewGameButton.OnClickAsObservable()から呼ばれる</remarks>
 	public void newGame( ) {
 
 		Debug.Log( "<color='red'>newGame Function Called.</color>" );
 
-		// 装備の仮データ読み込み
-		{
-			//gameData.Equipments = new List<int>();
-			// 仮で全装備を ID + 1 所持している状態にする
-			/*var equipments = EquipmentManager.getEquipmentList();
-            foreach (var equipment in equipments) {
-                for (int i = 0; i <= equipment.ID; ++i) {
-                    gameData.Equipments.Add(equipment.ID);
-                }
-            }*/
-		}
-		
-		UpdatePlayTime( );
+		// save data file delete, save prefab で任意のセーブスロットを選択すると
+		// 選択されたファイルが一旦, 削除される, その後, 初期化されたデータで保存される
+		SaveData.remove( slot );
+
+		// save data を扱う各, singlton class の初期化処理
+		// player
+		SingltonPlayerManager.Instance.SaveDataPlayerState.Clear( );
+		SingltonPlayerManager.Instance.NewGame( );
+		// equip
+		SingltonEquipmentManager.Instance.SaveDataPlayerEquipmentParam.Clear( );
+		SingltonEquipmentManager.Instance.NewGame( );
+		// item
+		SingltonItemManager.Instance.SDItem.Name.Clear( );
+		SingltonItemManager.Instance.NewGame( );
+		// skill
+		SingltonSkillManager.Instance.SDSkill.Clear( );
+		SingltonSkillManager.Instance.NewGame( );
+		// time
+		gameData.timeSecond = 0;
+
+		GameDataSave( slot );
 
 
 	}
-
-	/*===============================================================*/
-	/// <summary>各,セーブスロットのプレイ時間更新を行います</summary>
-	/// <remarks>
-	/// newGame()または,saveで呼びます
-	/// </remarks>
-	private void UpdatePlayTime( ) {
-		Debug.Log( "<color='red'>UpdatePlayTime Function Called.</color>" );
-
-		Debug.Log( "<color='red'>セーブスロット : " + slot + "</color>" );
-		// slot 別の初期時間保存処理
-		if( SaveData.getString( slot + SaveDataKey.KEY_TIME_OLD, "-1" ) == "-1" ) {
-			SaveData.setString( slot + SaveDataKey.KEY_TIME_OLD, System.DateTime.Now.ToString( ) );
-			SaveData.setSlot( slot );
-			SaveData.save( );
-			Debug.Log( "<color='red'>oldPlayTime[ " + slot + " ] : " + System.DateTime.Now + ", で保存されました。</color>" );
-			oldPlayTime[ slot ] = System.DateTime.Now;
-
-		} else if( SaveData.getString( slot + SaveDataKey.KEY_TIME_OLD, "-1" ) != "-1" ) {
-			foreach( string items in SaveData.getKeys( ) ) {
-				if( items == slot + SaveDataKey.KEY_TIME_OLD ) {
-					oldPlayTime[ slot ] = DateTime.Parse( SaveData.getString( slot + SaveDataKey.KEY_TIME_OLD, "-1" ) );
-					Debug.Log( "<color='red'>初期時間が更新されました。</color>" );
-
-				}
-
-			}
-
-		}
-
-
-	}
-	/*===============================================================*/
 
 	/*===============================================================*/
 	/// <summary>TitleでのLoad時にパラメーターを読み込みます</summary>
@@ -181,6 +179,21 @@ public sealed class GV {
 		Debug.Log( "<color='red'>各種パラメーターが更新されました。</color>" );
 		SingltonPlayerManager.Instance.LoadPlayer( slotIndex ); // slot を変えたときに値を更新する
 		SingltonEquipmentManager.Instance.LoadEquipment( slotIndex );
+		SingltonSkillManager.Instance.LoadSkill( slotIndex );
+		SingltonItemManager.Instance.LoadItem( slotIndex );
+
+
+	}
+	/*===============================================================*/
+
+	/*===============================================================*/
+	/// <summary>時間をカウントアップします</summary>
+	private void TimeCountUp( ) {
+		//myTimeSecond = SaveData.getInt( slot + SaveDataKey.KEY_CURRENT_TIME, -1 );
+		gameData.timeSecond += 1; // 一秒づつカウント
+		//TimeSpan newTime = new TimeSpan( 0, 0, gameData.timeSecond[ slot ] );
+		//Debug.Log( "<color='red'>newTime : " + newTime + ", myTimeSecond : " + gameData.timeSecond[ slot ] + " </color>" );
+		if( gameData.timeSecond == -1 ) Debug.LogError( "TimeCountUp Function on the Error." );
 
 
 	}
@@ -200,12 +213,12 @@ public sealed class GV {
 
 	/*===============================================================*/
 	/// <summary>セーブデータキー定義</summary>
-	private class SaveDataKey {
+	public class SaveDataKey {
 		public const string PRAYER_PARAM = "PLAYER_PARAM";
 		public const string EQUIPMENT_PARAM = "EQUIPMENT_PARAM";
 		public const string ITEM_PARAM = "ITEM_PARAM";
-		public const string KEY_TIME = "KEY_TIME";
-		public const string KEY_TIME_OLD = "KEY_TIME_OLD";
+		public const string SKILL_PARAM = "SKILL_PARAM";
+		public const string KEY_CURRENT_TIME = "KEY_CURRENT_TIME";
 
 
 	}
@@ -215,9 +228,9 @@ public sealed class GV {
 	/// <summary>セットした変動値をセーブデータから読み込みます</summary>
 	/// <remarks>
 	/// コンティニューなどに使います
-	/// (注意) gamemaneger classなどで最初にsave data を扱う,player singlton class および
-	/// equip singlton class のインスタンスを作成しておかないと各,singlton class
-	/// のloadで前の値が読み込まれる可能性があるので一括で作成するようにします。
+	/// (注意) gamemaneger class などで最初に save data を扱う,player singlton class や
+	/// equip singlton class などのインスタンスを作成しておかないと各,singlton class
+	/// のloadで前の値が読み込まれる可能性があるので gamemanager class に一括で作成するようにします。
 	/// </remarks>
 	/// <param name="loadSlot">ロードするセーブデータスロットを指定します</param>
 	public void GameDataLoad( int loadSlot ) {
@@ -268,13 +281,37 @@ public sealed class GV {
 
 		/*===============================================================*/
 		// アイテム情報読込
+		SingltonItemManager.ItemParam myItem = SaveData.getClass<SingltonItemManager.ItemParam>( GV.SaveDataKey.ITEM_PARAM );
+
+		if( myItem != null ) {
+			gameData.Items.Name = myItem.Name;
+			gameData.Items.Stock = myItem.Stock;
+
+		}
 
 		/*===============================================================*/
 
-		// セーブスロット + キーでプレイ時間を読み込む
-		if ( loadSlot > 0 ) gameData.playTime[ loadSlot ] = SaveData.getString( loadSlot + SaveDataKey.KEY_TIME );
+		/*===============================================================*/
+		// スキル情報読込
+		List<SingltonSkillManager.SkillParam> mySkill = SaveData.getList<SingltonSkillManager.SkillParam>( GV.SaveDataKey.SKILL_PARAM );
 
-		Debug.Log( loadSlot + ", " + saveLoadSlot );
+		for( int i = 0; i < gameData.PlayersSkills.Count; i++ ) {
+			if ( mySkill != null ) {
+				gameData.PlayersSkills[ i ].Name = mySkill[ i ].Name;
+
+			}
+
+		}
+		/*===============================================================*/
+
+		// ロードスロット + キーでプレイ時間を読み込む
+		if ( loadSlot > 0 ) {
+			gameData.timeSecond = SaveData.getInt( SaveDataKey.KEY_CURRENT_TIME, 0 );
+
+		}
+
+		//TimeSpan t = new TimeSpan( 0, 0, gameData.timeSecond[ loadSlot ] );
+		//Debug.Log( "<color='red'>" + loadSlot + ", " + saveLoadSlot + ", playTime : " + t + "</color>" );
 
 
 	}
@@ -297,17 +334,19 @@ public sealed class GV {
 		// セーブデータへの値セット部 START
 
 		SaveData.setList( SaveDataKey.PRAYER_PARAM, SingltonPlayerManager.Instance.SaveDataPlayerState ); // プレイヤーパラメーター
-		SaveData.setList( SaveDataKey.EQUIPMENT_PARAM, SingltonEquipmentManager.Instance.SaveDataPlayerEquipmentParam ); // プレイヤー装備ーパラメーター
+		SaveData.setList( SaveDataKey.EQUIPMENT_PARAM, SingltonEquipmentManager.Instance.SaveDataPlayerEquipmentParam ); // プレイヤー装備パラメーター
+		SaveData.setList( SaveDataKey.SKILL_PARAM, SingltonSkillManager.Instance.SDSkill ); // プレイヤースキルパラメーター
+		SaveData.setClass( SaveDataKey.ITEM_PARAM, SingltonItemManager.Instance.SDItem ); // アイテムパラメーター
 
 		// セーブデータへの値セット部 END
 		/*===============================================================*/
-		
-		UpdatePlayTime( );
-		SaveData.setString( saveSlot + SaveDataKey.KEY_TIME, ( oldPlayTime[ saveSlot ] - System.DateTime.Now ).Duration( ).ToString( ) );
+
+		SaveData.setInt( SaveDataKey.KEY_CURRENT_TIME, gameData.timeSecond );
 
 		SaveData.save( );
 
-		Debug.Log( saveSlot + ", " + saveLoadSlot );
+		//TimeSpan t = new TimeSpan( 0, 0, gameData.timeSecond[ saveSlot ] );
+		//Debug.Log( "<color='red'>" + saveSlot + ", " + saveLoadSlot + ", playTime : " + t + "</color>" );
 
 
 	}
@@ -356,6 +395,29 @@ public sealed class GV {
 		public string Accessory1;
 		/// <summary>アクセサリー2(装備名)</summary>
 		public string Accessory2;
+
+
+	}
+
+	/// <summary>
+	/// スキル情報
+	/// </summary>
+	[Serializable]
+	public class SkillParam {
+		/// <summary>現在覚えているスキルの名前</summary>
+		public List<string> Name;
+
+
+	}
+
+	/// <summary>
+	/// アイテム情報
+	/// </summary>
+	public class ItemParam {
+		/// <summary>現在所持しているアイテム一覧</summary>
+		public List<string> Name;
+		/// <summary>現在所持しているアイテムに対するアイテム所持数</summary>
+		public List<int> Stock;
 
 
 	}

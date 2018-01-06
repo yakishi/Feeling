@@ -66,6 +66,7 @@ public class CSVLoader
         CSVTable csvTable = new CSVTable();
         // テキストアセットとしてCSVをロード.
         TextAsset csvTextAsset = Resources.Load(t_csv_path) as TextAsset;
+		if( csvTextAsset == null ) Debug.LogError( "ファイル名または, ディレクトリが間違っている可能性があります。確認して下さい！" );
         // OS環境ごとに適切な改行コードをCR(=キャリッジリターン)に置換.
         string csvText = csvTextAsset.text.Replace(Environment.NewLine, "\r");
         // テキストデータの前後からCRを取り除く.

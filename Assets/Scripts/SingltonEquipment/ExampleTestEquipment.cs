@@ -35,7 +35,7 @@ public class ExampleTestEquipment : MonoBehaviour {
 		// SAVEDATA データの取得例
 		foreach( SingltonEquipmentManager.PlayerEquipmentParam items in myEquip.SaveDataPlayerEquipmentParam ) {
 			Debug.Log( "<color='red'>SAVEDATA 装備 ID : " + items.ID + ", 武器 : " 
-				+ items.Arms + ", 頭 : " + items.Head + ". 足 : " + items.Shoes + "</color>" );
+				+ items.Arms + ", 頭 : " + items.Head + ", 足 : " + items.Shoes + "</color>" );
 
 		}
 

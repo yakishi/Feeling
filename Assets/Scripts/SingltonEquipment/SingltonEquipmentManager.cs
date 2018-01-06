@@ -28,7 +28,7 @@ public sealed class SingltonEquipmentManager {
 		EquipmentSaveList = new List<PlayerEquipmentParam>( );
 		EquipmentCsvList = new List<EquipmentArticleList>( );
 
-		EquipmentCreate( ); // プレイヤーパラメーターの作成を行います
+		EquipmentCreate( ); // 装備パラメーターの作成を行います
 
 
 	}
@@ -39,7 +39,6 @@ public sealed class SingltonEquipmentManager {
 	private void EquipmentCreate( ) {
 
 		myGV = GV.Instance; // Save/Load クラスのインスタンスを取得
-		myGV.newGame( ); // 必ず new Game 下後に変動値などの保存を行う
 
 		// 人数分の装備を生成する
 		for ( int i = 0; i < myGV.GData.Equipments.Count; i++ ) {
@@ -50,6 +49,20 @@ public sealed class SingltonEquipmentManager {
 		LoadEquipment( myGV.slot ); // セーブデータの読込
 
 		LoadCsvEquipment( ); // CSV からのデータ読込
+
+
+	}
+	/*===============================================================*/
+
+	/*===============================================================*/
+	/// <summary>NewGame時のセーブのインスタンス生成処理</summary>
+	/// <remarks>GV.cs:newGame( )から呼ばれる</remarks>
+	public void NewGame( ) {
+		// 人数分の装備を生成する
+		for ( int i = 0; i < myGV.GData.Equipments.Count; i++ ) {
+			EquipmentSaveList.Add( new PlayerEquipmentParam( ) );
+
+		}
 
 
 	}

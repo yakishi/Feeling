@@ -8,6 +8,10 @@ public class ExampleTestSaveLoadMono : MonoBehaviour {
 
 	ExampleTestSaveLoad my;
 
+	[ SerializeField ]
+	private GameObject canvasTitle;
+
+
 	// Use this for initialization
 	void Start( ) {
 		//Initialize( );
@@ -16,6 +20,7 @@ public class ExampleTestSaveLoadMono : MonoBehaviour {
 
 
 		my = new ExampleTestSaveLoad( );
+		my.canvasTitle = canvasTitle;
 
 
 	}
