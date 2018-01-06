@@ -24,7 +24,7 @@ public sealed class SingltonPlayerManager {
 
 	/// <summary>セーブデータから読み込まれたプレイヤーパラメーターを取得またはセット</summary>
 	public List<PlayerParameters> SaveDataPlayerState { get { return PlayerSaveList; } set { PlayerSaveList = value; } }
-	/// <summary>CSVから読み込まれた敵パラメーターを取得します</summary>
+	/// <summary>CSVから読み込まれたプレイヤーパラメーターを取得します</summary>
 	public List<PlayerParameters> GetCsvDataPlayerState { get { return PlayerCsvList; } }
 	/// <summary>Singlton</summary>
 	public static SingltonPlayerManager Instance { get { return mInstance; } }
@@ -55,7 +55,6 @@ public sealed class SingltonPlayerManager {
 	private void PlayerCreate( ) {
 
 		myGV = GV.Instance; // Save/Load クラスのインスタンスを取得
-		myGV.newGame( ); // 必ず new Game 下後に変動値などの保存を行う
 
 		// 人数分の player を生成する
 		for ( int i = 0; i < myGV.GData.Players.Count; i++ ) {
@@ -75,6 +74,20 @@ public sealed class SingltonPlayerManager {
 		}
 
 		LoadCsvPlayer( ); // CSV からのデータ読込
+
+
+	}
+	/*===============================================================*/
+
+	/*===============================================================*/
+	/// <summary>NewGame時のセーブのインスタンス生成処理</summary>
+	/// <remarks>GV.cs:newGame( )から呼ばれる</remarks>
+	public void NewGame( ) {
+		// 人数分の player を生成する
+		for ( int i = 0; i < myGV.GData.Players.Count; i++ ) {
+			PlayerSaveList.Add( new PlayerParameters( ) );
+
+		}
 
 
 	}
