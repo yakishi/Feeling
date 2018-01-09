@@ -40,7 +40,6 @@ public class GameManager : MonoBehaviour {
 	/*===============================================================*/
 	/// <summary>brief 初期化</summary>
 	void Initialize( ) {
-		//GV.newGame( ); // 必ず new Game 下後に変動値などの保存を行う
 
 		// セーブデータへの変動値保存 保存を実行した後にアンコメントアウトするとセーブされたのがロードされていると実感できます
 		//for( int i = 0; i < 6; i++ ) GV.PlayersSetHPSave( i, i + 10 * ( i + 10 ) );

@@ -16,8 +16,11 @@ public class ExampleTest : MonoBehaviour {
 
 		example1 = SingltonEnemyManager.Instance;
 		example2 = SingltonEnemyManager.Instance;
-		
-		foreach( SingltonEnemyManager.EnemyParameters items in example1.GetEnemyState ) {
+
+		if ( example1 == example2 )
+			Debug.Log( "example1 == example2" );
+
+		foreach ( SingltonEnemyManager.EnemyParameters items in example1.GetEnemyState ) {
 			Debug.Log( "-----------------------\nforeach 出力\nID : " + items.ID + "\nLV : " +
 				items.LV + "\nNAME : " + items.NAME + "\n-----------------------" );
 

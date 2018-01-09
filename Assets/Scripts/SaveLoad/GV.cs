@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UniRx;
 using UnityEngine;
 
 
@@ -11,9 +12,16 @@ using UnityEngine;
 /// クラスが参照されたタイミングでインスタンスが生成されます
 /// Singlton を採用
 /// </remarks>
-public sealed class GV
-{
+public sealed class GV {
 	#region Classes
+
+	////////////////////////////////////////////
+	int saveLoadSlot = 1; // 初期セーブスロット
+	/// <summary>Title.csのsaveおよびloadでのみ値セットするものとする</summary>
+	public int slot { get { return saveLoadSlot; } set { saveLoadSlot = value; } }
+	///////////////////////////////////////////
+
+	private const int PLAYERS = 6;
 
 	private static GV mInstance = new GV( );
 	/// <summary>Singlton</summary>
@@ -24,194 +32,177 @@ public sealed class GV
 	private GV( ) {
 		Debug.Log( "Create GV Instance." );
 
-		// データのロードを行う ( 前回のデータ保持 )
-		GV.load( );
-
+		// インスタンスの作成
 		// 毎回 new すると前のセーブデータが消えるので一回だけ new する
 		gameData = new GameData( );
 
-		// プレイヤー 6 人数分のパラメータの作成
 		gameData.Players = new List<PlayerParam>( );
-		for( int player = 0; player < 6; player++ ) {
+
+		gameData.Equipments = new List<EquipmentParam>( );
+
+		gameData.PlayersSkills = new List<SkillParam>( );
+
+		gameData.Items = new ItemParam( );
+		gameData.Items.Name = new List<string>( );
+		gameData.Items.Stock = new List<int>( );
+
+		for( int i = 0; i < PLAYERS /* !変更しない! */; i++ ) {
 			gameData.Players.Add( new PlayerParam( ) );
+			gameData.Equipments.Add( new EquipmentParam( ) );
+			gameData.PlayersSkills.Add( new SkillParam( ) );
+			gameData.PlayersSkills[ i ].Name = new List<string>( );
 
 		}
+
+		// データのロードを行う ( 前回のデータ保持 )
+		GameDataLoad( slot );
+
+		// 一秒ごとに, タイムカウントアップします
+		Observable
+			.Interval( TimeSpan.FromSeconds( 1 ) )
+			.Subscribe( x => {
+				TimeCountUp( );
+			}
+		);
+
 
 
 	}
 	/*===============================================================*/
 
-    /// <summary>
-    /// プレイヤーの情報
-    /// 変動する情報を保存用
-    /// </summary>
-    [Serializable]
-    public class PlayerParam
-    {
-        public int ID;
-        public int Lv;
-        public int HP;
-        public int MP;
-        public int Atk;
-        public int Def;
-        public int Int;
-        public int Mgr;
-        public int Agl;
-        public int Luc;
-        public int StatusPoint;
-        public int[] currentEquipment = new int[6];
-    }
+	/// <summary>
+	/// Save するゲームデータ
+	/// </summary>
+	[Serializable]
+	public class GameData {
+		#region Other
+		/// <summary>プレイ時間[秒]</summary>
+		/// <remarks>
+		/// TimeSpan example = new TimeSpan( 0, 0, timeSecond );
+		/// 上の様に変換しプレイ時間を取得します
+		/// </remarks>
+		public int timeSecond;
+		#endregion
 
-    /// <summary>
-    /// Save するゲームデータ
-    /// </summary>
-    [Serializable]
-    public class GameData
-    {
-        #region Other
-        public int playTime;
-        #endregion
+		#region Player
+		public List<PlayerParam> Players;
+		public List<SkillParam> PlayersSkills;
+		//public int PartyCount;
+		#endregion
 
-        #region Player
-        public List<PlayerParam> Players;
-        public int PartyCount;
-        #endregion
+		#region Items
+		// 所持している装備のIDの配列
+		//public List<int> Equipments;
+		public List<EquipmentParam> Equipments;
+		/// <summary>現在所持しているアイテム一覧</summary>
+		public ItemParam Items;
+		#endregion
+	}
 
-        #region Items
-        // 所持している装備のIDの配列
-        public List<int> Equipments;
-        #endregion
-    }
+	// ゲームデータを読み込むときは先にセーブデータのロードまたはnewGame で関数を初期化して使用
+	private GameData gameData;
+	public GameData GData { get { return gameData; } }
 
-    // ゲームデータを読み込むときは先にセーブデータのロードまたはnewGame で関数を初期化して使用
-    static GameData gameData;
-    static public GameData GData 
-    {
-        get {
-            return gameData;
-        }
-    }
+	[Serializable]
+	public class SystemData {
+		public bool[ ] usedSave;
+		public SystemData( ) {
+			usedSave = new bool[ SaveData.SaveSlotCount ];
+		}
+	}
 
-    [Serializable]
-    public class SystemData
-    {
-        public bool[] usedSave;
-        public SystemData()
-        {
-            usedSave = new bool[SaveData.SaveSlotCount];
-        }
-    }
+	private SystemData systemData;
+	public SystemData SData {
+		get {
+			if ( systemData == null ) {
+				gameAwake( );
+			}
+			return systemData;
+		}
+	}
 
-    static SystemData systemData;
-    static public SystemData SData
-    {
-        get {
-            if (systemData == null)
-            {
-                gameAwake();
-            }
-            return systemData;
-        }
-    }
+	#endregion
 
-    #endregion
+	#region Properties
+	#endregion
 
-    #region Properties
-    #endregion
+	/// <summary>
+	/// ゲーム起動時に呼び出し
+	/// </summary>
+	public void gameAwake( ) {
+		// SystemDataの読み込み
+		SaveData.setSlot( 0 );
+		SaveData.load( );
+		systemData = SaveData.getClass<SystemData>( "SystemData", null );
+		if ( systemData == null ) {
+			systemData = new SystemData( );
+		}
+	}
 
-    /// <summary>
-    /// GameData をセーブする
-    /// </summary>
-    /// <param name="slot">セーブするスロット(0はシステムデータ保存用)</param>
-    static public void save(int slot = 1)
-    {
-        //gameData = new GameData();
-        gameData.playTime = 20;
+	/// <summary>
+	/// ゲームを新しく始めるときに呼び出される関数
+	/// </summary>
+	/// <remarks>Title.csのnewGameButton.OnClickAsObservable()から呼ばれる</remarks>
+	public void newGame( ) {
 
-       // gameData.Players = new List<PlayerParam>();
-		//var player = new PlayerParam();
-		//gameData.Players.Add(player);
-		SData.usedSave[slot - 1] = true;
+		Debug.Log( "<color='red'>newGame Function Called.</color>" );
 
-        SaveData.setSlot(0);
-        SaveData.setClass("SystemData", SData);
-        SaveData.save();
+		// save data file delete, save prefab で任意のセーブスロットを選択すると
+		// 選択されたファイルが一旦, 削除される, その後, 初期化されたデータで保存される
+		SaveData.remove( slot );
 
-        SaveData.setSlot(slot);
-        SaveData.setClass("GameData", GData);
-        SaveData.save();
-    }
+		// save data を扱う各, singlton class の初期化処理
+		// player
+		SingltonPlayerManager.Instance.SaveDataPlayerState.Clear( );
+		SingltonPlayerManager.Instance.NewGame( );
+		// equip
+		SingltonEquipmentManager.Instance.SaveDataPlayerEquipmentParam.Clear( );
+		SingltonEquipmentManager.Instance.NewGame( );
+		// item
+		SingltonItemManager.Instance.SDItem.Name.Clear( );
+		SingltonItemManager.Instance.NewGame( );
+		// skill
+		SingltonSkillManager.Instance.SDSkill.Clear( );
+		SingltonSkillManager.Instance.NewGame( );
+		// time
+		gameData.timeSecond = 0;
 
-    static public void load(int slot = 1)
-    {
-        SaveData.setSlot(slot);
-        SaveData.load();
-        gameData = SaveData.getClass<GameData>("GameData", null);
-    }
-
-    /// <summary>
-    /// ゲーム起動時に呼び出し
-    /// </summary>
-    static public void gameAwake()
-    {
-        // SystemDataの読み込み
-        SaveData.setSlot(0);
-        SaveData.load();
-        systemData = SaveData.getClass<SystemData>("SystemData", null);
-        if (systemData == null) {
-            systemData = new SystemData();
-        }
-    }
-
-    /// <summary>
-    /// ゲームを新しく始めるときに呼び出される関数
-    /// </summary>
-    static public void newGame()
-    {
-
-       // gameData = new GameData();
-
-		// 装備の仮データ読み込み
-		{
-            //gameData.Equipments = new List<int>();
-            // 仮で全装備を ID + 1 所持している状態にする
-            /*var equipments = EquipmentManager.getEquipmentList();
-            foreach (var equipment in equipments) {
-                for (int i = 0; i <= equipment.ID; ++i) {
-                    gameData.Equipments.Add(equipment.ID);
-                }
-            }*/
-        }
-
-        // プレイヤーの仮作成
-        {
-            //gameData.Players = new List<PlayerParam>();
-			//for( int players = 0; players < 6; players++ ) gameData.Players.Add( gameData.Players[ players ] );
-            for( int i = 0; i < gameData.Players.Count; i++ ) {
-				gameData.Players[ i ]/*newPlayer*/.ID = 0;
-				gameData.Players[ i ]/*newPlayer*/.Lv = 0;
-				gameData.Players[ i ]/*newPlayer*/.HP = 0;
-				gameData.Players[ i ]/*newPlayer*/.MP = 0;
-				gameData.Players[ i ]/*newPlayer*/.Atk = 0;
-				gameData.Players[ i ]/*newPlayer*/.Def = 0;
-				gameData.Players[ i ]/*newPlayer*/.Int = 0;
-				gameData.Players[ i ]/*newPlayer*/.Mgr = 0;
-				gameData.Players[ i ]/*newPlayer*/.Agl = 0;
-				gameData.Players[ i ]/*newPlayer*/.Luc = 0;
-				gameData.Players[ i ]/*newPlayer*/.StatusPoint = 0;
-
-				//gameData.Players.Add( gameData.Players[ i ] );
-            }
-
-        }
+		GameDataSave( slot );
 
 
-    }
+	}
+
+	/*===============================================================*/
+	/// <summary>TitleでのLoad時にパラメーターを読み込みます</summary>
+	/// <param name="slotIndex">ロードするスロット番号</param>
+	public void SlotChangeParamUpdate( int slotIndex ) {
+		Debug.Log( "<color='red'>各種パラメーターが更新されました。</color>" );
+		SingltonPlayerManager.Instance.LoadPlayer( slotIndex ); // slot を変えたときに値を更新する
+		SingltonEquipmentManager.Instance.LoadEquipment( slotIndex );
+		SingltonSkillManager.Instance.LoadSkill( slotIndex );
+		SingltonItemManager.Instance.LoadItem( slotIndex );
+
+
+	}
+	/*===============================================================*/
+
+	/*===============================================================*/
+	/// <summary>時間をカウントアップします</summary>
+	private void TimeCountUp( ) {
+		//myTimeSecond = SaveData.getInt( slot + SaveDataKey.KEY_CURRENT_TIME, -1 );
+		gameData.timeSecond += 1; // 一秒づつカウント
+		//TimeSpan newTime = new TimeSpan( 0, 0, gameData.timeSecond[ slot ] );
+		//Debug.Log( "<color='red'>newTime : " + newTime + ", myTimeSecond : " + gameData.timeSecond[ slot ] + " </color>" );
+		if( gameData.timeSecond == -1 ) Debug.LogError( "TimeCountUp Function on the Error." );
+
+
+	}
+	/*===============================================================*/
 
 	/*===============================================================*/
 	/// <summary>セーブデータに保存されているKEYのデバッグ出力を行います</summary>
-	public static void DebugKeyPrint( ) {
-		foreach( string items in SaveData.getKeys( ) ) {
+	public void DebugKeyPrint( ) {
+		foreach ( string items in SaveData.getKeys( ) ) {
 			Debug.Log( "------------------\nセーブデータキー :\n" + items + "\n------------------" );
 
 		}
@@ -221,35 +212,13 @@ public sealed class GV
 	/*===============================================================*/
 
 	/*===============================================================*/
-	/// <summary>プレイヤーID:セーブデータキー定義</summary>
-	public class PlayerID {
-		public const string P1 = "0";
-		public const string P2 = "1";
-		public const string P3 = "2";
-		public const string P4 = "3";
-		public const string P5 = "4";
-		public const string P6 = "5";
-
-
-	}
-	/*===============================================================*/
-
-	/*===============================================================*/
-	/// <summary>プレイヤーステータス:セーブデータキー定義</summary>
+	/// <summary>セーブデータキー定義</summary>
 	public class SaveDataKey {
-		public const string ID = "_Players";
-		public const string LV = "_Player_Lv";
-		public const string HP = "_Player_HP";
-		public const string MP = "_Player_MP";
-		public const string ATK = "_Player_Atk";
-		public const string DEF = "_Player_Def";
-		public const string INT = "_Player_Int";
-		public const string MGR = "_Player_Mgr";
-		public const string AGR = "_Player_Agl";
-		public const string LUC = "_Player_Luc";
-		public const string STATUSPOCONST = "_Player_StatusPoconst";
-		public const string CURRENTEQUIPMENT = "_Player_currentEquipment";
-		public const string KEY_TIME = "TIME";
+		public const string PRAYER_PARAM = "PLAYER_PARAM";
+		public const string EQUIPMENT_PARAM = "EQUIPMENT_PARAM";
+		public const string ITEM_PARAM = "ITEM_PARAM";
+		public const string SKILL_PARAM = "SKILL_PARAM";
+		public const string KEY_CURRENT_TIME = "KEY_CURRENT_TIME";
 
 
 	}
@@ -257,72 +226,203 @@ public sealed class GV
 
 	/*===============================================================*/
 	/// <summary>セットした変動値をセーブデータから読み込みます</summary>
-	/// <remarks>コンティニューなどに使います</remarks>
-	static public void GameDataLoad( ) {
+	/// <remarks>
+	/// コンティニューなどに使います
+	/// (注意) gamemaneger class などで最初に save data を扱う,player singlton class や
+	/// equip singlton class などのインスタンスを作成しておかないと各,singlton class
+	/// のloadで前の値が読み込まれる可能性があるので gamemanager class に一括で作成するようにします。
+	/// </remarks>
+	/// <param name="loadSlot">ロードするセーブデータスロットを指定します</param>
+	public void GameDataLoad( int loadSlot ) {
 
-		//GV.load( );
+		SaveData.setSlot( loadSlot );
+		SaveData.load( );
 
-		//gameData = new GameData( );
-		//gameData.Players = new List<PlayerParam>( );
+		/*===============================================================*/
+		// プレイヤーステータス情報読込
+		List<SingltonPlayerManager.PlayerParameters> myPlayerState = SaveData.getList<SingltonPlayerManager.PlayerParameters>( GV.SaveDataKey.PRAYER_PARAM );
 
 		for ( int i = 0; i < gameData.Players.Count; i++ ) {
-			//PlayerParam newPlayer = new PlayerParam( );
-			//GV.GData.Players[ i ].ID = ( int )SaveData.getInt( i.ToString( ) + GV.SaveDataKey.ID, 0 );
-			//GV.GData.Players[ i ].Lv = ( int )SaveData.getInt( i.ToString( ) + GV.SaveDataKey.LV, 0 );
-			gameData.Players[ i ].HP = ( int )SaveData.getInt( i.ToString( ) + GV.SaveDataKey.HP, -1 );
-			gameData.Players[ i ].MP = ( int )SaveData.getInt( i.ToString( ) + GV.SaveDataKey.MP, -1 );
-			//newPlayer.Atk = ( i + 1 ) * 4/*PlayerManagerCSV.GetPlayers[ i ].ATK*/;
-			//newPlayer.Def = ( i + 1 ) * 5/*PlayerManagerCSV.GetPlayers[ i ].DEF*/;
-			//newPlayer.Int = ( i + 1 ) * 6/*PlayerManagerCSV.GetPlayers[ i ].INT*/;
-			//newPlayer.Mgr = ( i + 1 ) * 7/*PlayerManagerCSV.GetPlayers[ i ].MDEF*/;
-			//newPlayer.Agl = ( i + 1 ) * 8/*PlayerManagerCSV.GetPlayers[ i ].SPD*/;
-			//newPlayer.Luc = ( i + 1 ) * 9/*PlayerManagerCSV.GetPlayers[ i ].LUCKY*/;
-			//newPlayer.StatusPoint = 5; // 経験値が溜まってレベルがあがると5ポイントのステータスポイントが獲得できる。この5ポイントは固定
+			if ( myPlayerState != null ) {
+				gameData.Players[ i ].ID = myPlayerState[ i ].ID;
+				gameData.Players[ i ].Lv = myPlayerState[ i ].Lv;
+				gameData.Players[ i ].HP = myPlayerState[ i ].HP;
+				gameData.Players[ i ].MP = myPlayerState[ i ].MP;
+				gameData.Players[ i ].Atk = myPlayerState[ i ].Atk;
+				gameData.Players[ i ].Def = myPlayerState[ i ].Def;
+				gameData.Players[ i ].Int = myPlayerState[ i ].Int;
+				gameData.Players[ i ].Mgr = myPlayerState[ i ].Mgr;
+				gameData.Players[ i ].Agl = myPlayerState[ i ].Agl;
+				gameData.Players[ i ].Luc = myPlayerState[ i ].Luc;
+				gameData.Players[ i ].StatusPoint = myPlayerState[ i ].StatusPoint; // 経験値が溜まってレベルがあがると5ポイントのステータスポイントが獲得できる。この5ポイントは固定
 
-			//gameData.Players.Add( newPlayer );
+			}
+
+		}
+		/*===============================================================*/
+
+		/*===============================================================*/
+		// 装備情報読込
+		List<SingltonEquipmentManager.PlayerEquipmentParam> myEquip = SaveData.getList<SingltonEquipmentManager.PlayerEquipmentParam>( GV.SaveDataKey.EQUIPMENT_PARAM );
+
+		for( int i = 0; i < gameData.Equipments.Count; i++ ) {
+			if ( myEquip != null ) {
+				gameData.Equipments[ i ].ID = myEquip[ i ].ID;
+				gameData.Equipments[ i ].Arms = myEquip[ i ].Arms;
+				gameData.Equipments[ i ].Head = myEquip[ i ].Head;
+				gameData.Equipments[ i ].Shoes = myEquip[ i ].Shoes;
+				gameData.Equipments[ i ].Accessory1 = myEquip[ i ].Accessory1;
+				gameData.Equipments[ i ].Accessory2 = myEquip[ i ].Accessory2;
+
+			}
+
+		}
+		/*===============================================================*/
+
+		/*===============================================================*/
+		// アイテム情報読込
+		SingltonItemManager.ItemParam myItem = SaveData.getClass<SingltonItemManager.ItemParam>( GV.SaveDataKey.ITEM_PARAM );
+
+		if( myItem != null ) {
+			gameData.Items.Name = myItem.Name;
+			gameData.Items.Stock = myItem.Stock;
 
 		}
 
+		/*===============================================================*/
+
+		/*===============================================================*/
+		// スキル情報読込
+		List<SingltonSkillManager.SkillParam> mySkill = SaveData.getList<SingltonSkillManager.SkillParam>( GV.SaveDataKey.SKILL_PARAM );
+
+		for( int i = 0; i < gameData.PlayersSkills.Count; i++ ) {
+			if ( mySkill != null ) {
+				gameData.PlayersSkills[ i ].Name = mySkill[ i ].Name;
+
+			}
+
+		}
+		/*===============================================================*/
+
+		// ロードスロット + キーでプレイ時間を読み込む
+		if ( loadSlot > 0 ) {
+			gameData.timeSecond = SaveData.getInt( SaveDataKey.KEY_CURRENT_TIME, 0 );
+
+		}
+
+		//TimeSpan t = new TimeSpan( 0, 0, gameData.timeSecond[ loadSlot ] );
+		//Debug.Log( "<color='red'>" + loadSlot + ", " + saveLoadSlot + ", playTime : " + t + "</color>" );
+
+
+	}
+	/*===============================================================*/
+
+	/*===============================================================*/
+	/// <summary>セーブを行います</summary>
+	/// <param name="saveSlot">セーブするセーブデータスロットを指定します</param>
+	public void GameDataSave( int saveSlot ) {
+
+		SData.usedSave[ saveSlot - 1 ] = true;
+
+		SaveData.setSlot( 0 );
+		SaveData.setClass( "SystemData", SData );
+		SaveData.save( );
+
+		SaveData.setSlot( saveSlot );
+
+		/*===============================================================*/
+		// セーブデータへの値セット部 START
+
+		SaveData.setList( SaveDataKey.PRAYER_PARAM, SingltonPlayerManager.Instance.SaveDataPlayerState ); // プレイヤーパラメーター
+		SaveData.setList( SaveDataKey.EQUIPMENT_PARAM, SingltonEquipmentManager.Instance.SaveDataPlayerEquipmentParam ); // プレイヤー装備パラメーター
+		SaveData.setList( SaveDataKey.SKILL_PARAM, SingltonSkillManager.Instance.SDSkill ); // プレイヤースキルパラメーター
+		SaveData.setClass( SaveDataKey.ITEM_PARAM, SingltonItemManager.Instance.SDItem ); // アイテムパラメーター
+
+		// セーブデータへの値セット部 END
+		/*===============================================================*/
+
+		SaveData.setInt( SaveDataKey.KEY_CURRENT_TIME, gameData.timeSecond );
+
+		SaveData.save( );
+
+		//TimeSpan t = new TimeSpan( 0, 0, gameData.timeSecond[ saveSlot ] );
+		//Debug.Log( "<color='red'>" + saveSlot + ", " + saveLoadSlot + ", playTime : " + t + "</color>" );
+
 
 	}
 	/*===============================================================*/
 
 	/*===============================================================*/
-	/// <summary>プレイヤーのヒットポイント変動値を保存します</summary>
-	/// <param name="playerIndex">プレイヤー0～5で指定します</param>
-	/// <param name="setHp">保存したいヒットポイント値を指定します</param>
-	static public void PlayersSetHPSave( int playerIndex, int setHp ) {
-		if( playerIndex < gameData.Players.Count ) {
-			// key がある場合, 最初にロードする ( これを行わないと今までの Key が全て無くなる )
-			foreach( string items in SaveData.getKeys( ) ) if( items != null ) GV.load( );
-			// ID + KEY
-			SaveData.setInt( playerIndex + GV.SaveDataKey.HP, setHp );
-			SaveData.setString( GV.SaveDataKey.KEY_TIME, System.DateTime.Now.ToBinary( ).ToString( ) );
-			GV.save( );
+	// パラメーター部 START
 
-		} else if( playerIndex >= gameData.Players.Count ) Debug.LogError( "プレイヤーは、6人です。0～5で指定して下さい。" );
-
-
-	}
-	/*===============================================================*/
-
-	/*===============================================================*/
-	/// <summary>プレイヤーのマジックポイント変動値を保存します</summary>
-	/// <param name="playerIndex">プレイヤー0～5で指定します</param>
-	/// <param name="setHp">保存したいマジックポイント値を指定します</param>
-	static public void PlayersSetMPSave( int playerIndex, int setMp ) {
-		if( playerIndex < gameData.Players.Count ) {
-			// key がある場合, 最初にロードする ( これを行わないと今までの Key が全て無くなる )
-			foreach( string items in SaveData.getKeys( ) ) if( items != null ) GV.load( );
-			// ID + KEY
-			SaveData.setInt( playerIndex + GV.SaveDataKey.MP, setMp );
-			SaveData.setString( GV.SaveDataKey.KEY_TIME, System.DateTime.Now.ToBinary( ).ToString( ) );
-			GV.save( );
-
-		} else if( playerIndex >= gameData.Players.Count ) Debug.LogError( "プレイヤーは、6人です。0～5で指定して下さい。" );
+	/// <summary>
+	/// プレイヤーの情報
+	/// 変動する情報を保存用
+	/// </summary>
+	[Serializable]
+	public class PlayerParam {
+		public int ID;
+		public int Lv;
+		public int HP;
+		public int MP;
+		public int Atk;
+		public int Def;
+		public int Int;
+		public int Mgr;
+		public int Agl;
+		public int Luc;
+		public int StatusPoint;
+		public int[ ] currentEquipment = new int[ 6 ];
 
 
 	}
+
+	/// <summary>
+	/// 装備情報
+	/// 変動する情報を保存用
+	/// </summary>
+	[Serializable]
+	public class EquipmentParam {
+		/// <summary>プレイヤー識別ID(0からの連番で管理)</summary>
+		public int ID;
+		/// <summary>武器(装備名)</summary>
+		public string Arms;
+		/// <summary>頭(装備名)</summary>
+		public string Head;
+		/// <summary>足(装備名)</summary>
+		public string Shoes;
+		/// <summary>アクセサリー1(装備名)</summary>
+		public string Accessory1;
+		/// <summary>アクセサリー2(装備名)</summary>
+		public string Accessory2;
+
+
+	}
+
+	/// <summary>
+	/// スキル情報
+	/// </summary>
+	[Serializable]
+	public class SkillParam {
+		/// <summary>現在覚えているスキルの名前</summary>
+		public List<string> Name;
+
+
+	}
+
+	/// <summary>
+	/// アイテム情報
+	/// </summary>
+	public class ItemParam {
+		/// <summary>現在所持しているアイテム一覧</summary>
+		public List<string> Name;
+		/// <summary>現在所持しているアイテムに対するアイテム所持数</summary>
+		public List<int> Stock;
+
+
+	}
+
+	// パラメーター部 END
 	/*===============================================================*/
 
 

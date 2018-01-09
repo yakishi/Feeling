@@ -7,6 +7,9 @@ using UniRx;
 
 public class Title : MonoBehaviour
 {
+	
+	GV myGV = GV.Instance; // Save/Load クラスのインスタンスを取得
+
     /// <summary>
     /// ゲームを新しく始めるボタン
     /// </summary>
@@ -24,15 +27,29 @@ public class Title : MonoBehaviour
     /// </summary>
     [SerializeField]
     Button exitButton;
+
+	GameObject saveUiObj;
+	bool sceneLoadOnce;
     
     // Use this for initialization
     void Start()
     {
-        newGameButton.OnClickAsObservable()
+
+		newGameButton.transform.GetChild( 0 ).GetComponent<Text>( ).text = "New Game";
+		newGameButton.transform.GetChild( 0 ).GetComponent<Text>( ).fontSize = 32;
+		loadGameButton.transform.GetChild( 0 ).GetComponent<Text>( ).text = "Load Game";
+		loadGameButton.transform.GetChild( 0 ).GetComponent<Text>( ).fontSize = 32;
+		exitButton.transform.GetChild( 0 ).GetComponent<Text>( ).text = "Quit Game";
+		exitButton.transform.GetChild( 0 ).GetComponent<Text>( ).fontSize = 32;
+
+		saveUiObj = newGameButton.gameObject; // 初期 null 回避
+
+		sceneLoadOnce = true; // update 中に 1 回だけ呼ばれるようにするフラグ
+
+		newGameButton.OnClickAsObservable()
             .Subscribe(_ => {
-                GV.newGame();
-                // TODO: 仮でワールドマップに遷移
-                SceneManager.LoadScene(SceneName.WorldMap);
+				// セーブスロット UI 表示
+				saveUiObj = SaveLoad.CreateUI( SaveLoad.Type.Save, gameObject );
             })
             .AddTo(this);
         loadGameButton.OnClickAsObservable()
@@ -42,8 +59,26 @@ public class Title : MonoBehaviour
             .AddTo(this);
         exitButton.OnClickAsObservable()
             .Subscribe(_ => {
-                Application.Quit();
+                // Quit パッケージ後の EXE で有効になる
+				#if !UNITY_EDITOR
+					Application.Quit( );
+				#endif
+				// Editor の Quit 処理
+				#if UNITY_EDITOR
+					UnityEditor.EditorApplication.isPlaying = false;
+				#endif
             })
             .AddTo(this);
     }
+
+	void Update( ) {
+		// セーブスロット UI 表示 → 任意セーブスロット選択 → newGame → 任意セーブスロット削除 → SystemData 更新 → 遷移
+		if ( saveUiObj == null && sceneLoadOnce ) {
+			sceneLoadOnce = false;
+			myGV.newGame( );
+			// TODO: 仮でワールドマップに遷移
+			SceneManager.LoadScene(SceneName.WorldMap);
+
+		}
+	}
 }
