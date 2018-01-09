@@ -3,13 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UniRx;
+using UnityEngine.UI;
 
 public class BattleController : MonoBehaviour
 {
+    private Transform[] playerIconPos = new Transform[4];
+    public GameObject monsterZone;
+    [SerializeField]
+    public GameObject combatGrid;
+
     /// <summary>
     /// 味方グループ、敵グループの生存判定
     /// </summary>
-    enum GroupDeadType
+    public enum GroupDeadType
     {
         None,
         AllPlayerDead,
@@ -23,10 +29,27 @@ public class BattleController : MonoBehaviour
     [SerializeField]
     GameObject battleMonsterPrefab;
 
+    [SerializeField]
+    BattleUI battleUI;
+
     int playerCount;
     int monsterCount;
+    public int MonsterCount
+    {
+        get
+        {
+            return monsterCount;
+        }
+    }
 
     BattleCharacter currentActionCharacter;
+    public BattleCharacter CurrentActionCharacter
+    {
+        get
+        {
+            return currentActionCharacter;
+        }
+    }
 
     List<BattleCharacter> characters;
     public List<BattleCharacter> Characters {
@@ -50,9 +73,29 @@ public class BattleController : MonoBehaviour
             return monsters;
         }
     }
+    /// <summary>
+    /// 仮データ用モンスターイメージ
+    /// </summary>
+    [SerializeField]
+    Sprite[] monsterImg = new Sprite[4];
+
+    GroupDeadType groupDeadType = GroupDeadType.None;
+    public GroupDeadType DeadType
+    {
+        get
+        {
+            return groupDeadType;
+        }
+    }
+
 
     void Start()
     {
+        for(int i = 0; i < playerIconPos.Length; i++) {
+            playerIconPos[i] = GameObject.Find("PlayerIcon" + (i + 1)).transform;
+        }
+        monsterZone = GameObject.Find("MonsterZone");
+
         characters = new List<BattleCharacter>();
         createDamyData();
 
@@ -66,12 +109,25 @@ public class BattleController : MonoBehaviour
 
             character.onEndActionAsObservable()
                 .Subscribe(c => {
-                    var groupDeadType = getGroupDeadType();
+                    //TODO:　死んだ後にnullが発生、デストロイ後に行動順の再設定
+                    //死亡処理 ロードIDができるまで仮
+
+                    foreach (var chara in characters) {
+                        if (!chara.IsDead) continue;
+                        if (chara.ID >= 0 && chara.ID < players.Length) {
+                            players[chara.ID].gameObject.SetActive(false);
+                        }
+                        else if (chara.ID >= players.Length) {
+                            monsters[chara.ID - 4].gameObject.SetActive(false);
+                        }
+
+                    }
+
+                    groupDeadType = getGroupDeadType();
                     if (groupDeadType == GroupDeadType.None) {
                         Observable.NextFrame().Subscribe(_ => {
                             currentActionCharacter = getNextActionCharacter();
                             currentActionCharacter.startAction();
-                            Debug.Log(currentActionCharacter.name);
                         });
                         return;
                     }
@@ -90,27 +146,34 @@ public class BattleController : MonoBehaviour
     /// </summary>
     void createDamyData()
     {
-        playerCount = 2;
+        
+        playerCount = 4;
         players = new BattlePlayer[playerCount];
         for (int i = 0; i < players.Length; ++i) {
-            players[i] = Instantiate(battlePlayerPrefab, transform).GetComponent<BattlePlayer>();
+            players[i] = Instantiate(battlePlayerPrefab, playerIconPos[i], false).GetComponent<BattlePlayer>();
+            players[i].ID = i;
+            players[i].enabled = false;
         }
         foreach (var player in players) {
             player.loadData(0);
         }
 
-        for (int i = 0; i < playerCount; ++i) {
-            players[i].gameObject.transform.position = Vector2.left * 20.0f;
-        }
-
-        monsterCount = 2;
+        monsterCount = 3;
         monsters = new BattleMonster[monsterCount];
         for (int i = 0; i < monsters.Length; ++i) {
-            monsters[i] = Instantiate(battleMonsterPrefab, transform).GetComponent<BattleMonster>();
+            var random = Random.Range(0, monsterImg.Length);
+            GameObject temp = Instantiate(battleMonsterPrefab, monsterZone.transform, false);
+
+            monsters[i] = temp.GetComponent<BattleMonster>();
+            monsters[i].transform.position = new Vector3(monsterPosX(i, monsterCount), monsterZone.transform.position.y, 0);
+            monsters[i].ID = i + players.Length;
+            monsters[i].GetComponent<Image>().sprite = monsterImg[random];
         }
         foreach (var monster in monsters) {
             monster.loadData(0);
         }
+
+        BattleUI.NotActiveButton(monsterZone);
 
         characters = characters
             .Concat(players)
@@ -122,6 +185,20 @@ public class BattleController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// モンスターの均等配置
+    /// </summary>
+    /// <param name="i">何番目のモンスターか</param>
+    /// <param name="monsterCount">モンスターの最大数</param>
+    /// <returns></returns>
+    float monsterPosX(float i, int monsterCount)
+    {
+        float posX;
+        float zoneWidth = monsterZone.transform.position.x * 2; 
+        posX = (zoneWidth / monsterCount) / 2;
+
+        return posX + (zoneWidth / monsterCount) * i;
+    }
     /// <summary>
     /// GameDataから読み込む
     /// </summary>
@@ -156,14 +233,9 @@ public class BattleController : MonoBehaviour
             nextTurn();
         }
 
-        foreach(var c in characters) {
-            Debug.Log(c.CurrentHp);
-        }
-
         var ret = characters
             .Where(character => character.CanAction)
             .MaxElement(character => { return character.Agl; });
-        Debug.Log(ret.name);
         return ret;
     }
 

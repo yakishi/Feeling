@@ -1,10 +1,25 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UniRx;
 
 public abstract  class BattleCharacter : MonoBehaviour
 {
+    protected int id;
+    public int ID
+    {
+        get
+        {
+            return id;
+        }
+
+        set
+        {
+            id = value;             //死亡管理用の仮組
+        }
+    }
+
     protected int hp;
     public int Hp {
         get
@@ -26,6 +41,15 @@ public abstract  class BattleCharacter : MonoBehaviour
         get
         {
             return atk;
+        }
+    }
+
+    protected int def;
+    public int Def
+    {
+        get
+        {
+            return def;
         }
     }
 
@@ -51,7 +75,10 @@ public abstract  class BattleCharacter : MonoBehaviour
         }
     }
 
+    protected int buffTurn;
+
     protected BattleController battleController;
+    protected BattleUI battleUI;
 
     protected bool isEndAction = false;
     protected Subject<BattleCharacter> onEndActionSubject = new Subject<BattleCharacter>();
@@ -66,7 +93,9 @@ public abstract  class BattleCharacter : MonoBehaviour
         hp = 100;
         currentHp = hp;
         atk = 10;
+        def = 3;
         agl = Random.Range(10, 21);
+        buffTurn = 0;
     }
 
     /// <summary>
@@ -111,6 +140,11 @@ public abstract  class BattleCharacter : MonoBehaviour
         battleController = setController;
     }
 
+    public void setBattleUI(BattleUI setUI)
+    {
+        battleUI = setUI;
+    }
+
     /// <summary>
     /// バトル開始時に呼ばれる
     /// </summary>
@@ -129,6 +163,9 @@ public abstract  class BattleCharacter : MonoBehaviour
                     break;
                 case BattleParam.Atk:
                     atk += effects[targetParam];
+                    break;
+                case BattleParam.Def:
+                    def += effects[targetParam];
                     break;
                 case BattleParam.Agl:
                     agl += effects[targetParam];

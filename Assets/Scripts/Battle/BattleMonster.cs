@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using UniRx;
 
 public class BattleMonster : BattleCharacter
 {
@@ -13,15 +14,25 @@ public class BattleMonster : BattleCharacter
     public override void loadData(int id)
     {
         base.loadData(id);
-        GetComponentInChildren<Text>().text = "Monst" + id;
     }
 
     public override void startAction()
     {
+
+        BattleUI.DisplayMonsterTurn(this.name);
+        battleController.combatGrid.SetActive(false);
+
         // 一番HPの高いキャラクターを攻撃
         var target = battleController.Players.MaxElement(player => player.CurrentHp);
         var skill = new Skill();
 
-        playAction(skill.use(this, new BattleCharacter[] { target }));
+        Observable.Timer(System.TimeSpan.FromMilliseconds(800.0))
+            .Take(1)
+            .Subscribe(_ => {
+                playAction(skill.use(this, new BattleCharacter[] { target }, Skill.SkillType.Damage));
+
+            })
+            .AddTo(this);
+
     }
 }

@@ -6,11 +6,5 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Title.unity
-    guid: 606ed788295f27e42aa28c316186b2bb
-  - enabled: 1
-    path: Assets/Scenes/WorldMap.unity
-    guid: 5b0081e62711ccb468db2d7a4e391c29
-  - enabled: 1
-    path: Assets/Scenes/Battle/BattleScene.unity
-    guid: 53012ee1c8275a047a6842bd0caf3350
+    path: Assets/Scenes/TestScenes/BatteleUITest.unity
+    guid: b3a832d1e265fd94cb957c805144f3e0
