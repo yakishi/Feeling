@@ -126,7 +126,6 @@ public class PlayerManagerSaveData {
 				state[ cnt ].Mgr = item.Mgr;
 				state[ cnt ].Agl = item.Agl;
 				state[ cnt ].Luc = item.Luc;
-				state[ cnt ].Int = item.Int;
 				state[ cnt ].Feeling = "about"; // item に存在しないのでテキトウな値を入れる
 				state[ cnt ].Skill = "about"; // item に存在しないのでテキトウな値を入れる
 				state[ cnt ].StatusPoint = item.StatusPoint;

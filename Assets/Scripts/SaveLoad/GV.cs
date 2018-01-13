@@ -250,7 +250,6 @@ public sealed class GV {
 				gameData.Players[ i ].MP = myPlayerState[ i ].MP;
 				gameData.Players[ i ].Atk = myPlayerState[ i ].Atk;
 				gameData.Players[ i ].Def = myPlayerState[ i ].Def;
-				gameData.Players[ i ].Int = myPlayerState[ i ].Int;
 				gameData.Players[ i ].Mgr = myPlayerState[ i ].Mgr;
 				gameData.Players[ i ].Agl = myPlayerState[ i ].Agl;
 				gameData.Players[ i ].Luc = myPlayerState[ i ].Luc;
@@ -367,7 +366,6 @@ public sealed class GV {
 		public int MP;
 		public int Atk;
 		public int Def;
-		public int Int;
 		public int Mgr;
 		public int Agl;
 		public int Luc;

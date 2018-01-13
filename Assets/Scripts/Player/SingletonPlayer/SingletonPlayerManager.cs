@@ -119,7 +119,6 @@ public sealed class SingltonPlayerManager {
 				PlayerSaveList[ cnt ].Mgr = item.Mgr;
 				PlayerSaveList[ cnt ].Agl = item.Agl;
 				PlayerSaveList[ cnt ].Luc = item.Luc;
-				PlayerSaveList[ cnt ].Int = item.Int;
 				PlayerSaveList[ cnt ].Feeling = "about"; // item に存在しないのでテキトウな値を入れる
 				PlayerSaveList[ cnt ].FeelingValue = -1; // item に存在しないのでテキトウな値を入れる
 				PlayerSaveList[ cnt ].Skill = "about"; // item に存在しないのでテキトウな値を入れる
@@ -168,7 +167,6 @@ public sealed class SingltonPlayerManager {
 				PlayerArray[ i, j ].EquipmentDef = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_EQUIPMENTDEF" ) );
 				PlayerArray[ i, j ].Agl = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_AGL" ) );
 				PlayerArray[ i, j ].Luc = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_LUC" ) );
-				PlayerArray[ i, j ].Int = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_INT" ) );
 				PlayerArray[ i, j ].WEAPON01 = myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_WEAPON01" );
 				PlayerArray[ i, j ].WEAPON02 = myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_WEAPON02" );
 				PlayerArray[ i, j ].Feeling = myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_FEELING" );
@@ -226,8 +224,6 @@ public sealed class SingltonPlayerManager {
 		public int Luc;
 		/// <summary>回避率</summary>
 		public int Agl;
-		/// <summary>知性,知力</summary>
-		public int Int;
 		/// <summary>感情</summary>
 		public string Feeling;
 		/// <summary>感情値(仮)一定以上の感情値で技を覚えるため値を保持する</summary>
