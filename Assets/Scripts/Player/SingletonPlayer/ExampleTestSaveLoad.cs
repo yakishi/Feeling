@@ -4,7 +4,7 @@ using UnityEngine;
 public class ExampleTestSaveLoad {
 
 	GV myGV;
-	// 一括で作成する理由は GV.cs:239 を参照してください。この場合は test のためここで一括で作成しています。
+	// 一括で作成する理由は GV.cs:231 を参照してください。この場合は test のためここで一括で作成しています。
 	SingltonPlayerManager example1;
 	SingltonEquipmentManager example2;
 	SingltonSkillManager example3;
@@ -69,6 +69,11 @@ public class ExampleTestSaveLoad {
 	}
 
 	public void SaveTest( ) {
+
+		// 注意! ゲーム開始時 ロードを行ってから, セーブを行うようにします
+		// ゲーム開始時のロードスロットが 1 のため, 始めたいゲームデータスロットを選んでスロットを更新するようにして下さい
+		// ゲーム開始時に 1 セーブスロットから開始したい場合には, ロードを行わないでも問題ありません
+		// 初期セーブスロットの定義は, GV:19 です
 
 		// セーブする値の仮セット
 		saveTest++;
