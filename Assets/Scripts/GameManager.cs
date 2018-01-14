@@ -41,28 +41,12 @@ public class GameManager : MonoBehaviour {
 	/// <summary>brief 初期化</summary>
 	void Initialize( ) {
 
-		// セーブデータへの変動値保存 保存を実行した後にアンコメントアウトするとセーブされたのがロードされていると実感できます
-		//for( int i = 0; i < 6; i++ ) GV.PlayersSetHPSave( i, i + 10 * ( i + 10 ) );
-		//for( int i = 0; i < 6; i++ ) GV.PlayersSetMPSave( i, i + 20 * ( i + 10 ) );
-
-		// セーブデータからの変動値読込
-		//GV.GameDataLoad( );
-
-
-		//PlayerManagerSaveData.PlayerManager test = new PlayerManagerSaveData.PlayerManager( );
-		// players data を GV.GData.Players のデータから読み込みます
-		//test.LoadPlayer( );
-
-		//foreach( string items in SaveData.getKeys( ) ) {
-		//	Debug.Log( "------------------\nセーブデータキー :\n" + items + "\n------------------" );
-
-		//}
-		//int cnt = 0;
-		//foreach( PlayerManagerSaveData.State items in test.CurrentState ) {
-		//	Debug.Log( "------------------\nセーブデータ :\nプレイヤー " + cnt + " : " + items.HP + " ( ヒットポイント )\n" + items.MP + " ( マジックポイント)\n------------------" );
-		//	cnt++;
-
-		//}
+		// セーブデータを扱うシングルトンクラスインスタンス生成処理
+		GV myGV = GV.Instance;
+		SingltonPlayerManager mySPM = SingltonPlayerManager.Instance;
+		SingltonEquipmentManager mySEM = SingltonEquipmentManager.Instance;
+		SingltonSkillManager mySSM = SingltonSkillManager.Instance;
+		SingltonItemManager mySIM = SingltonItemManager.Instance;
 
 		Application.targetFrameRate = 60; // 60 FPS に設定
 		Debug.Log( "現在のシーン : " + state.ToString( ) );

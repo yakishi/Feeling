@@ -10,21 +10,19 @@ public class ExampleTestSkill : MonoBehaviour {
 		mySkill = SingltonSkillManager.Instance;
 		myGV = GV.Instance;
 
-		int cnt, cnt2 = 1;
 		// CSV データの取得例
-		foreach ( SingltonSkillManager.SkillInfo items in mySkill.CDSkill ) {
-			Debug.Log( "CSVDATA スキル ID : " + items.ID
-				+ ", スキル名 : " + items.NAME
-				+ ", 魔法倍率 : " + items.MAGICDIAMETER
-				+ ", スキル威力 : " + items.SKILLPOWER
-				+ ", 習得値 : " + items.LEARNINGFEELINGVALUE );
-				cnt = items.ID;
-				if( cnt > 8 ) {
-					Debug.Log( "<color='red'>↑プレイヤー" + cnt2 + "↑</color>" );
-					cnt = 0;
-					cnt2++;
+		foreach( SingltonSkillManager.SkillInfo item1 in mySkill.CDSkill ) {
+			Debug.Log( "要素数 ( 閃き　) : " + item1.flair.Count );
+			foreach( SingltonSkillManager.Hirameki item2 in item1.flair ) {
+				Debug.Log( "スキル ID ( 派生先 ) : " + item2.skill_ID + "\n確率 ( 派生先 ) : " + item2.probability );
 
-				}
+			}
+			Debug.Log( "<color='red'>Enum 型 種類 : " + item1.myCategory
+				+ "\nEnum 型 何に影響を与えるか : "+ item1.influence
+				+ "\nスキル名 : " + item1.skill
+				+ "\nEnum 型 感情種類 : " + item1.FVC.Key
+				+ "\n感情補正値 : " + item1.FVC.Value
+				+ "</color>" );
 
 		}
 
