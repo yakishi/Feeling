@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 /*===============================================================*/
@@ -7,7 +8,7 @@ using UnityEngine;
 public sealed class SingltonSkillManager {
 
 	private static SingltonSkillManager mInstance = new SingltonSkillManager( );
-	private SkillInfo[ , ] SkillArray;
+	private SkillInfo[ ] SkillArray;
 	private List<SkillParam> SkillSaveList;
 	private List<SkillInfo> SkillCsvList;
 
@@ -26,7 +27,7 @@ public sealed class SingltonSkillManager {
 		public string[ ] data;
 
 	}
-	CSVDATA[ ] myCsvData;
+	CSVDATA myCsvData;
 
 	/*===============================================================*/
 	/// <summary>コンストラクター</summary>
@@ -57,14 +58,10 @@ public sealed class SingltonSkillManager {
 
 		LoadSkill( myGV.slot ); // セーブデータの読込
 
-		// 配列確保およびプレイヤー分用意
-		myCsvData = new CSVDATA[ myGV.GData.PlayersSkills.Count ];
-		for ( int players = 0; players < myGV.GData.PlayersSkills.Count; players++ ) {
-			myCsvData[ players ] = new CSVDATA( );
-			myCsvData[ players ].data = new string[ 256 ];
-			myCsvData[ players ].key = new string[ 256 ];
-
-		}
+		// 配列確保
+		myCsvData = new CSVDATA( );
+		myCsvData.data = new string[ 256 ];
+		myCsvData.key = new string[ 256 ];
 
 		LoadCsvSkill( ); // CSV からのデータ読込
 
@@ -116,57 +113,182 @@ public sealed class SingltonSkillManager {
 	private void LoadCsvSkill( ) {
 		// CSV ファイルからのキーとデータの読込
 		CSVLoader myLoader = new CSVLoader( );
-		myCsvData[ 0 ].data = myLoader.GetCSV_Key_Record( "CSV/Skill/CSV_Player1_IdOrder", myCsvData[ 0 ].key );
-		myCsvData[ 1 ].data = myLoader.GetCSV_Key_Record( "CSV/Skill/CSV_Player2_IdOrder", myCsvData[ 1 ].key );
-		myCsvData[ 2 ].data = myLoader.GetCSV_Key_Record( "CSV/Skill/CSV_Player3_IdOrder", myCsvData[ 2 ].key );
-		myCsvData[ 3 ].data = myLoader.GetCSV_Key_Record( "CSV/Skill/CSV_Player4_IdOrder", myCsvData[ 3 ].key );
-		myCsvData[ 4 ].data = myLoader.GetCSV_Key_Record( "CSV/Skill/CSV_Player5_IdOrder", myCsvData[ 4 ].key );
-		myCsvData[ 5 ].data = myLoader.GetCSV_Key_Record( "CSV/Skill/CSV_Player6_IdOrder", myCsvData[ 5 ].key );
+		myCsvData.data = myLoader.GetCSV_Key_Record( "CSV/CSV_Skill_IdOrder", myCsvData.key );
 
-		SkillArray = new SkillInfo[ myGV.GData.Players.Count, CSVLoader.csvId ];
+		int odd = 0, even = 1; // 奇数, 偶数 hirameki で使用します
+
+		SkillArray = new SkillInfo[ CSVLoader.csvId ];
 
 		// 配列にデータを格納していく
-		for ( int i = 0; i < SkillArray.GetLength( 0 ); i++ ) { // Player 人数
-			for ( int j = 0; j < SkillArray.GetLength( 1 ); j++ ) { // CSV 1 ヘッダー当りのデータ量
-				SkillArray[ i, j ] = new SkillInfo( );
-				SkillArray[ i, j ].ID = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_ID" ) );
-				SkillArray[ i, j ].NAME = myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_NAME" );
-				SkillArray[ i, j ].MAGICDIAMETER = float.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_MAGICDIAMETER" ) );
-				SkillArray[ i, j ].SKILLPOWER = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_SKILLPOWER" ) );
-				SkillArray[ i, j ].LEARNINGFEELINGVALUE = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_LEARNINGFEELINGVALUE" ) );
+		for ( int i = 0; i < SkillArray.Length; i++ ) {
+			SkillArray[ i ] = new SkillInfo( );
+			SkillArray[ i ].ID = myLoader.GetCSVData( myCsvData.key, myCsvData.data, i + "_ID" );
+			SkillArray[ i ].skill = myLoader.GetCSVData( myCsvData.key, myCsvData.data, i + "_SKILL" );
+			SkillArray[ i ].ADV = float.Parse( myLoader.GetCSVData( myCsvData.key, myCsvData.data, i + "_ADV" ) );
+			SkillArray[ i ].MDV = float.Parse( myLoader.GetCSVData( myCsvData.key, myCsvData.data, i + "_MDV" ) );
+			SkillArray[ i ].myCategory = ( Category )Enum.ToObject( typeof( Category ), int.Parse( myLoader.GetCSVData( myCsvData.key, myCsvData.data, i + "_CATEGORY" ) ) );
+			SkillArray[ i ].myTarget = ( Target )Enum.ToObject( typeof( Target ), int.Parse( myLoader.GetCSVData( myCsvData.key, myCsvData.data, i + "_TARGET" ) ) );
+			SkillArray[ i ].myScope = ( Scope )Enum.ToObject( typeof( Scope ), int.Parse( myLoader.GetCSVData( myCsvData.key, myCsvData.data, i + "_SCOPE" ) ) );
+			SkillArray[ i ].influence = ( BattleParam )Enum.ToObject( typeof( BattleParam ), int.Parse( myLoader.GetCSVData( myCsvData.key, myCsvData.data, i + "_INFLUENCE" ) ) );
+			SkillArray[ i ].DT = int.Parse( myLoader.GetCSVData( myCsvData.key, myCsvData.data, i + "_DT" ) );
 
-				SkillCsvList.Add( SkillArray[ i, j ] ); // 入れ込む
+			SkillArray[ i ].flair = new List<Hirameki>( );
+
+			List<string> hiramekiAfterDivision = new List<string>( HiramekiDivision( myLoader, i, "_ID:確率/ID:確率・・・", myCsvData ) );
+			// 閃き ( CSV ) ID:確率/ID:確率 分回し入れてく
+			for( int hirameki = 0; hirameki < hiramekiAfterDivision.Count; hirameki++ ) {
+				// 分解したものをコンストラクタで入れる
+				SkillArray[ i ].flair.Add( new Hirameki( int.Parse( hiramekiAfterDivision[ odd ] ), float.Parse( hiramekiAfterDivision[ even ] ) ) );
+				if( even <= hiramekiAfterDivision.Count - 2 ) {
+					even += 2;
+					odd += 2;
+
+				} else break;
 
 			}
+			even = 1;
+			odd = 0;
+
+			SkillArray[ i ].FVC = new CollectionValue( );
+			SkillArray[ i ].FVC.Key = ( Feel )Enum.ToObject( typeof( Feel ), int.Parse( myLoader.GetCSVData( myCsvData.key, myCsvData.data, i + "_FC" ) ) );
+			SkillArray[ i ].FVC.Value = int.Parse( myLoader.GetCSVData( myCsvData.key, myCsvData.data, i + "_FVC" ) );
+
+			SkillCsvList.Add( SkillArray[ i ] ); // 入れ込む
 
 		}
-
-		//Debug.Log( myLoader.GetCSVData( myCsvData[ 0 ].key, myCsvData[ 0 ].data, "0_SKILL" ) );
+		
 		//Debug.Log( "CSV1 ファイル当りのデータ数 : " + CSVLoader.csvRecordAll );
-
-		//foreach( SkillParam items in SkillCsvList ) {
-		//	Debug.Log( items.Skill );
-
-		//}
 
 
 	}
 	/*===============================================================*/
 
 	/*===============================================================*/
+	/// <summary>ID:確率/ID:確率フォーマット形式を分割します</summary>
+	/// <param name="myLoader">CSVLoaderクラスのインスタンス</param>
+	/// <param name="index">CSV行インデックス</param>
+	/// <param name="str">_CSVに定義されたヘッダー名</param>
+	/// <param name="csvData">CSVDATA構造体し格納します</param>
+	/// <returns>:で分割されたデータが返ります</returns>
+	private List<string> HiramekiDivision( CSVLoader myLoader, int index, string str, CSVDATA csvData ) {
+		List<string> hiramekiDivision1 = new List<string>( myLoader.GetCSVData( csvData.key, csvData.data, index + str ).Split( '/' ) );
+		List<string> hiramekiDivision2 = new List<string>( );
+
+		foreach( string item1 in hiramekiDivision1 ) {
+			//Debug.Log( item1 );
+			for( int i = 0; i < 2; i++ ) hiramekiDivision2.Add( item1.Split( ':' )[ i ] );
+
+		}
+		return hiramekiDivision2;
+
+
+	}
+	/*===============================================================*/
+
+	/*===============================================================*/
+	// 列挙型の定義(SkillInfo)
+	/// <summary>種類(バフまたはデバフなど・・・)</summary>
+	public enum Category {
+		/// <summary>バフ</summary>
+		Buff,
+		/// <summary>デバフ</summary>
+		Debuff
+
+	};
+	/// <summary>ターゲット(スキル効果対象)</summary>
+	public enum Target {
+		/// <summary>敵</summary>
+		Enemy,
+		/// <summary>味方</summary>
+		Supporter,
+		/// <summary>自分</summary>
+		MySelf
+
+	};
+	/// <summary>範囲</summary>
+	public enum Scope {
+		/// <summary>単体</summary>
+		Simplex,
+		/// <summary>全体</summary>
+		OverAll
+
+	};
+	/// <summary>感情種類</summary>
+	public enum Feel {
+		/// <summary>喜</summary>
+		Ki,
+		/// <summary>怒</summary>
+		Do,
+		/// <summary>哀</summary>
+		Ai,
+		/// <summary>楽</summary>
+		Raku,
+		/// <summary>愛</summary>
+		Love,
+		/// <summary>憎</summary>
+		Zou
+
+	};
+	/*===============================================================*/
+
+	/*===============================================================*/
 	/// <summary>SkillInfo(CSV情報)</summary>
 	/// <remarks>パラメーターは,暫定的です</remarks>
 	public class SkillInfo {
-		/// <summary>ID:0から順に管理</summary>
-		public int ID;
+		/// <summary>ID</summary>
+		public string ID;
 		/// <summary>スキル名</summary>
-		public string NAME;
-		/// <summary>魔法倍率</summary>
-		public float MAGICDIAMETER;
-		/// <summary>スキル威力</summary>
-		public int SKILLPOWER;
-		/// <summary>戦闘中に一定以上の感情値に到達すると技を覚える（例：攻撃→怒＋5→閃めいて火炎切り習得</summary>
-		public int LEARNINGFEELINGVALUE;
+		public string skill;
+		/// <summary>攻撃依存値:AttackDependValue</summary>
+		public float ADV;
+		/// <summary>魔法依存値:MagicDependValue</summary>
+		public float MDV;
+		/// <summary>種類(バフまたはデバフなど・・・)</summary>
+		public Category myCategory;
+		/// <summary>ターゲット(スキル効果対象)</summary>
+		public Target myTarget;
+		/// <summary>範囲</summary>
+		public Scope myScope;
+		/// <summary>何に影響を与えるか</summary>
+		public BattleParam influence;
+		/// <summary>持続ターン:DurationTurn{0:即時終了},{例...1:1ターン持続,2:2ターン持続・・・}</summary>
+		public int DT;
+		/// <summary>確率で覚える</summary>
+		public List<Hirameki> flair;
+		/// <summary>感情値補正:FeelingValueCorrect</summary>
+		public CollectionValue FVC;
+
+
+	}
+	/*===============================================================*/
+
+	/*===============================================================*/
+	/// <summary>閃き管理</summary>
+	public class Hirameki {
+
+		public Hirameki( int _skill_ID, float _probability ) {
+			this.skill_ID = _skill_ID;
+			this.probability = _probability;
+
+
+		}
+
+		/// <summary>派生先スキルID</summary>
+		public int skill_ID;
+		/// <summary>派生先確率</summary>
+		public float probability;
+
+
+	}
+	/*===============================================================*/
+
+	/*===============================================================*/
+	/// <summary>感情値補正管理</summary>
+	public class CollectionValue {
+		/// <summary>感情種類</summary>
+		public Feel Key;
+		/// <summary>感情値補値</summary>
+		public int Value;
 
 
 	}
