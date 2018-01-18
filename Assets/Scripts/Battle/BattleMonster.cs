@@ -11,7 +11,7 @@ public class BattleMonster : BattleCharacter
     /// id からデータを読み込み
     /// </summary>
     /// <param name="id"></param>
-    public override void loadData(int id,GameManager gameManager, bool dummy = false)
+    public override void loadData(string id,GameManager gameManager, bool dummy = false)
     {
         base.loadData(id,gameManager,true);
     }
