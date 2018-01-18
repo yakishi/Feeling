@@ -116,7 +116,7 @@ public class PlayerManagerSaveData {
 				// item は GV.newGame( ) でファイルから読み込んでくるようですが・・・
 				// 現状, テキトウな値で初期化されています
 				// GV.PlayerParam に定義されているメンバ変数を players に入れていく
-				state[ cnt ].ID = item.ID;
+				state[ cnt ].ID = /*item.ID*/-1;
 				state[ cnt ].Lv = item.Lv;
 				state[ cnt ].HP = item.HP;
 				state[ cnt ].MP = item.MP;
@@ -128,7 +128,7 @@ public class PlayerManagerSaveData {
 				state[ cnt ].Luc = item.Luc;
 				state[ cnt ].Feeling = "about"; // item に存在しないのでテキトウな値を入れる
 				state[ cnt ].Skill = "about"; // item に存在しないのでテキトウな値を入れる
-				state[ cnt ].StatusPoint = item.StatusPoint;
+				state[ cnt ].StatusPoint = /*item.StatusPoint*/-1;
 				state[ cnt ].OverDrive = "about"; // item に存在しないのでテキトウな値を入れる
 				state[ cnt ].WEAPON01 = "about"; // item に存在しないのでテキトウな値を入れる
 				state[ cnt ].WEAPON02 = "about"; // item に存在しないのでテキトウな値を入れる
