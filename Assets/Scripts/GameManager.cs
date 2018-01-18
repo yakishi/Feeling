@@ -27,13 +27,35 @@ public class GameManager : MonoBehaviour {
 	/// <remarks>setには,GameManager.GameStateで定義されたシーンをいれます</remarks>
 	static public GameState SetGetGameState { get { return state; } set { state = value; } }
 
-	/*===============================================================*/
-	/// <summary>brief UnityEngine ライフサイクルによる初期化 </summary>
-	void Awake( ) {
+    GV myGV;
+    SingltonPlayerManager mySPM;
+    SingltonEquipmentManager mySEM;
+    SingltonSkillManager mySSM;
+    public SingltonSkillManager SkillManager
+    {
+        get
+        {
+            return mySSM;
+        }
+    }
+    SingltonItemManager mySIM;
+
+    List<SingltonPlayerManager.PlayerParameters> players;
+    public List<SingltonPlayerManager.PlayerParameters> PlayerList
+    {
+        get
+        {
+            return players;
+        }
+    }
+
+    /*===============================================================*/
+    /// <summary>brief UnityEngine ライフサイクルによる初期化 </summary>
+    void Awake( ) {
 		// 初期化関数を呼び出す
 		Initialize( );
 
-
+        players = mySPM.GetCsvDataPlayerState;
 	}
 	/*===============================================================*/
 
@@ -42,11 +64,11 @@ public class GameManager : MonoBehaviour {
 	void Initialize( ) {
 
 		// セーブデータを扱うシングルトンクラスインスタンス生成処理
-		GV myGV = GV.Instance;
-		SingltonPlayerManager mySPM = SingltonPlayerManager.Instance;
-		SingltonEquipmentManager mySEM = SingltonEquipmentManager.Instance;
-		SingltonSkillManager mySSM = SingltonSkillManager.Instance;
-		SingltonItemManager mySIM = SingltonItemManager.Instance;
+		myGV = GV.Instance;
+		mySPM = SingltonPlayerManager.Instance;
+		mySEM = SingltonEquipmentManager.Instance;
+		mySSM = SingltonSkillManager.Instance;
+		mySIM = SingltonItemManager.Instance;
 
 		Application.targetFrameRate = 60; // 60 FPS に設定
 		Debug.Log( "現在のシーン : " + state.ToString( ) );
