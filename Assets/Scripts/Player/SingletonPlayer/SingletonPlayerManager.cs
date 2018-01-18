@@ -7,15 +7,6 @@ using UnityEngine;
 /// <remarks> クラスが参照されたタイミングでインスタンスが生成されます</remarks>
 public sealed class SingltonPlayerManager {
 
-	//////////////////////////////////////////////////////////
-	//	TODO
-	//	エネミー, 装備, プレイヤーなどのHPやMPをクラスのメンバとして持っておく
-	//	ID と Key で読み込んでくる共通した機能・・・
-	//	シングルトンパターンで作りこみ
-	//	https://qiita.com/calmbooks/items/9cf32c6dd36b724b155e
-	//	Save は, 最後に呼ぶ slot 指定
-	/////////////////////////////////////////////////////////
-
 	private static SingltonPlayerManager mInstance = new SingltonPlayerManager( );
 	private PlayerParameters[ , ] PlayerArray;
 	private List<PlayerParameters> PlayerSaveList;
@@ -87,7 +78,8 @@ public sealed class SingltonPlayerManager {
 		// 人数分の player を生成する
 		for ( int i = 0; i < myGV.GData.Players.Count; i++ ) {
 			PlayerSaveList.Add( new PlayerParameters( ) );
-			PlayerSaveList[ i ].AES = new AfterEquipmentStatus( );
+			PlayerSaveList[ i ].ES = new EquipmentStatus( );
+			PlayerSaveList[ i ].SkillList = new List<string>( );
 
 		}
 
@@ -110,19 +102,19 @@ public sealed class SingltonPlayerManager {
 				// GV.PlayerParam に定義されているメンバ変数を players に入れていく
 				PlayerSaveList[ cnt ].Lv = item.Lv;
 				PlayerSaveList[ cnt ].CFV = item.CFV;
-				PlayerSaveList[ cnt ].AES = new AfterEquipmentStatus( );
-				PlayerSaveList[ cnt ].AES.HP = item.HP;
-				PlayerSaveList[ cnt ].AES.MP = item.MP;
-				PlayerSaveList[ cnt ].AES.Atk = item.Atk;
-				PlayerSaveList[ cnt ].AES.WeaponAtk = item.WeaponAtk;
-				PlayerSaveList[ cnt ].AES.Def = item.Def;
-				PlayerSaveList[ cnt ].AES.EquipmentDef = item.EquipmentDef;
-				PlayerSaveList[ cnt ].AES.Matk = item.Matk;
-				PlayerSaveList[ cnt ].AES.Mgr = item.Mgr;
-				PlayerSaveList[ cnt ].AES.Luc = item.Luc;
-				PlayerSaveList[ cnt ].AES.Agl = item.Agl;
-				PlayerSaveList[ cnt ].AES.Feeling = item.Feeling;
-				PlayerSaveList[ cnt ].AES.FeelingValue = item.FeelingValue;
+				PlayerSaveList[ cnt ].SkillList = new List<string>( );
+				PlayerSaveList[ cnt ].SkillList = item.SkillList;
+				PlayerSaveList[ cnt ].ES = new EquipmentStatus( );
+				PlayerSaveList[ cnt ].ES.HP = item.HP;
+				PlayerSaveList[ cnt ].ES.MP = item.MP;
+				PlayerSaveList[ cnt ].ES.Atk = item.Atk;
+				PlayerSaveList[ cnt ].ES.Def = item.Def;
+				PlayerSaveList[ cnt ].ES.Matk = item.Matk;
+				PlayerSaveList[ cnt ].ES.Mgr = item.Mgr;
+				PlayerSaveList[ cnt ].ES.Luc = item.Luc;
+				PlayerSaveList[ cnt ].ES.Agl = item.Agl;
+				PlayerSaveList[ cnt ].ES.Feeling = item.Feeling;
+				PlayerSaveList[ cnt ].ES.FeelingValue = item.FeelingValue;
 				cnt++;
 
 			}
@@ -147,6 +139,8 @@ public sealed class SingltonPlayerManager {
 
 		PlayerArray = new PlayerParameters[ myGV.GData.Players.Count, CSVLoader.csvId ];
 
+		//Debug.Log( "プレイヤーステータス CSV1 ファイル当りのデータ数 : " + CSVLoader.csvRecordAll );
+
 		// 配列にデータを格納していく
 		for( int i = 0; i < PlayerArray.GetLength( 0 ); i++ ) { // Player 人数
 			for( int j = 0; j < PlayerArray.GetLength( 1 ); j++ ) { // CSV 1 ヘッダー当りのデータ量
@@ -157,27 +151,27 @@ public sealed class SingltonPlayerManager {
 				// TODO : index i で, Enum Feel をテキトウに入れる
 				PlayerArray[ i, j ].RF = (SingltonSkillManager.Feel)Enum.ToObject( typeof(SingltonSkillManager.Feel), i );
 
-				PlayerArray[ i, j ].BES = new BeforeEquipmentStatus( );
-				PlayerArray[ i, j ].BES.HP = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_HP" ) );
-				PlayerArray[ i, j ].BES.MP = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_MP" ) );
-				PlayerArray[ i, j ].BES.Atk = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_ATK" ) );
-				PlayerArray[ i, j ].BES.WeaponAtk = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_WEAPONATK" ) );
-				PlayerArray[ i, j ].BES.Def = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_DEF" ) );
-				PlayerArray[ i, j ].BES.EquipmentDef = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_EQUIPMENTDEF" ) );
-				PlayerArray[ i, j ].BES.Matk = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_MATK" ) );
-				PlayerArray[ i, j ].BES.Mgr = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_MGR" ) );
-				PlayerArray[ i, j ].BES.Luc = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_LUC" ) );
-				PlayerArray[ i, j ].BES.Agl = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_AGL" ) );
-				PlayerArray[ i, j ].BES.Feeling = myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_FEELING" );
-				PlayerArray[ i, j ].BES.FeelingValue = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_FEELINGVALUE" ) );
+				PlayerArray[ i, j ].ES = new EquipmentStatus( );
+				PlayerArray[ i, j ].ES.HP = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_HP" ) );
+				PlayerArray[ i, j ].ES.MP = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_MP" ) );
+				PlayerArray[ i, j ].ES.Atk = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_ATK" ) );
+				PlayerArray[ i, j ].ES.Def = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_DEF" ) );
+				PlayerArray[ i, j ].ES.Matk = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_MATK" ) );
+				PlayerArray[ i, j ].ES.Mgr = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_MGR" ) );
+				PlayerArray[ i, j ].ES.Luc = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_LUC" ) );
+				PlayerArray[ i, j ].ES.Agl = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_AGL" ) );
+				PlayerArray[ i, j ].ES.Feeling = myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_FEELING" );
+				PlayerArray[ i, j ].ES.FeelingValue = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_FEELINGVALUE" ) );
+
+				PlayerArray[ i, j ].SkillList = new List<string>( );
+				List<string> div = new List<string>( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_InitSkillList(ID/ID・・・)" ).Split( '/' ) );
+				foreach( string items in div ) PlayerArray[ i, j ].SkillList.Add( items );
 
 				PlayerCsvList.Add( PlayerArray[ i, j ] ); // 入れ込む
 
 			}
 
 		}
-
-		//Debug.Log( "プレイヤーステータス CSV1 ファイル当りのデータ数 : " + CSVLoader.csvRecordAll );
 
 
 	}
@@ -197,67 +191,37 @@ public sealed class SingltonPlayerManager {
 		public string Name;
 		/// <summary>レベル(Save)</summary>
 		public int Lv;
-		/// <summary>装備前ステータス(CSV)</summary>
-		public BeforeEquipmentStatus BES;
-		/// <summary>装備後ステータス(Save)</summary>
-		public AfterEquipmentStatus AES;
+		/// <summary>
+		/// 装備前ステータス(CSV)
+		/// 装備後ステータス(Save)
+		/// </summary>
+		public EquipmentStatus ES;
 		/// <summary>上昇しやすい感情:RisingFeel(CSV)</summary>
 		public SingltonSkillManager.Feel RF;
 		/// <summary>現在の感情値:CurrentFeelingValue(Save)</summary>
 		public int CFV;
+		/// <summary>
+		/// 現在覚えているスキルIDリスト(Save)
+		/// レベル毎に初期で覚えているスキルIDリスト(CSV)
+		/// </summary>
+		public List<string> SkillList;
 
 
 	}
 	/*===============================================================*/
 
 	/*===============================================================*/
-	/// <summary>装備前ステータス(CSV)</summary>
-	public class BeforeEquipmentStatus {
-		/// <summary>ヒットポイント</summary>
-		public int HP;
-		/// <summary>マジックポイント</summary>
-		public int MP;
-		/// <summary>攻撃力</summary>
-		public int Atk;
-		/// <summary>武器攻撃力(装備している武器の合計)</summary>
-		public int WeaponAtk;
-		/// <summary>防御力</summary>
-		public int Def;
-		/// <summary>防具防御力(装備している防具の合計)</summary>
-		public int EquipmentDef;
-		/// <summary>魔法攻撃力</summary>
-		public int Matk;
-		/// <summary>魔法防御</summary>
-		public int Mgr;
-		/// <summary>運</summary>
-		public int Luc;
-		/// <summary>回避率</summary>
-		public int Agl;
-		/// <summary>感情</summary>
-		public string Feeling;
-		/// <summary>感情値(仮)一定以上の感情値で技を覚えるため値を保持する</summary>
-		public int FeelingValue;
-
-
-	}
-	/*===============================================================*/
-
-	/*===============================================================*/
-	/// <summary>装備後ステータス(Save)</summary>
+	/// <summary>ステータス</summary>
 	[System.Serializable]
-	public class AfterEquipmentStatus {
+	public class EquipmentStatus {
 		/// <summary>ヒットポイント</summary>
 		public int HP;
 		/// <summary>マジックポイント</summary>
 		public int MP;
 		/// <summary>攻撃力</summary>
 		public int Atk;
-		/// <summary>武器攻撃力(装備している武器の合計)</summary>
-		public int WeaponAtk;
 		/// <summary>防御力</summary>
 		public int Def;
-		/// <summary>防具防御力(装備している防具の合計)</summary>
-		public int EquipmentDef;
 		/// <summary>魔法攻撃力</summary>
 		public int Matk;
 		/// <summary>魔法防御</summary>

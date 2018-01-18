@@ -48,6 +48,7 @@ public sealed class GV {
 
 		for( int i = 0; i < PLAYERS /* !変更しない! */; i++ ) {
 			gameData.Players.Add( new PlayerParam( ) );
+			gameData.Players[ i ].SkillList = new List<string>( );
 			gameData.Equipments.Add( new EquipmentParam( ) );
 			gameData.PlayersSkills.Add( new SkillParam( ) );
 			gameData.PlayersSkills[ i ].Name = new List<string>( );
@@ -246,18 +247,17 @@ public sealed class GV {
 			if ( myPlayerState != null ) {
 				gameData.Players[ i ].Lv = myPlayerState[ i ].Lv;
 				gameData.Players[ i ].CFV = myPlayerState[ i ].CFV;
-				gameData.Players[ i ].HP = myPlayerState[ i ].AES.HP;
-				gameData.Players[ i ].MP = myPlayerState[ i ].AES.MP;
-				gameData.Players[ i ].Atk = myPlayerState[ i ].AES.Atk;
-				gameData.Players[ i ].WeaponAtk = myPlayerState[ i ].AES.WeaponAtk;
-				gameData.Players[ i ].Def = myPlayerState[ i ].AES.Def;
-				gameData.Players[ i ].EquipmentDef = myPlayerState[ i ].AES.EquipmentDef;
-				gameData.Players[ i ].Matk = myPlayerState[ i ].AES.Matk;
-				gameData.Players[ i ].Mgr = myPlayerState[ i ].AES.Mgr;
-				gameData.Players[ i ].Luc = myPlayerState[ i ].AES.Luc;
-				gameData.Players[ i ].Agl = myPlayerState[ i ].AES.Agl;
-				gameData.Players[ i ].Feeling = myPlayerState[ i ].AES.Feeling;
-				gameData.Players[ i ].FeelingValue = myPlayerState[ i ].AES.FeelingValue;
+				gameData.Players[ i ].SkillList = myPlayerState[ i ].SkillList;
+				gameData.Players[ i ].HP = myPlayerState[ i ].ES.HP;
+				gameData.Players[ i ].MP = myPlayerState[ i ].ES.MP;
+				gameData.Players[ i ].Atk = myPlayerState[ i ].ES.Atk;
+				gameData.Players[ i ].Def = myPlayerState[ i ].ES.Def;
+				gameData.Players[ i ].Matk = myPlayerState[ i ].ES.Matk;
+				gameData.Players[ i ].Mgr = myPlayerState[ i ].ES.Mgr;
+				gameData.Players[ i ].Luc = myPlayerState[ i ].ES.Luc;
+				gameData.Players[ i ].Agl = myPlayerState[ i ].ES.Agl;
+				gameData.Players[ i ].Feeling = myPlayerState[ i ].ES.Feeling;
+				gameData.Players[ i ].FeelingValue = myPlayerState[ i ].ES.FeelingValue;
 
 			}
 
@@ -369,18 +369,16 @@ public sealed class GV {
 		public int Lv;
 		/// <summary>現在の感情値:CurrentFeelingValue(Save)</summary>
 		public int CFV;
+		/// <summary>現在覚えているスキルIDリスト(Save)</summary>
+		public List<string> SkillList;
 		/// <summary>ヒットポイント</summary>
 		public int HP;
 		/// <summary>マジックポイント</summary>
 		public int MP;
 		/// <summary>攻撃力</summary>
 		public int Atk;
-		/// <summary>武器攻撃力(装備している武器の合計)</summary>
-		public int WeaponAtk;
 		/// <summary>防御力</summary>
 		public int Def;
-		/// <summary>防具防御力(装備している防具の合計)</summary>
-		public int EquipmentDef;
 		/// <summary>魔法攻撃力</summary>
 		public int Matk;
 		/// <summary>魔法防御</summary>
