@@ -168,12 +168,12 @@ public abstract  class BattleCharacter : MonoBehaviour
         if(param == null) {
             Debug.Log("Not Found ID :" + id);
         }
-        hp = param.BES.HP;
-        currentHp = param.BES.HP;
-        atk = param.BES.Atk;
-        matk = param.BES.Matk;
-        def = param.BES.Def;
-        agl = param.BES.Agl;
+        hp = param.ES.HP;
+        currentHp = param.ES.HP;
+        atk = param.ES.Atk;
+        matk = param.ES.Matk;
+        def = param.ES.Def;
+        agl = param.ES.Agl;
         buffList = new List<BuffManager>();
         skillManager = gameManager.SkillManager;
         //ToDo PlayerParamにスキルリストが追加され次第変更
