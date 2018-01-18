@@ -6,25 +6,25 @@ public class MonsterSelect : MonoBehaviour{
 
     BattleUI battleUI;
     GameObject monsterSelecter;
+    GameObject prefab;
 
     private void Start()
     {
         battleUI = GameObject.Find("Canvas").GetComponent<BattleUI>();
-        monsterSelecter = battleUI.monsterSelecter;
+        prefab = battleUI.monsterSelecterPrefab;
     }
 
     public void Select(GameObject monster)
     {
         if (monster == null) return;
 
-        monsterSelecter.SetActive(true);
-
+        monsterSelecter = GameObject.Instantiate(prefab,battleUI.Canvas.transform);
         monsterSelecter.transform.position = this.gameObject.transform.position + Vector3.up * 180.0f;
 
     }
 
     public void Deselect()
     {
-        monsterSelecter.SetActive(false);
+        DestroyObject(monsterSelecter);
     }
 }
