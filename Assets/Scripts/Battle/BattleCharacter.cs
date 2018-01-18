@@ -147,7 +147,7 @@ public abstract  class BattleCharacter : MonoBehaviour
     /// id からデータを読み込み
     /// </summary>
     /// <param name="id"></param>
-    public virtual void loadData(int id,GameManager gameManager,bool dummy = false)
+    public virtual void loadData(string id,GameManager gameManager,bool dummy = false)
     {
         if (dummy) {
             hp = 100;
@@ -168,12 +168,12 @@ public abstract  class BattleCharacter : MonoBehaviour
         if(param == null) {
             Debug.Log("Not Found ID :" + id);
         }
-        hp = param.HP;
-        currentHp = param.HP;
-        atk = param.Atk;
-        matk = param.Matk;
-        def = param.Def;
-        agl = param.Agl;
+        hp = param.BES.HP;
+        currentHp = param.BES.HP;
+        atk = param.BES.Atk;
+        matk = param.BES.Matk;
+        def = param.BES.Def;
+        agl = param.BES.Agl;
         buffList = new List<BuffManager>();
         skillManager = gameManager.SkillManager;
         //ToDo PlayerParamにスキルリストが追加され次第変更

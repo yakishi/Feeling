@@ -182,7 +182,7 @@ public class BattleController : MonoBehaviour
             players[i].enabled = false;
         }
         foreach(var player in players) {
-            player.loadData(id++,gameManager);
+            player.loadData(" ",gameManager);
         }
 
         monsterCount = 3;
@@ -197,7 +197,7 @@ public class BattleController : MonoBehaviour
             monsters[i].GetComponent<Image>().sprite = monsterImg[random];
         }
         foreach (var monster in monsters) {
-            monster.loadData(0,gameManager,true);
+            monster.loadData("0",gameManager,true);
         }
 
         BattleUI.NotActiveButton(monsterZone);
