@@ -244,16 +244,20 @@ public sealed class GV {
 
 		for ( int i = 0; i < gameData.Players.Count; i++ ) {
 			if ( myPlayerState != null ) {
-				gameData.Players[ i ].ID = myPlayerState[ i ].ID;
 				gameData.Players[ i ].Lv = myPlayerState[ i ].Lv;
-				gameData.Players[ i ].HP = myPlayerState[ i ].HP;
-				gameData.Players[ i ].MP = myPlayerState[ i ].MP;
-				gameData.Players[ i ].Atk = myPlayerState[ i ].Atk;
-				gameData.Players[ i ].Def = myPlayerState[ i ].Def;
-				gameData.Players[ i ].Mgr = myPlayerState[ i ].Mgr;
-				gameData.Players[ i ].Agl = myPlayerState[ i ].Agl;
-				gameData.Players[ i ].Luc = myPlayerState[ i ].Luc;
-				gameData.Players[ i ].StatusPoint = myPlayerState[ i ].StatusPoint; // 経験値が溜まってレベルがあがると5ポイントのステータスポイントが獲得できる。この5ポイントは固定
+				gameData.Players[ i ].CFV = myPlayerState[ i ].CFV;
+				gameData.Players[ i ].HP = myPlayerState[ i ].AES.HP;
+				gameData.Players[ i ].MP = myPlayerState[ i ].AES.MP;
+				gameData.Players[ i ].Atk = myPlayerState[ i ].AES.Atk;
+				gameData.Players[ i ].WeaponAtk = myPlayerState[ i ].AES.WeaponAtk;
+				gameData.Players[ i ].Def = myPlayerState[ i ].AES.Def;
+				gameData.Players[ i ].EquipmentDef = myPlayerState[ i ].AES.EquipmentDef;
+				gameData.Players[ i ].Matk = myPlayerState[ i ].AES.Matk;
+				gameData.Players[ i ].Mgr = myPlayerState[ i ].AES.Mgr;
+				gameData.Players[ i ].Luc = myPlayerState[ i ].AES.Luc;
+				gameData.Players[ i ].Agl = myPlayerState[ i ].AES.Agl;
+				gameData.Players[ i ].Feeling = myPlayerState[ i ].AES.Feeling;
+				gameData.Players[ i ].FeelingValue = myPlayerState[ i ].AES.FeelingValue;
 
 			}
 
@@ -356,21 +360,39 @@ public sealed class GV {
 
 	/// <summary>
 	/// プレイヤーの情報
+	/// 装備後ステータス(Save)
 	/// 変動する情報を保存用
 	/// </summary>
 	[Serializable]
 	public class PlayerParam {
-		public int ID;
+		/// <summary>レベル(Save)</summary>
 		public int Lv;
+		/// <summary>現在の感情値:CurrentFeelingValue(Save)</summary>
+		public int CFV;
+		/// <summary>ヒットポイント</summary>
 		public int HP;
+		/// <summary>マジックポイント</summary>
 		public int MP;
+		/// <summary>攻撃力</summary>
 		public int Atk;
+		/// <summary>武器攻撃力(装備している武器の合計)</summary>
+		public int WeaponAtk;
+		/// <summary>防御力</summary>
 		public int Def;
+		/// <summary>防具防御力(装備している防具の合計)</summary>
+		public int EquipmentDef;
+		/// <summary>魔法攻撃力</summary>
+		public int Matk;
+		/// <summary>魔法防御</summary>
 		public int Mgr;
-		public int Agl;
+		/// <summary>運</summary>
 		public int Luc;
-		public int StatusPoint;
-		public int[ ] currentEquipment = new int[ 6 ];
+		/// <summary>回避率</summary>
+		public int Agl;
+		/// <summary>感情</summary>
+		public string Feeling;
+		/// <summary>感情値(仮)一定以上の感情値で技を覚えるため値を保持する</summary>
+		public int FeelingValue;
 
 
 	}
