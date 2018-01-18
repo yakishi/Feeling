@@ -7,10 +7,25 @@ using UnityEngine.UI;
 
 public class BattleController : MonoBehaviour
 {
+    [SerializeField]
+    GameManager gameManager;
     private Transform[] playerIconPos = new Transform[4];
+    /// <summary>
+    /// モンスターが配置されるグリッド
+    /// </summary>
     public GameObject monsterZone;
+
+    /// <summary>
+    /// コマンドが配置されるグリッド
+    /// </summary>
     [SerializeField]
     public GameObject combatGrid;
+
+    /// <summary>
+    /// プレイヤーが配置されるグリッド
+    /// </summary>
+    [SerializeField]
+    public GameObject playerGrid;
 
     /// <summary>
     /// 味方グループ、敵グループの生存判定
@@ -88,12 +103,21 @@ public class BattleController : MonoBehaviour
         }
     }
 
+    //仮
+    List<SingltonSkillManager.SkillInfo> skillList;
+    public List<SingltonSkillManager.SkillInfo> SkillList
+    {
+        get
+        {
+            return skillList;
+        }
+    }
 
     void Start()
     {
-        for(int i = 0; i < playerIconPos.Length; i++) {
-            playerIconPos[i] = GameObject.Find("PlayerIcon" + (i + 1)).transform;
-        }
+        //for(int i = 0; i < playerIconPos.Length; i++) {
+        //    playerIconPos[i] = GameObject.Find("PlayerIcon" + (i + 1)).transform;
+        //}
         monsterZone = GameObject.Find("MonsterZone");
 
         characters = new List<BattleCharacter>();
@@ -103,13 +127,14 @@ public class BattleController : MonoBehaviour
         foreach (var character in characters) {
             // TODO: ロードIDはプレイヤーとモンスターで今後分ける
             // 仮ID読み込み
-            character.loadData(id++);
+            //character.loadData(id++,gameManager);
             character.setBattleController(this);
             character.battleStart();
 
             character.onEndActionAsObservable()
                 .Subscribe(c => {
-                    //TODO:　死んだ後にnullが発生、デストロイ後に行動順の再設定
+
+
                     //死亡処理 ロードIDができるまで仮
 
                     foreach (var chara in characters) {
@@ -139,6 +164,8 @@ public class BattleController : MonoBehaviour
 
         currentActionCharacter = getNextActionCharacter();
         currentActionCharacter.startAction();
+
+        skillList = SingltonSkillManager.Instance.CDSkill;
     }
 
     /// <summary>
@@ -146,16 +173,16 @@ public class BattleController : MonoBehaviour
     /// </summary>
     void createDamyData()
     {
-        
+        int id = 0;
         playerCount = 4;
         players = new BattlePlayer[playerCount];
         for (int i = 0; i < players.Length; ++i) {
-            players[i] = Instantiate(battlePlayerPrefab, playerIconPos[i], false).GetComponent<BattlePlayer>();
-            players[i].ID = i;
+            players[i] = Instantiate(battlePlayerPrefab,playerGrid.transform).GetComponent<BattlePlayer>();
+            
             players[i].enabled = false;
         }
-        foreach (var player in players) {
-            player.loadData(0);
+        foreach(var player in players) {
+            player.loadData(id++,gameManager);
         }
 
         monsterCount = 3;
@@ -170,7 +197,7 @@ public class BattleController : MonoBehaviour
             monsters[i].GetComponent<Image>().sprite = monsterImg[random];
         }
         foreach (var monster in monsters) {
-            monster.loadData(0);
+            monster.loadData(0,gameManager,true);
         }
 
         BattleUI.NotActiveButton(monsterZone);
@@ -233,6 +260,8 @@ public class BattleController : MonoBehaviour
             nextTurn();
         }
 
+        battleUI.ClearTempSkillID();
+
         var ret = characters
             .Where(character => character.CanAction)
             .MaxElement(character => { return character.Agl; });
@@ -244,6 +273,7 @@ public class BattleController : MonoBehaviour
     /// </summary>
     void nextTurn()
     {
+
         foreach (var character in characters) {
             character.beginTurn();
         }

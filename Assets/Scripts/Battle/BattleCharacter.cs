@@ -13,10 +13,9 @@ public abstract  class BattleCharacter : MonoBehaviour
         {
             return id;
         }
-
         set
         {
-            id = value;             //死亡管理用の仮組
+            id = value;
         }
     }
 
@@ -53,6 +52,15 @@ public abstract  class BattleCharacter : MonoBehaviour
         }
     }
 
+    protected int matk;
+    public int MAtk
+    {
+        get
+        {
+            return matk;
+        }
+    }
+
     protected int agl;
     public int Agl {
         get
@@ -75,7 +83,57 @@ public abstract  class BattleCharacter : MonoBehaviour
         }
     }
 
-    protected int buffTurn;
+    protected SingltonPlayerManager.PlayerParameters param;
+    public SingltonPlayerManager.PlayerParameters Param
+    {
+        get
+        {
+            return param;
+        }
+    }
+
+
+    public class BuffManager
+    {
+        private SingltonSkillManager.SkillInfo skill;
+        private int remainBuffTurn;
+
+        public BuffManager(SingltonSkillManager.SkillInfo info)
+        {
+            skill = info;
+            remainBuffTurn = info.DT;
+        }
+
+        public SingltonSkillManager.SkillInfo GetSkill
+        {
+            get
+            {
+                return skill;
+            }
+        }
+
+        public int RemainBuffTurn
+        {
+            get
+            {
+                return remainBuffTurn;
+            }
+        }
+
+        public void ResetBuff()
+        {
+            remainBuffTurn = skill.DT;
+        }
+
+        public void AdvanceBuffTurn()
+        {
+            remainBuffTurn--;
+        }
+    }
+
+    //後で消す
+    SingltonSkillManager skillManager;
+    protected List<SingltonSkillManager.SkillInfo> skillList;
 
     protected BattleController battleController;
     protected BattleUI battleUI;
@@ -83,19 +141,43 @@ public abstract  class BattleCharacter : MonoBehaviour
     protected bool isEndAction = false;
     protected Subject<BattleCharacter> onEndActionSubject = new Subject<BattleCharacter>();
 
+    public List<BuffManager> buffList;
+
     /// <summary>
     /// id からデータを読み込み
     /// </summary>
     /// <param name="id"></param>
-    public virtual void loadData(int id)
+    public virtual void loadData(int id,GameManager gameManager,bool dummy = false)
     {
-        // 仮で作成
-        hp = 100;
-        currentHp = hp;
-        atk = 10;
-        def = 3;
-        agl = Random.Range(10, 21);
-        buffTurn = 0;
+        if (dummy) {
+            hp = 100;
+            currentHp = hp;
+            atk = 10;
+            matk = 10;
+            def = 10;
+            agl = Random.Range(1,6);
+            buffList = new List<BuffManager>();
+            return;
+        }
+        List<SingltonPlayerManager.PlayerParameters> playersParam = gameManager.PlayerList;
+        foreach(var i in playersParam) {
+            if(i.ID == id) {
+                param = i;
+            }
+        }
+        if(param == null) {
+            Debug.Log("Not Found ID :" + id);
+        }
+        hp = param.HP;
+        currentHp = param.HP;
+        atk = param.Atk;
+        matk = param.Matk;
+        def = param.Def;
+        agl = param.Agl;
+        buffList = new List<BuffManager>();
+        skillManager = gameManager.SkillManager;
+        //ToDo PlayerParamにスキルリストが追加され次第変更
+        skillList = skillManager.CDSkill;
     }
 
     /// <summary>
@@ -114,6 +196,25 @@ public abstract  class BattleCharacter : MonoBehaviour
     /// </remarks>
     public abstract void startAction();
 
+    public void endAction()
+    {
+        foreach (var n in buffList) {
+            n.AdvanceBuffTurn();
+        }
+        foreach (var n in buffList.ToArray()) {
+            if (n.RemainBuffTurn <= 0) {
+                buffList.Remove(n);
+
+
+            }
+        }
+        if (buffList.Count <= 0) Debug.Log("none");
+        foreach (var n in buffList) {
+            var s = n.GetSkill;
+            Debug.Log(s.skill + " : " + n.RemainBuffTurn);
+        }
+    }
+
     /// <summary>
     /// アクションを実行
     /// </summary>
@@ -127,6 +228,7 @@ public abstract  class BattleCharacter : MonoBehaviour
         }
 
         // TODO: アニメーションを再生する場合再生終了後に呼び出す必要あり
+        endAction();
         isEndAction = true;
         onEndActionSubject.OnNext(this);
     }
@@ -143,6 +245,11 @@ public abstract  class BattleCharacter : MonoBehaviour
     public void setBattleUI(BattleUI setUI)
     {
         battleUI = setUI;
+    }
+
+    public void setBattlePram(SingltonPlayerManager.PlayerParameters playerParameters)
+    {
+        param = playerParameters;
     }
 
     /// <summary>

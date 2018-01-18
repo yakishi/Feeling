@@ -4,55 +4,65 @@ using UnityEngine;
 
 public class Skill
 {
+    SingltonSkillManager.SkillInfo skill;
+
+    /// <summary>
+    /// スキルの種類
+    /// </summary>
+    //protected TargetRange range;
+    //public TargetRange Range { get { return range; } }
+    public SingltonSkillManager.Category Category
+    {
+        set
+        {
+            skill.myCategory = value;
+        }
+    }
+
     /// <summary>
     /// スキル範囲
     /// </summary>
-    public enum TargetRange
+    //protected TargetType target;
+    //public TargetType Target { get { return target; } }
+    public SingltonSkillManager.Scope Scope
     {
-        Unit,  // 単体
-        Group, // グループ
-        Field  // 全体
+        set
+        {
+            skill.myScope = value;
+        }
     }
 
     /// <summary>
     /// スキル対象
     /// </summary>
-    public enum TargetType
-    {
-        Enemy, // 相手を対象
-        Ally,  // 味方を対象
-        Self   // 自分自身
+    public SingltonSkillManager.Target Target
+    { 
+        set
+        {
+            skill.myTarget = value;
+        }
     }
 
-    /// <summary>
-    /// スキルタイプ
-    /// </summary>
-    public enum SkillType
+    public Skill()
     {
-        Damage,
-        Buff,
-        Debuff
+        skill = new SingltonSkillManager.SkillInfo();
     }
 
-    /// <summary>
-    /// スキルの範囲
-    /// </summary>
-    protected TargetRange range;
-    public TargetRange Range { get { return range; } }
+    public Skill(SingltonSkillManager.SkillInfo info)
+    {
+        skill = info;
+    }
 
-    /// <summary>
-    /// スキル対象
-    /// </summary>
-    protected TargetType target;
-    public TargetType Target { get { return target; } }
 
-    public virtual List<BattleAction> use(BattleCharacter from, BattleCharacter[] targets,SkillType type)
+    public virtual List<BattleAction> use(BattleCharacter from, BattleCharacter[] targets)
     {
         var ret = new List<BattleAction>();
         // 仮で攻撃力分のHPを減らす処理を作成
         // 防御力などが入った場合ここかアクションを処理するところで行う
-        switch (type) {
-            case SkillType.Damage:
+
+        Debug.Log(skill.skill + ", " + skill.myCategory.ToString() + ", " + skill.myTarget + " = " + targets[0]);
+        switch (skill.myCategory) {
+            case SingltonSkillManager.Category.Damage:
                 ret.Add(new BattleAction()
                 {
                     targets = targets,
@@ -63,17 +73,30 @@ public class Skill
                 });
                 break;
 
-            case SkillType.Buff:
+            case SingltonSkillManager.Category.Buff:
                 ret.Add(new BattleAction()
                 {
                     targets = targets,
                     effects = new Dictionary<BattleParam, int>
                     {
-                        {BattleParam.Def, 5 }
+                        {skill.influence, 5 }
                     }
                 });
-                break;
-            case SkillType.Debuff:
+
+                foreach(var c in targets) {
+                    BattleCharacter.BuffManager tempManager = new BattleCharacter.BuffManager(skill);
+
+                    if (!c.buffList.Contains(tempManager)) {
+                        c.buffList.Add(tempManager);
+                    }
+                    else {
+                        foreach(var s in c.buffList) {
+                            if(s == tempManager) {
+                                s.ResetBuff();
+                            }
+                        }
+                    }
+                }
                 break;
             default:
                 break;

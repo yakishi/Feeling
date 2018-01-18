@@ -11,25 +11,27 @@ public class BattleMonster : BattleCharacter
     /// id からデータを読み込み
     /// </summary>
     /// <param name="id"></param>
-    public override void loadData(int id)
+    public override void loadData(int id,GameManager gameManager, bool dummy = false)
     {
-        base.loadData(id);
+        base.loadData(id,gameManager,true);
     }
 
     public override void startAction()
     {
-
         BattleUI.DisplayMonsterTurn(this.name);
         battleController.combatGrid.SetActive(false);
 
         // 一番HPの高いキャラクターを攻撃
         var target = battleController.Players.MaxElement(player => player.CurrentHp);
         var skill = new Skill();
+        skill.Target = SingltonSkillManager.Target.Enemy;
+        skill.Scope = SingltonSkillManager.Scope.Simplex;
+        skill.Category = SingltonSkillManager.Category.Damage;
 
         Observable.Timer(System.TimeSpan.FromMilliseconds(800.0))
             .Take(1)
             .Subscribe(_ => {
-                playAction(skill.use(this, new BattleCharacter[] { target }, Skill.SkillType.Damage));
+                playAction(skill.use(this, new BattleCharacter[] { target}));
 
             })
             .AddTo(this);
