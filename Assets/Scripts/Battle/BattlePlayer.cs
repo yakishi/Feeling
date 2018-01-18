@@ -27,6 +27,7 @@ public class BattlePlayer : BattleCharacter
             .Subscribe(_ => {
                 BattleUI.NotActiveButton(battleController.combatGrid);
                 BattleUI.ActiveButton(battleController.monsterZone);
+                battleUI.beforeGrid = battleController.combatGrid;
 
                 battleUI.Mode = BattleUI.SelectMode.Monster;
             })
@@ -35,29 +36,74 @@ public class BattlePlayer : BattleCharacter
         combatButtons[1].OnClickAsObservable()
             .Where(_ => isPlayerAction)
             .Subscribe(_ => {
-                var target = this;
+                BattleCharacter targets = this;
                 var skill = new Skill();
 
                 isPlayerAction = false;
-                playAction(skill.use(this, new BattleCharacter[] { target }, Skill.SkillType.Buff));
+                playAction(skill.use(this, new BattleCharacter[] { targets }));
+            })
+            .AddTo(this);
+
+        combatButtons[2].OnClickAsObservable()
+            .Where(_ => isPlayerAction)
+            .Subscribe(_ =>{
+
+                if (battleUI.skillButtonList.Count == 0) {
+                    foreach (var i in skillList) {
+                        battleUI.SetSkill(i);
+                    }
+                }
+
+                battleUI.SkillWindow.SetActive(true);
+                battleUI.SkillDetail.SetActive(true);
+                battleUI.SkillMode();
+
+                BattleUI.NotActiveButton(battleController.combatGrid);
+                BattleUI.ActiveButton(battleUI.SkillWindow);
+                battleUI.Mode = BattleUI.SelectMode.Skill;
+            })
+            .AddTo(this);
+
+        combatButtons[5].OnClickAsObservable()
+            .Where(_ => isPlayerAction)
+            .Subscribe(_ => {
+                Application.Quit();
             })
             .AddTo(this);
     }
 
-    public void attackAction(BattleCharacter target)
+    public void attackAction(BattleCharacter[] targets, string id = "none")
     {
         var skill = new Skill();
-
-        Debug.Log("Hit" + target.name);
-
+        if (id == "none") {
+            skill.Target = SingltonSkillManager.Target.Enemy;
+            skill.Scope = SingltonSkillManager.Scope.Simplex;
+            skill.Category = SingltonSkillManager.Category.Damage;
+        }
+        else{
+            skill = searchSkill(id);
+        }
         isPlayerAction = false;
-        playAction(skill.use(this, new BattleCharacter[] { target }, Skill.SkillType.Damage));
+
+        playAction(skill.use(this, targets));
+    }
+
+    Skill searchSkill(string id)
+    {
+        SingltonSkillManager.SkillInfo skill = new SingltonSkillManager.SkillInfo();
+
+        foreach(var s in battleController.SkillList) {
+            if(s.ID == id) {
+                skill = s;
+            }
+        }
+
+        return new Skill(skill);
     }
 
     public override void startAction()
     {
         BattleUI.DisplayPlayerTurn(this.name);
-        Debug.Log(this.name + " Turn");
 
         isPlayerAction = true;
         battleController.combatGrid.SetActive(true);

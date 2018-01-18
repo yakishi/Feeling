@@ -191,8 +191,8 @@ public sealed class SingltonSkillManager {
 	public enum Category {
 		/// <summary>バフ</summary>
 		Buff,
-		/// <summary>デバフ</summary>
-		Debuff
+		/// <summary>ダメージ</summary>
+		Damage
 
 	};
 	/// <summary>ターゲット(スキル効果対象)</summary>
@@ -257,7 +257,6 @@ public sealed class SingltonSkillManager {
 		public List<Hirameki> flair;
 		/// <summary>感情値補正:FeelingValueCorrect</summary>
 		public CollectionValue FVC;
-
 
 	}
 	/*===============================================================*/
