@@ -4,26 +4,43 @@ using UnityEngine;
 using UnityEngine.UI;
 using UniRx;
 
-public abstract  class BattleCharacter : MonoBehaviour
+public abstract class BattleCharacter : MonoBehaviour
 {
-    protected int id;
-    public int ID
+    protected SingltonPlayerManager.PlayerParameters param;
+    public SingltonPlayerManager.PlayerParameters Param
     {
         get
         {
-            return id;
-        }
-        set
-        {
-            id = value;
+            return param;
         }
     }
 
-    protected int hp;
+    protected SingltonPlayerManager.Status status;
+    public SingltonPlayerManager.Status Status
+    {
+        get
+        {
+            return status;
+        }
+    }
+    public string ID
+    {
+        get
+        {
+            return param.ID;
+        }
+        //モンスターがデータができるまでの仮
+        set
+        {
+            param.ID = value;
+        }
+
+    }
+
     public int Hp {
         get
         {
-            return hp;
+            return status.HP;
         }
     }
 
@@ -35,37 +52,33 @@ public abstract  class BattleCharacter : MonoBehaviour
         }
     }
 
-    protected int atk;
     public int Atk {
         get
         {
-            return atk;
+            return status.Atk;
         }
     }
 
-    protected int def;
     public int Def
     {
         get
         {
-            return def;
+            return status.Def;
         }
     }
 
-    protected int matk;
     public int MAtk
     {
         get
         {
-            return matk;
+            return status.Matk;
         }
     }
 
-    protected int agl;
     public int Agl {
         get
         {
-            return agl;
+            return status.Agl;
         }
     }
 
@@ -83,14 +96,6 @@ public abstract  class BattleCharacter : MonoBehaviour
         }
     }
 
-    protected SingltonPlayerManager.PlayerParameters param;
-    public SingltonPlayerManager.PlayerParameters Param
-    {
-        get
-        {
-            return param;
-        }
-    }
 
 
     public class BuffManager
@@ -147,37 +152,43 @@ public abstract  class BattleCharacter : MonoBehaviour
     /// id からデータを読み込み
     /// </summary>
     /// <param name="id"></param>
-    public virtual void loadData(string id,GameManager gameManager,bool dummy = false)
+    public virtual void loadData(string id, GameManager gameManager, bool dummy = false)
     {
         if (dummy) {
-            hp = 100;
-            currentHp = hp;
-            atk = 10;
-            matk = 10;
-            def = 10;
-            agl = Random.Range(1,6);
+            status = new SingltonPlayerManager.Status(100, 100, 10, 10, 10, 10, 10, Random.Range(1, 20), SingltonSkillManager.Feel.Do, 20);
+            currentHp = status.HP;
             buffList = new List<BuffManager>();
             return;
         }
         List<SingltonPlayerManager.PlayerParameters> playersParam = gameManager.PlayerList;
-        foreach(var i in playersParam) {
-            if(i.ID == id) {
+        foreach (var i in playersParam) {
+            if (i.ID == id) {
                 param = i;
             }
         }
-        if(param == null) {
+        if (param == null) {
             Debug.Log("Not Found ID :" + id);
         }
-        hp = param.ES.HP;
-        currentHp = param.ES.HP;
-        atk = param.ES.Atk;
-        matk = param.ES.Matk;
-        def = param.ES.Def;
-        agl = param.ES.Agl;
+        status = param.STATUS;
+        currentHp = param.STATUS.HP;
         buffList = new List<BuffManager>();
         skillManager = gameManager.SkillManager;
         //ToDo PlayerParamにスキルリストが追加され次第変更
-        skillList = skillManager.CDSkill;
+        skillList = CreateSkillList(param.SkillList);
+    }
+
+    List<SingltonSkillManager.SkillInfo> CreateSkillList(List<string> idList)
+    {
+        List<SingltonSkillManager.SkillInfo> list = new List<SingltonSkillManager.SkillInfo>();
+        foreach(var id in idList) {
+            foreach(var skill in skillManager.CDSkill) {
+                if(id == skill.ID) {
+                    list.Add(skill);
+                }
+            }
+        }
+
+        return list;
     }
 
     /// <summary>
@@ -269,13 +280,13 @@ public abstract  class BattleCharacter : MonoBehaviour
                     currentHp += effects[targetParam];
                     break;
                 case BattleParam.Atk:
-                    atk += effects[targetParam];
+                    status.HP += effects[targetParam];
                     break;
                 case BattleParam.Def:
-                    def += effects[targetParam];
+                    status.Def += effects[targetParam];
                     break;
                 case BattleParam.Agl:
-                    agl += effects[targetParam];
+                    status.Agl += effects[targetParam];
                     break;
             }
         }
