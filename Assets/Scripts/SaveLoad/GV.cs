@@ -124,7 +124,7 @@ public sealed class GV {
 
 	#endregion
 
-	#region Properties
+	#region PropertiSTATUS
 	#endregion
 
 	/// <summary>
@@ -248,16 +248,16 @@ public sealed class GV {
 				gameData.Players[ i ].Lv = myPlayerState[ i ].Lv;
 				gameData.Players[ i ].CFV = myPlayerState[ i ].CFV;
 				gameData.Players[ i ].SkillList = myPlayerState[ i ].SkillList;
-				gameData.Players[ i ].HP = myPlayerState[ i ].ES.HP;
-				gameData.Players[ i ].MP = myPlayerState[ i ].ES.MP;
-				gameData.Players[ i ].Atk = myPlayerState[ i ].ES.Atk;
-				gameData.Players[ i ].Def = myPlayerState[ i ].ES.Def;
-				gameData.Players[ i ].Matk = myPlayerState[ i ].ES.Matk;
-				gameData.Players[ i ].Mgr = myPlayerState[ i ].ES.Mgr;
-				gameData.Players[ i ].Luc = myPlayerState[ i ].ES.Luc;
-				gameData.Players[ i ].Agl = myPlayerState[ i ].ES.Agl;
-				gameData.Players[ i ].Feeling = myPlayerState[ i ].ES.Feeling;
-				gameData.Players[ i ].FeelingValue = myPlayerState[ i ].ES.FeelingValue;
+				gameData.Players[ i ].HP = myPlayerState[ i ].STATUS.HP;
+				gameData.Players[ i ].MP = myPlayerState[ i ].STATUS.MP;
+				gameData.Players[ i ].Atk = myPlayerState[ i ].STATUS.Atk;
+				gameData.Players[ i ].Def = myPlayerState[ i ].STATUS.Def;
+				gameData.Players[ i ].Matk = myPlayerState[ i ].STATUS.Matk;
+				gameData.Players[ i ].Mgr = myPlayerState[ i ].STATUS.Mgr;
+				gameData.Players[ i ].Luc = myPlayerState[ i ].STATUS.Luc;
+				gameData.Players[ i ].Agl = myPlayerState[ i ].STATUS.Agl;
+				gameData.Players[ i ].Feeling = myPlayerState[ i ].STATUS.Feeling;
+				gameData.Players[ i ].FeelingValue = myPlayerState[ i ].STATUS.FeelingValue;
 
 			}
 
@@ -322,16 +322,16 @@ public sealed class GV {
 
 	/*===============================================================*/
 	/// <summary>セーブを行います</summary>
-	/// <param name="saveSlot">セーブするセーブデータスロットを指定します</param>
-	public void GameDataSave( int saveSlot ) {
+	/// <param name="savSTATUSlot">セーブするセーブデータスロットを指定します</param>
+	public void GameDataSave( int savSTATUSlot ) {
 
-		SData.usedSave[ saveSlot - 1 ] = true;
+		SData.usedSave[ savSTATUSlot - 1 ] = true;
 
 		SaveData.setSlot( 0 );
 		SaveData.setClass( "SystemData", SData );
 		SaveData.save( );
 
-		SaveData.setSlot( saveSlot );
+		SaveData.setSlot( savSTATUSlot );
 
 		/*===============================================================*/
 		// セーブデータへの値セット部 START
@@ -348,8 +348,8 @@ public sealed class GV {
 
 		SaveData.save( );
 
-		//TimeSpan t = new TimeSpan( 0, 0, gameData.timeSecond[ saveSlot ] );
-		//Debug.Log( "<color='red'>" + saveSlot + ", " + saveLoadSlot + ", playTime : " + t + "</color>" );
+		//TimeSpan t = new TimeSpan( 0, 0, gameData.timeSecond[ savSTATUSlot ] );
+		//Debug.Log( "<color='red'>" + savSTATUSlot + ", " + saveLoadSlot + ", playTime : " + t + "</color>" );
 
 
 	}
@@ -388,7 +388,7 @@ public sealed class GV {
 		/// <summary>回避率</summary>
 		public int Agl;
 		/// <summary>感情</summary>
-		public string Feeling;
+		public SingltonSkillManager.Feel Feeling;
 		/// <summary>感情値(仮)一定以上の感情値で技を覚えるため値を保持する</summary>
 		public int FeelingValue;
 

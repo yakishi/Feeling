@@ -35,13 +35,13 @@ public class ExampleTestPlayer : MonoBehaviour {
 					if( example1.GetCsvDataPlayerState[ j ].Name == "P" + ( i + 1 ) &&
 						example1.GetCsvDataPlayerState[ j ].ID == "7" ) {
 						// 上の条件の時の, 感情値 ( CSV ) データを 現在の感情値 ( セーブデータ ) にいれる
-						example1.SaveDataPlayerState[ i ].CFV = example1.GetCsvDataPlayerState[ j ].ES.FeelingValue;
+						example1.SaveDataPlayerState[ i ].CFV = example1.GetCsvDataPlayerState[ j ].STATUS.FeelingValue;
 
 					}
 
 				}
-				example1.SaveDataPlayerState[ i ].ES.HP = 100;
-				example1.SaveDataPlayerState[ i ].ES.MP = 200;
+				example1.SaveDataPlayerState[ i ].STATUS.HP = 100;
+				example1.SaveDataPlayerState[ i ].STATUS.MP = 200;
 
 				for( int cnt = 0; cnt < i + 1; cnt++ ) {
 					example1.SaveDataPlayerState[ i ].SkillList.Add( cnt.ToString( ) );
@@ -56,7 +56,7 @@ public class ExampleTestPlayer : MonoBehaviour {
 		int cntTest = 0;
 		foreach ( SingltonPlayerManager.PlayerParameters items in example1.SaveDataPlayerState ) {
 			Debug.Log( "-----------------------\nforeach ( セーブデータ ) 出力\n現在の感情値 : " + items.CFV + "\nHP : " +
-				items.ES.HP + "\nMP : " + items.ES.MP + "\n-----------------------" );
+				items.STATUS.HP + "\nMP : " + items.STATUS.MP + "\n-----------------------" );
 			cntTest++;
 
 			foreach( string items2 in items.SkillList ) Debug.Log( "現在覚えているスキルIDリスト(Save) : " + items2 );
@@ -65,7 +65,7 @@ public class ExampleTestPlayer : MonoBehaviour {
 
 		foreach ( SingltonPlayerManager.PlayerParameters items in example1.GetCsvDataPlayerState ) {
 			Debug.Log( "-----------------------\nforeach ( CSV データ ) 出力\nプレイヤー種別 : " + items.Name + "\nHP : " +
-				items.ES.HP + "\nMP : " + items.ES.MP + "\nID : "
+				items.STATUS.HP + "\nMP : " + items.STATUS.MP + "\nID : "
 					+ items.ID + "\n-----------------------" );
 
 			foreach( string items2 in items.SkillList ) Debug.Log( "レベル毎に初期で覚えているスキルIDリスト(CSV) : " + items2 );
@@ -87,8 +87,8 @@ public class ExampleTestPlayer : MonoBehaviour {
 		saveTest += 10;
 
 		for ( int i = 0; i < myGV.GData.Players.Count; i++ ) {
-			SingltonPlayerManager.Instance.SaveDataPlayerState[ i ].ES.HP = i + 100 * ( i + saveTest );
-			SingltonPlayerManager.Instance.SaveDataPlayerState[ i ].ES.MP = i + 200 * ( i + saveTest );
+			SingltonPlayerManager.Instance.SaveDataPlayerState[ i ].STATUS.HP = i + 100 * ( i + saveTest );
+			SingltonPlayerManager.Instance.SaveDataPlayerState[ i ].STATUS.MP = i + 200 * ( i + saveTest );
 
 		}
 		myGV.GameDataSave( myGV.slot ); // セーブを行います

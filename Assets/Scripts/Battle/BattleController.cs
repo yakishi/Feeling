@@ -133,19 +133,15 @@ public class BattleController : MonoBehaviour
 
             character.onEndActionAsObservable()
                 .Subscribe(c => {
+                    //死亡処理
+                    foreach(var p in players) {
+                        if (!p.IsDead) continue;
+                        p.gameObject.SetActive(false);
+                    }
 
-
-                    //死亡処理 ロードIDができるまで仮
-
-                    foreach (var chara in characters) {
-                        if (!chara.IsDead) continue;
-                        if (chara.ID >= 0 && chara.ID < players.Length) {
-                            players[chara.ID].gameObject.SetActive(false);
-                        }
-                        else if (chara.ID >= players.Length) {
-                            monsters[chara.ID - 4].gameObject.SetActive(false);
-                        }
-
+                    foreach (var m in monsters) {
+                        if (!m.IsDead) continue;
+                        m.gameObject.SetActive(false);
                     }
 
                     groupDeadType = getGroupDeadType();
@@ -182,7 +178,8 @@ public class BattleController : MonoBehaviour
             players[i].enabled = false;
         }
         foreach(var player in players) {
-            player.loadData(" ",gameManager);
+            player.loadData(id.ToString(),gameManager);
+            id++;
         }
 
         monsterCount = 3;
@@ -193,7 +190,6 @@ public class BattleController : MonoBehaviour
 
             monsters[i] = temp.GetComponent<BattleMonster>();
             monsters[i].transform.position = new Vector3(monsterPosX(i, monsterCount), monsterZone.transform.position.y, 0);
-            monsters[i].ID = i + players.Length;
             monsters[i].GetComponent<Image>().sprite = monsterImg[random];
         }
         foreach (var monster in monsters) {

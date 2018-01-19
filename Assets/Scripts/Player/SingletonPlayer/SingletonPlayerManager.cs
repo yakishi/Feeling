@@ -78,7 +78,7 @@ public sealed class SingltonPlayerManager {
 		// 人数分の player を生成する
 		for ( int i = 0; i < myGV.GData.Players.Count; i++ ) {
 			PlayerSaveList.Add( new PlayerParameters( ) );
-			PlayerSaveList[ i ].ES = new EquipmentStatus( );
+			PlayerSaveList[ i ].STATUS = new Status( );
 			PlayerSaveList[ i ].SkillList = new List<string>( );
 
 		}
@@ -104,17 +104,8 @@ public sealed class SingltonPlayerManager {
 				PlayerSaveList[ cnt ].CFV = item.CFV;
 				PlayerSaveList[ cnt ].SkillList = new List<string>( );
 				PlayerSaveList[ cnt ].SkillList = item.SkillList;
-				PlayerSaveList[ cnt ].ES = new EquipmentStatus( );
-				PlayerSaveList[ cnt ].ES.HP = item.HP;
-				PlayerSaveList[ cnt ].ES.MP = item.MP;
-				PlayerSaveList[ cnt ].ES.Atk = item.Atk;
-				PlayerSaveList[ cnt ].ES.Def = item.Def;
-				PlayerSaveList[ cnt ].ES.Matk = item.Matk;
-				PlayerSaveList[ cnt ].ES.Mgr = item.Mgr;
-				PlayerSaveList[ cnt ].ES.Luc = item.Luc;
-				PlayerSaveList[ cnt ].ES.Agl = item.Agl;
-				PlayerSaveList[ cnt ].ES.Feeling = item.Feeling;
-				PlayerSaveList[ cnt ].ES.FeelingValue = item.FeelingValue;
+				PlayerSaveList[ cnt ].EquipmentStatus = new Status(item.HP,item.MP,item.Atk,item.Def,item.Matk,item.Mgr,item.Luc,item.Agl,item.Feeling,item.FeelingValue );
+				
 				cnt++;
 
 			}
@@ -151,17 +142,18 @@ public sealed class SingltonPlayerManager {
 				// TODO : index i で, Enum Feel をテキトウに入れる
 				PlayerArray[ i, j ].RF = (SingltonSkillManager.Feel)Enum.ToObject( typeof(SingltonSkillManager.Feel), i );
 
-				PlayerArray[ i, j ].ES = new EquipmentStatus( );
-				PlayerArray[ i, j ].ES.HP = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_HP" ) );
-				PlayerArray[ i, j ].ES.MP = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_MP" ) );
-				PlayerArray[ i, j ].ES.Atk = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_ATK" ) );
-				PlayerArray[ i, j ].ES.Def = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_DEF" ) );
-				PlayerArray[ i, j ].ES.Matk = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_MATK" ) );
-				PlayerArray[ i, j ].ES.Mgr = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_MGR" ) );
-				PlayerArray[ i, j ].ES.Luc = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_LUC" ) );
-				PlayerArray[ i, j ].ES.Agl = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_AGL" ) );
-				PlayerArray[ i, j ].ES.Feeling = myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_FEELING" );
-				PlayerArray[ i, j ].ES.FeelingValue = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_FEELINGVALUE" ) );
+				PlayerArray[ i, j ].STATUS = new Status( );
+				PlayerArray[ i, j ].STATUS.HP = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_HP" ) );
+				PlayerArray[ i, j ].STATUS.MP = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_MP" ) );
+				PlayerArray[ i, j ].STATUS.Atk = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_ATK" ) );
+				PlayerArray[ i, j ].STATUS.Def = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_DEF" ) );
+				PlayerArray[ i, j ].STATUS.Matk = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_MATK" ) );
+				PlayerArray[ i, j ].STATUS.Mgr = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_MGR" ) );
+				PlayerArray[ i, j ].STATUS.Luc = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_LUC" ) );
+				PlayerArray[ i, j ].STATUS.Agl = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_AGL" ) );
+				PlayerArray[ i, j ].STATUS.Feeling = (SingltonSkillManager.Feel)Enum.ToObject(typeof(SingltonSkillManager.Feel), int.Parse(myLoader.GetCSVData(myCsvData[i].key, myCsvData[i].data, i + "_FEELING")));
+                //myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_FEELING" );
+                PlayerArray[ i, j ].STATUS.FeelingValue = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_FEELINGVALUE" ) );
 
 				PlayerArray[ i, j ].SkillList = new List<string>( );
 				List<string> div = new List<string>( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_InitSkillList(ID/ID・・・)" ).Split( '/' ) );
@@ -191,11 +183,10 @@ public sealed class SingltonPlayerManager {
 		public string Name;
 		/// <summary>レベル(Save)</summary>
 		public int Lv;
-		/// <summary>
-		/// 装備前ステータス(CSV)
-		/// 装備後ステータス(Save)
-		/// </summary>
-		public EquipmentStatus ES;
+		/// <summar>標準ステータス</summary>
+		public Status STATUS;
+        /// <summary>装備後ステータス</summary>
+        public Status EquipmentStatus;
 		/// <summary>上昇しやすい感情:RisingFeel(CSV)</summary>
 		public SingltonSkillManager.Feel RF;
 		/// <summary>現在の感情値:CurrentFeelingValue(Save)</summary>
@@ -213,7 +204,7 @@ public sealed class SingltonPlayerManager {
 	/*===============================================================*/
 	/// <summary>ステータス</summary>
 	[System.Serializable]
-	public class EquipmentStatus {
+	public class Status {
 		/// <summary>ヒットポイント</summary>
 		public int HP;
 		/// <summary>マジックポイント</summary>
@@ -231,11 +222,28 @@ public sealed class SingltonPlayerManager {
 		/// <summary>回避率</summary>
 		public int Agl;
 		/// <summary>感情</summary>
-		public string Feeling;
+		public SingltonSkillManager.Feel Feeling;
 		/// <summary>感情値(仮)一定以上の感情値で技を覚えるため値を保持する</summary>
 		public int FeelingValue;
 
+        public Status()
+        {
+        }
 
+        public Status(int hp,int mp,int atk,int def,int mAtk,int mgr,int luc,int agl,SingltonSkillManager.Feel feel,int feelValue)
+        {
+            HP = hp;
+            MP = mp;
+            Atk = atk;
+            Def = def;
+            Matk = mAtk;
+            Mgr = mgr;
+            Luc = luc;
+            Agl = agl;
+            Feeling = feel;
+            FeelingValue = feelValue;
+
+        }
 	}
 	/*===============================================================*/
 
