@@ -38,8 +38,8 @@ public class ExampleTestSaveLoad {
 
 		Debug.Log( "<color='red'>SaveDataPlayerState[ 0 ].LV : " + example1.SaveDataPlayerState[ 0 ].Lv + "\n"
 			/* player */
-			+ "SaveDataPlayerState[ 1 ].HP : " + example1.SaveDataPlayerState[ 1 ].ES.HP + "\n"
-			+ "SaveDataPlayerState[ 2 ].HP : " + example1.SaveDataPlayerState[ 2 ].ES.HP + "\n"
+			+ "SaveDataPlayerState[ 1 ].HP : " + example1.SaveDataPlayerState[ 1 ].STATUS.HP + "\n"
+			+ "SaveDataPlayerState[ 2 ].HP : " + example1.SaveDataPlayerState[ 2 ].STATUS.HP + "\n"
 			/* equip */
 			+ "SaveDataPlayerEquipmentParam[ 0 ].ID : " + example2.SaveDataPlayerEquipmentParam[ 0 ].ID + "\n"
 			+ "SaveDataPlayerEquipmentParam[ 1 ].Accessory2 : " + example2.SaveDataPlayerEquipmentParam[ 1 ].Accessory2 + "\n"
@@ -80,8 +80,8 @@ public class ExampleTestSaveLoad {
 		Debug.Log( saveTest );
 		for( int i = 0; i < myGV.GData.Players.Count; i++ ) {
 			// player
-			example1.SaveDataPlayerState[ i ].ES.HP = i + 100 * ( i + saveTest );
-			example1.SaveDataPlayerState[ i ].ES.MP = i + 200 * ( i + saveTest );
+			example1.SaveDataPlayerState[ i ].STATUS.HP = i + 100 * ( i + saveTest );
+			example1.SaveDataPlayerState[ i ].STATUS.MP = i + 200 * ( i + saveTest );
 
 			// equip
 			example2.SaveDataPlayerEquipmentParam[ i ].ID = i + ( saveTest + 1000 );
