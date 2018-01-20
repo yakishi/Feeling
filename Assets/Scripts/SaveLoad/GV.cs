@@ -248,16 +248,16 @@ public sealed class GV {
 				gameData.Players[ i ].Lv = myPlayerState[ i ].Lv;
 				gameData.Players[ i ].CFV = myPlayerState[ i ].CFV;
 				gameData.Players[ i ].SkillList = myPlayerState[ i ].SkillList;
-				gameData.Players[ i ].HP = myPlayerState[ i ].STATUS.HP;
-				gameData.Players[ i ].MP = myPlayerState[ i ].STATUS.MP;
-				gameData.Players[ i ].Atk = myPlayerState[ i ].STATUS.Atk;
-				gameData.Players[ i ].Def = myPlayerState[ i ].STATUS.Def;
-				gameData.Players[ i ].Matk = myPlayerState[ i ].STATUS.Matk;
-				gameData.Players[ i ].Mgr = myPlayerState[ i ].STATUS.Mgr;
-				gameData.Players[ i ].Luc = myPlayerState[ i ].STATUS.Luc;
-				gameData.Players[ i ].Agl = myPlayerState[ i ].STATUS.Agl;
-				gameData.Players[ i ].Feeling = myPlayerState[ i ].STATUS.Feeling;
-				gameData.Players[ i ].FeelingValue = myPlayerState[ i ].STATUS.FeelingValue;
+				gameData.Players[ i ].HP = myPlayerState[ i ].EquipmentStatus.HP;
+				gameData.Players[ i ].MP = myPlayerState[ i ].EquipmentStatus.MP;
+				gameData.Players[ i ].Atk = myPlayerState[ i ].EquipmentStatus.Atk;
+				gameData.Players[ i ].Def = myPlayerState[ i ].EquipmentStatus.Def;
+				gameData.Players[ i ].Matk = myPlayerState[ i ].EquipmentStatus.Matk;
+				gameData.Players[ i ].Mgr = myPlayerState[ i ].EquipmentStatus.Mgr;
+				gameData.Players[ i ].Luc = myPlayerState[ i ].EquipmentStatus.Luc;
+				gameData.Players[ i ].Agl = myPlayerState[ i ].EquipmentStatus.Agl;
+				gameData.Players[ i ].Feeling = myPlayerState[ i ].EquipmentStatus.Feeling;
+				gameData.Players[ i ].FeelingValue = myPlayerState[ i ].EquipmentStatus.FeelingValue;
 
 			}
 
@@ -322,16 +322,16 @@ public sealed class GV {
 
 	/*===============================================================*/
 	/// <summary>セーブを行います</summary>
-	/// <param name="savSTATUSlot">セーブするセーブデータスロットを指定します</param>
-	public void GameDataSave( int savSTATUSlot ) {
+	/// <param name="saveSlot">セーブするセーブデータスロットを指定します</param>
+	public void GameDataSave( int saveSlot ) {
 
-		SData.usedSave[ savSTATUSlot - 1 ] = true;
+		SData.usedSave[ saveSlot - 1 ] = true;
 
 		SaveData.setSlot( 0 );
 		SaveData.setClass( "SystemData", SData );
 		SaveData.save( );
 
-		SaveData.setSlot( savSTATUSlot );
+		SaveData.setSlot( saveSlot );
 
 		/*===============================================================*/
 		// セーブデータへの値セット部 START
@@ -348,8 +348,8 @@ public sealed class GV {
 
 		SaveData.save( );
 
-		//TimeSpan t = new TimeSpan( 0, 0, gameData.timeSecond[ savSTATUSlot ] );
-		//Debug.Log( "<color='red'>" + savSTATUSlot + ", " + saveLoadSlot + ", playTime : " + t + "</color>" );
+		//TimeSpan t = new TimeSpan( 0, 0, gameData.timeSecond[ saveSlot ] );
+		//Debug.Log( "<color='red'>" + saveSlot + ", " + saveLoadSlot + ", playTime : " + t + "</color>" );
 
 
 	}
@@ -431,6 +431,7 @@ public sealed class GV {
 	/// <summary>
 	/// アイテム情報
 	/// </summary>
+	[Serializable]
 	public class ItemParam {
 		/// <summary>現在所持しているアイテム一覧</summary>
 		public List<string> Name;

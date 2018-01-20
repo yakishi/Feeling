@@ -78,7 +78,7 @@ public sealed class SingltonPlayerManager {
 		// 人数分の player を生成する
 		for ( int i = 0; i < myGV.GData.Players.Count; i++ ) {
 			PlayerSaveList.Add( new PlayerParameters( ) );
-			PlayerSaveList[ i ].STATUS = new Status( );
+			PlayerSaveList[ i ].EquipmentStatus = new Status( );
 			PlayerSaveList[ i ].SkillList = new List<string>( );
 
 		}
@@ -140,7 +140,7 @@ public sealed class SingltonPlayerManager {
 				PlayerArray[ i, j ].Name = "P" + ( i + 1 );
 
 				// TODO : index i で, Enum Feel をテキトウに入れる
-				PlayerArray[ i, j ].RF = (SingltonSkillManager.Feel)Enum.ToObject( typeof(SingltonSkillManager.Feel), i );
+				PlayerArray[ i, j ].RF = ( SingltonSkillManager.Feel )Enum.ToObject( typeof( SingltonSkillManager.Feel ), i );
 
 				PlayerArray[ i, j ].STATUS = new Status( );
 				PlayerArray[ i, j ].STATUS.HP = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_HP" ) );
@@ -151,9 +151,8 @@ public sealed class SingltonPlayerManager {
 				PlayerArray[ i, j ].STATUS.Mgr = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_MGR" ) );
 				PlayerArray[ i, j ].STATUS.Luc = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_LUC" ) );
 				PlayerArray[ i, j ].STATUS.Agl = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_AGL" ) );
-				PlayerArray[ i, j ].STATUS.Feeling = (SingltonSkillManager.Feel)Enum.ToObject(typeof(SingltonSkillManager.Feel), int.Parse(myLoader.GetCSVData(myCsvData[i].key, myCsvData[i].data, i + "_FEELING")));
-                //myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_FEELING" );
-                PlayerArray[ i, j ].STATUS.FeelingValue = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_FEELINGVALUE" ) );
+				PlayerArray[ i, j ].STATUS.Feeling = ( SingltonSkillManager.Feel )Enum.ToObject( typeof( SingltonSkillManager.Feel ), int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, i + "_FEELING" ) ) );
+				PlayerArray[ i, j ].STATUS.FeelingValue = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_FEELINGVALUE" ) );
 
 				PlayerArray[ i, j ].SkillList = new List<string>( );
 				List<string> div = new List<string>( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_InitSkillList(ID/ID・・・)" ).Split( '/' ) );
