@@ -38,13 +38,21 @@ public class ExampleTestSaveLoad {
 
 		Debug.Log( "<color='red'>SaveDataPlayerState[ 0 ].LV : " + example1.SaveDataPlayerState[ 0 ].Lv + "\n"
 			/* player */
-			+ "SaveDataPlayerState[ 1 ].HP : " + example1.SaveDataPlayerState[ 1 ].STATUS.HP + "\n"
-			+ "SaveDataPlayerState[ 2 ].HP : " + example1.SaveDataPlayerState[ 2 ].STATUS.HP + "\n"
+			+ "SaveDataPlayerState[ 1 ].HP : " + example1.SaveDataPlayerState[ 1 ].EquipmentStatus.HP + "\n"
+			+ "SaveDataPlayerState[ 2 ].HP : " + example1.SaveDataPlayerState[ 2 ].EquipmentStatus.HP + "\n"
 			/* equip */
 			+ "SaveDataPlayerEquipmentParam[ 0 ].ID : " + example2.SaveDataPlayerEquipmentParam[ 0 ].ID + "\n"
 			+ "SaveDataPlayerEquipmentParam[ 1 ].Accessory2 : " + example2.SaveDataPlayerEquipmentParam[ 1 ].Accessory2 + "\n"
 			+ "GV.slot : " + myGV.slot + "</color>" );
 
+		foreach( SingltonPlayerManager.PlayerParameters items1 in example1.SaveDataPlayerState ) {
+			foreach( string items2 in items1.SkillList ) {
+				Debug.Log( "<color='red'>セーブデータ ( スキルリスト ) : " + items2 + "</color>" );
+
+			}
+
+		}
+		
 		foreach( SingltonSkillManager.SkillParam items1 in example3.SDSkill ) {
 			foreach( string items2 in items1.Name ) {
 				Debug.Log( "<color='red'>セーブデータ ( スキル ) : " + items2 + "</color>" );
@@ -80,8 +88,9 @@ public class ExampleTestSaveLoad {
 		Debug.Log( saveTest );
 		for( int i = 0; i < myGV.GData.Players.Count; i++ ) {
 			// player
-			example1.SaveDataPlayerState[ i ].STATUS.HP = i + 100 * ( i + saveTest );
-			example1.SaveDataPlayerState[ i ].STATUS.MP = i + 200 * ( i + saveTest );
+			example1.SaveDataPlayerState[ i ].EquipmentStatus.HP = i + 100 * ( i + saveTest );
+			example1.SaveDataPlayerState[ i ].EquipmentStatus.MP = i + 200 * ( i + saveTest );
+			example1.SaveDataPlayerState[ i ].SkillList.Add( "プレイヤー " + i + " にスキル" + ( i + saveTest + 10 ) + "名を追加しました。" );
 
 			// equip
 			example2.SaveDataPlayerEquipmentParam[ i ].ID = i + ( saveTest + 1000 );

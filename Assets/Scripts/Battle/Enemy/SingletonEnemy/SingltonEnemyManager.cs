@@ -76,7 +76,6 @@ public sealed class SingltonEnemyManager {
 
 	/*===============================================================*/
 	/// <summary>EnemyParameters</summary>
-	[ SerializeField ]
 	public class EnemyParameters {
 		/// <summary>0からの連番:敵を識別します</summary>
 		public int ID;
