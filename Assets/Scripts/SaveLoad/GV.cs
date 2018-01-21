@@ -36,22 +36,30 @@ public sealed class GV {
 		// 毎回 new すると前のセーブデータが消えるので一回だけ new する
 		gameData = new GameData( );
 
+		// player
 		gameData.Players = new List<PlayerParam>( );
-
+		// equip
 		gameData.Equipments = new List<EquipmentParam>( );
-
+		// skill
 		gameData.PlayersSkills = new List<SkillParam>( );
-
+		// item
 		gameData.Items = new ItemParam( );
 		gameData.Items.Name = new List<string>( );
 		gameData.Items.Stock = new List<int>( );
+		// event
+		gameData.Flag = new FlagManage( );
+		gameData.Flag.Key = new List<string>( );
+		gameData.Flag.Value = new List<bool>( );
 
 		for( int i = 0; i < PLAYERS /* !変更しない! */; i++ ) {
+			// player
 			gameData.Players.Add( new PlayerParam( ) );
+			// skill
 			gameData.Players[ i ].SkillList = new List<string>( );
-			gameData.Equipments.Add( new EquipmentParam( ) );
 			gameData.PlayersSkills.Add( new SkillParam( ) );
 			gameData.PlayersSkills[ i ].Name = new List<string>( );
+			// equip
+			gameData.Equipments.Add( new EquipmentParam( ) );
 
 		}
 
@@ -83,6 +91,8 @@ public sealed class GV {
 		/// 上の様に変換しプレイ時間を取得します
 		/// </remarks>
 		public int timeSecond;
+		/// <summary>イベントフラグ管理</summary>
+		public FlagManage Flag;
 		#endregion
 
 		#region Player
@@ -165,6 +175,8 @@ public sealed class GV {
 		// skill
 		SingltonSkillManager.Instance.SDSkill.Clear( );
 		SingltonSkillManager.Instance.NewGame( );
+		// Event
+		SingltonFlagManager.Instance.NewGame( );
 		// time
 		gameData.timeSecond = 0;
 
@@ -182,6 +194,7 @@ public sealed class GV {
 		SingltonEquipmentManager.Instance.LoadEquipment( slotIndex );
 		SingltonSkillManager.Instance.LoadSkill( slotIndex );
 		SingltonItemManager.Instance.LoadItem( slotIndex );
+		SingltonFlagManager.Instance.LoadFlag( slotIndex );
 
 
 	}
@@ -220,6 +233,7 @@ public sealed class GV {
 		public const string ITEM_PARAM = "ITEM_PARAM";
 		public const string SKILL_PARAM = "SKILL_PARAM";
 		public const string KEY_CURRENT_TIME = "KEY_CURRENT_TIME";
+		public const string FLAG_PARAM = "FLAG_PARAM";
 
 
 	}
@@ -307,6 +321,18 @@ public sealed class GV {
 		}
 		/*===============================================================*/
 
+		/*===============================================================*/
+		// イベント情報読込
+		SingltonFlagManager.FlagManage myFlag = SaveData.getClass<SingltonFlagManager.FlagManage>( GV.SaveDataKey.FLAG_PARAM );
+
+		if ( myFlag != null ) {
+			gameData.Flag.Key = myFlag.Key;
+			gameData.Flag.Value = myFlag.Value;
+
+		}
+
+		/*===============================================================*/
+
 		// ロードスロット + キーでプレイ時間を読み込む
 		if ( loadSlot > 0 ) {
 			gameData.timeSecond = SaveData.getInt( SaveDataKey.KEY_CURRENT_TIME, 0 );
@@ -340,6 +366,7 @@ public sealed class GV {
 		SaveData.setList( SaveDataKey.EQUIPMENT_PARAM, SingltonEquipmentManager.Instance.SaveDataPlayerEquipmentParam ); // プレイヤー装備パラメーター
 		SaveData.setList( SaveDataKey.SKILL_PARAM, SingltonSkillManager.Instance.SDSkill ); // プレイヤースキルパラメーター
 		SaveData.setClass( SaveDataKey.ITEM_PARAM, SingltonItemManager.Instance.SDItem ); // アイテムパラメーター
+		SaveData.setClass( SaveDataKey.FLAG_PARAM, SingltonFlagManager.Instance.SDFlg ); // イベントパラメーター
 
 		// セーブデータへの値セット部 END
 		/*===============================================================*/
@@ -437,6 +464,19 @@ public sealed class GV {
 		public List<string> Name;
 		/// <summary>現在所持しているアイテムに対するアイテム所持数</summary>
 		public List<int> Stock;
+
+
+	}
+
+	[Serializable]
+	/// <summary>
+	/// イベント管理クラス
+	/// </summary>
+	public class FlagManage {
+		/// <summary>イベントフラグキー</summary>
+		public List<string> Key;
+		/// <summary>イベントフラグ</summary>
+		public List<bool> Value;
 
 
 	}

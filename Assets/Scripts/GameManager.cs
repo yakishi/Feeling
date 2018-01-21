@@ -48,10 +48,11 @@ public class GameManager : MonoBehaviour {
             return players;
         }
     }
+	SingltonFlagManager mySFM;
 
-    /*===============================================================*/
-    /// <summary>brief UnityEngine ライフサイクルによる初期化 </summary>
-    void Awake( ) {
+	/*===============================================================*/
+	/// <summary>brief UnityEngine ライフサイクルによる初期化 </summary>
+	void Awake( ) {
 		// 初期化関数を呼び出す
 		Initialize( );
 
@@ -69,6 +70,7 @@ public class GameManager : MonoBehaviour {
 		mySEM = SingltonEquipmentManager.Instance;
 		mySSM = SingltonSkillManager.Instance;
 		mySIM = SingltonItemManager.Instance;
+		mySFM = SingltonFlagManager.Instance;
 
 		Application.targetFrameRate = 60; // 60 FPS に設定
 		Debug.Log( "現在のシーン : " + state.ToString( ) );

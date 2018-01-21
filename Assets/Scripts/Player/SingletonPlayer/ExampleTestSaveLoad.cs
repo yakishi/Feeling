@@ -9,6 +9,7 @@ public class ExampleTestSaveLoad {
 	SingltonEquipmentManager example2;
 	SingltonSkillManager example3;
 	SingltonItemManager example4;
+	SingltonFlagManager example5;
 	//
 	static int saveTest;
 
@@ -22,6 +23,7 @@ public class ExampleTestSaveLoad {
 		example2 = SingltonEquipmentManager.Instance;
 		example3 = SingltonSkillManager.Instance;
 		example4 = SingltonItemManager.Instance;
+		example5 = SingltonFlagManager.Instance;
 		//
 		saveTest = example1.SaveDataPlayerState[ 0 ].Lv;
 		Debug.Log( saveTest );
@@ -67,6 +69,12 @@ public class ExampleTestSaveLoad {
 
 		}
 
+		for( int i = 0; i < example5.SDFlg.Key.Count; i++ ) {
+			Debug.Log( "<color='red'>セーブデータ ( イベント ) " +
+				"( Key : Value ) : ( " + example5.SDFlg.Key[ i ] + " : " + example5.SDFlg.Value[ i ] + " )</color>" );
+
+		}
+
 		TimeSpan t = new TimeSpan( 0, 0, myGV.GData.timeSecond );
 		Debug.Log( "slot " + myGV.slot + " load time : " + t ); 
 
@@ -102,6 +110,10 @@ public class ExampleTestSaveLoad {
 			// item
 			example4.SDItem.Name.Add( "アイテム" + i + "を追加しました。" );
 			example4.SDItem.Stock.Add( i );
+
+			// event
+			example5.SDFlg.Key.Add( "Event:Talk" + ( i + saveTest ) );
+			example5.SDFlg.Value.Add( false );
 
 		}
 		example1.SaveDataPlayerState[ 0 ].Lv = saveTest;
