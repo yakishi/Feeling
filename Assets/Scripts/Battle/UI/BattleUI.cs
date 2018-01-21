@@ -138,6 +138,12 @@ public class BattleUI : MonoBehaviour
     /// プレイヤーのHPバー
     /// </summary>
     Slider[] playerHP;
+    
+
+    /// <summary>
+    /// プレイヤーのMPバー
+    /// </summary>
+    Slider[] playerMP;
 
     [SerializeField]
     Text turnText;
@@ -158,6 +164,8 @@ public class BattleUI : MonoBehaviour
     }
 
     public GameObject beforeGrid;
+    public List<Button> beforeSelect;
+    Vector3 defScale;
 
     // Use this for initialization
     void Start()
@@ -170,18 +178,29 @@ public class BattleUI : MonoBehaviour
         }
 
         skillButtonList = new List<SkillButton>();
+        NotActiveButton(SkillWindow);
+        ActiveButton(battleController.combatGrid);
+        NotActiveButton(battleController.monsterZone);
+        NotActiveButton(battleController.playerGrid);
         skillWindow.SetActive(false);
         skillDetail.SetActive(false);
         tempSkillid = "none";
         isSkillScopeAll = false;
+        beforeSelect = new List<Button>();
+
 
         players = battleController.Players;
         monsters = battleController.Monsters;
+
         playerHP = new Slider[players.Length];
-        for (int i = 0; i < players.Length; i++) {
-            playerHP[i] = players[i].gameObject.GetComponentInChildren<Slider>();
+        playerMP = new Slider[players.Length];
+        for(int i = 0; i < players.Length; i++) {
+            playerHP[i] = players[i].transform.Find("HPBar").GetComponent<Slider>();
             playerHP[i].maxValue = players[i].Hp;
             playerHP[i].enabled = false;
+            playerMP[i] = players[i].transform.Find("MPBar").GetComponent<Slider>();
+            playerMP[i].maxValue = players[i].Mp;
+            playerMP[i].enabled = false;
         }
 
         foreach (var n in monsters) {
@@ -208,10 +227,12 @@ public class BattleUI : MonoBehaviour
 
                     }
                     currentCharacter.GetComponent<BattlePlayer>().attackAction(monsters, tempSkillid);
-                    ClearMonsterSelecter();
+                    ClearSelecter();
                     isSkillScopeAll = false;
                     selectMode = SelectMode.Behaviour;
                 });
+
+            defScale = Vector3.zero;
         }
 
         foreach (var n in players) {
@@ -228,6 +249,21 @@ public class BattleUI : MonoBehaviour
                         playerAttack(tempSkillid);
                     });
                 });
+
+            button.OnClickAsObservable()
+                .Where(_ => selectMode == SelectMode.Supporter && isSkillScopeAll)
+                .Subscribe(_ => {
+                    UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
+
+                    for (int i = 0; i < monsters.Length; ++i) {
+                        LeanTween.alpha(players[i].GetComponent<RectTransform>(), 1.0f, 0.3f).setFrom(0.0f).setLoopCount(3).setLoopType(LeanTweenType.pingPong);
+
+                    }
+                    currentCharacter.GetComponent<BattlePlayer>().attackAction(players, tempSkillid);
+                    ClearSelecter();
+                    isSkillScopeAll = false;
+                    selectMode = SelectMode.Behaviour;
+                });
         }
 
     }
@@ -241,10 +277,15 @@ public class BattleUI : MonoBehaviour
 
             button.OnClickAsObservable()
                 .Where(_ => selectMode == SelectMode.Skill)
+                .Where(_ => currentCharacter.CurrentMp - n.SkillInfo.MP >= 0)
                 .Subscribe(_ => {
-                    beforeGrid = battleController.monsterZone;
+                    beforeGrid = skillWindow;
+                    beforeSelect.Add(button);
+                    UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
+                    currentCharacter.GetComponent<BattlePlayer>().playerSelect.DeSelect();
                     DecisionScope(n);
                     DecisionTarget(n);
+
                 });
         }
     }
@@ -252,7 +293,7 @@ public class BattleUI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        ChangeHPBar();
+        ChangeBar();
         currentCharacter = battleController.CurrentActionCharacter;
 
         EndDisplay();
@@ -260,8 +301,9 @@ public class BattleUI : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.Escape) && selectMode == SelectMode.Skill) {
             UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
             BattleUI.NotActiveButton(skillWindow);
-            BattleUI.ActiveButton(battleController.combatGrid);
-            ClearMonsterSelecter();
+            BattleUI.ActiveButton(battleController.combatGrid,beforeSelect[beforeSelect.Count - 1].gameObject);
+            beforeSelect.RemoveAt(beforeSelect.Count - 1);
+            ClearSelecter();
             skillWindow.SetActive(false);
             skillDetail.SetActive(false);
 
@@ -270,7 +312,7 @@ public class BattleUI : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape) && selectMode == SelectMode.Monster) {
             UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
             BattleUI.NotActiveButton(battleController.monsterZone);
-            ClearMonsterSelecter();
+            ClearSelecter();
             if(beforeGrid == skillWindow) {
                 skillWindow.SetActive(true);
                 skillDetail.SetActive(true);
@@ -280,7 +322,10 @@ public class BattleUI : MonoBehaviour
                 selectMode = SelectMode.Behaviour;
             }
 
-            BattleUI.ActiveButton(beforeGrid);
+            ClearSelecter();
+            currentCharacter.GetComponent<BattlePlayer>().playerSelect.Select();
+            BattleUI.ActiveButton(beforeGrid, beforeSelect[beforeSelect.Count - 1].gameObject);
+            beforeSelect.RemoveAt(beforeSelect.Count - 1);
 
         }
         if(Input.GetKeyDown(KeyCode.Escape) && selectMode == SelectMode.Supporter) {
@@ -295,17 +340,16 @@ public class BattleUI : MonoBehaviour
                 selectMode = SelectMode.Behaviour;
             }
 
-            BattleUI.ActiveButton(beforeGrid);
+            ClearSelecter();
+            currentCharacter.GetComponent<BattlePlayer>().playerSelect.Select();
+            BattleUI.ActiveButton(beforeGrid,beforeSelect[beforeSelect.Count - 1].gameObject);
+            beforeSelect.RemoveAt(beforeSelect.Count - 1);
         }
 
         if (currentState == null) return;
         turnText.text = currentState;
     }
 
-    void ModeChange()
-    {
-
-    }
 
     /// <summary>
     /// スキル範囲毎の処理
@@ -313,21 +357,32 @@ public class BattleUI : MonoBehaviour
     void DecisionScope(SkillButton n)
     {
         if (n.SkillInfo.myScope == SingltonSkillManager.Scope.OverAll) {
-            UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
             NotActiveButton(skillWindow);
             skillWindow.SetActive(false);
             skillDetail.SetActive(false);
+            
 
             monsterSelecter = new GameObject[monsters.Length];
             isSkillScopeAll = true;
 
-            //モンスターセレクターを全モンスター上に表示
-            for (int i = 0; i < monsters.Length; ++i) {
-                if (monsters[i].transform.childCount >= 1) continue;
-                monsterSelecter[i] = GameObject.Instantiate(monsterSelecterPrefab, monsters[i].transform);
-                monsterSelecter[i].transform.position = monsters[i].gameObject.transform.position + Vector3.up * 180.0f;
-            }
+            if(n.SkillInfo.myTarget == SingltonSkillManager.Target.Supporter) {
+                foreach (var p in players) {
+                    p.gameObject.GetComponent<PlayerSelect>().enabled = false;
+                    BattlePlayer player = p.GetComponent<BattlePlayer>();
 
+                    defScale = player.img.transform.localScale;
+                    player.img.glowSize = 10;
+                    player.img.transform.localScale = player.img.transform.localScale * 1.2f;
+                }
+                
+            }else if(n.SkillInfo.myTarget == SingltonSkillManager.Target.Enemy) {
+                //モンスターセレクターを全モンスター上に表示
+                for (int i = 0; i < monsters.Length; ++i) {
+                    if (monsters[i].transform.childCount >= 1) continue;
+                    monsterSelecter[i] = GameObject.Instantiate(monsterSelecterPrefab, monsters[i].transform);
+                    monsterSelecter[i].transform.position = monsters[i].gameObject.transform.position + Vector3.up * 180.0f;
+                }
+            }
         }
         else if (n.SkillInfo.myScope == SingltonSkillManager.Scope.Simplex) {
             UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
@@ -346,14 +401,15 @@ public class BattleUI : MonoBehaviour
     void DecisionTarget(SkillButton n)
     {
         if (n.SkillInfo.myTarget == SingltonSkillManager.Target.Enemy) {
-            beforeGrid = skillWindow;
             ActiveButton(battleController.monsterZone);
             selectMode = SelectMode.Monster;
         }
         else if (n.SkillInfo.myTarget == SingltonSkillManager.Target.Supporter) {
-            beforeGrid = skillWindow;
             ActiveButton(battleController.playerGrid);
             selectMode = SelectMode.Supporter;
+        }
+        else if(n.SkillInfo.myTarget == SingltonSkillManager.Target.MySelf) {
+            OnlyActiveButton(currentCharacter.gameObject);
         }
     }
 
@@ -382,12 +438,24 @@ public class BattleUI : MonoBehaviour
         currentCharacter.GetComponent<BattlePlayer>().attackAction(new BattleCharacter[] { target }, skillId);
     }
 
-    public void ClearMonsterSelecter()
+    public void ClearSelecter()
     {
         if (monsterSelecter != null) {
             for (int i = 0; i < monsterSelecter.Length; i++)
                 DestroyObject(monsterSelecter[i]);
         }
+
+        if(defScale != Vector3.zero) {
+            foreach (var p in players) {
+                p.gameObject.GetComponent<PlayerSelect>().enabled = true;
+                BattlePlayer player = p.GetComponent<BattlePlayer>();
+
+                player.img.transform.localScale = defScale;
+                player.img.glowSize = 0;
+            }
+        }
+
+        defScale = Vector3.zero;
     }
 
     /// <summary>
@@ -426,23 +494,32 @@ public class BattleUI : MonoBehaviour
         }
     }
 
-    private void ChangeHPBar()
+    private void ChangeBar()
     {
         for (int i = 0; i < players.Length; i++) {
-            playerHP[i].value = players[i].CurrentHp;
+            if (players[i].gameObject.activeSelf != false) {
+                playerHP[i].value = players[i].CurrentHp;
+                playerHP[i].gameObject.GetComponentInChildren<Text>().text = "HP : " + players[i].CurrentHp + " / " + players[i].Hp;
+                playerMP[i].value = players[i].CurrentMp;
+                playerMP[i].gameObject.GetComponentInChildren<Text>().text = "MP : " + players[i].CurrentMp + " / " + players[i].Mp;
+            }
         }
     }
 
-    static public void ActiveButton(GameObject grid)
+    static public void ActiveButton(GameObject grid,GameObject targetObj = null)
     {
         for (var i = 0; i < grid.transform.childCount; i++) {
             grid.transform.GetChild(i).GetComponent<Button>().enabled = true;
         }
 
+        
         for (var i = 0; i < grid.transform.childCount; i++) {
+            if(targetObj == null) {
+                targetObj = grid.transform.GetChild(i).gameObject;
+            }
 
             if (grid.transform.GetChild(i).gameObject.activeSelf == true) {
-                UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(grid.transform.GetChild(i).gameObject);
+                UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(targetObj);
                 break;
             }
         }
@@ -453,5 +530,11 @@ public class BattleUI : MonoBehaviour
         for (var i = 0; i < grid.transform.childCount; i++) {
             grid.transform.GetChild(i).GetComponent<Button>().enabled = false;
         }
+    }
+
+    static public void OnlyActiveButton(GameObject targetObj)
+    {
+        targetObj.GetComponent<Button>().enabled = true;
+        UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(targetObj);
     }
 }

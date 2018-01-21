@@ -124,6 +124,7 @@ public sealed class SingltonSkillManager {
 			SkillArray[ i ] = new SkillInfo( );
 			SkillArray[ i ].ID = myLoader.GetCSVData( myCsvData.key, myCsvData.data, i + "_ID" );
 			SkillArray[ i ].skill = myLoader.GetCSVData( myCsvData.key, myCsvData.data, i + "_SKILL" );
+            SkillArray[ i ].MP = int.Parse(myLoader.GetCSVData(myCsvData.key, myCsvData.data, i + "_MP"));
 			SkillArray[ i ].ADV = float.Parse( myLoader.GetCSVData( myCsvData.key, myCsvData.data, i + "_ADV" ) );
 			SkillArray[ i ].MDV = float.Parse( myLoader.GetCSVData( myCsvData.key, myCsvData.data, i + "_MDV" ) );
 			SkillArray[ i ].myCategory = ( Category )Enum.ToObject( typeof( Category ), int.Parse( myLoader.GetCSVData( myCsvData.key, myCsvData.data, i + "_CATEGORY" ) ) );
@@ -239,6 +240,8 @@ public sealed class SingltonSkillManager {
 		public string ID;
 		/// <summary>スキル名</summary>
 		public string skill;
+        /// <summary>消費MP</summary>
+        public int MP;
 		/// <summary>攻撃依存値:AttackDependValue</summary>
 		public float ADV;
 		/// <summary>魔法依存値:MagicDependValue</summary>

@@ -17,14 +17,25 @@ public class BattlePlayer : BattleCharacter
     /// </summary>
     public Button[] combatButtons = new Button[6];
 
+    [SerializeField]
+    Text playerName;
+
+    [SerializeField]
+    public GlowImage img;
+
+    [SerializeField]
+    public PlayerSelect playerSelect;
+
     public override void battleStart()
     {
         base.battleStart();
-        GetComponentInChildren<Text>().text = this.name;
+        playerName.text = this.param.Name;
+        //. = Resources.Load("/Images/Player01") as Sprite;
         attachButton();
         combatButtons[0].OnClickAsObservable()
             .Where(_ => isPlayerAction)
             .Subscribe(_ => {
+                battleUI.beforeSelect.Add(combatButtons[0]);
                 BattleUI.NotActiveButton(battleController.combatGrid);
                 BattleUI.ActiveButton(battleController.monsterZone);
                 battleUI.beforeGrid = battleController.combatGrid;
@@ -54,6 +65,7 @@ public class BattlePlayer : BattleCharacter
                     }
                 }
 
+                battleUI.beforeSelect.Add(combatButtons[2]);
                 battleUI.SkillWindow.SetActive(true);
                 battleUI.SkillDetail.SetActive(true);
                 battleUI.SkillMode();
@@ -75,12 +87,7 @@ public class BattlePlayer : BattleCharacter
     public void attackAction(BattleCharacter[] targets, string id = "none")
     {
         var skill = new Skill();
-        if (id == "none") {
-            skill.Target = SingltonSkillManager.Target.Enemy;
-            skill.Scope = SingltonSkillManager.Scope.Simplex;
-            skill.Category = SingltonSkillManager.Category.Damage;
-        }
-        else{
+        if (id != "none") {
             skill = searchSkill(id);
         }
         isPlayerAction = false;
@@ -106,6 +113,7 @@ public class BattlePlayer : BattleCharacter
         BattleUI.DisplayPlayerTurn(this.name);
 
         isPlayerAction = true;
+        playerSelect.Select();
         battleController.combatGrid.SetActive(true);
         
         BattleUI.ActiveButton(battleController.combatGrid);
@@ -115,6 +123,12 @@ public class BattlePlayer : BattleCharacter
 
         if(battleUI != null)
             battleUI.Mode = BattleUI.SelectMode.Behaviour;
+    }
+
+    public override void endAction()
+    {
+        playerSelect.DeSelect();
+        base.endAction();
     }
 
     private void attachButton()
