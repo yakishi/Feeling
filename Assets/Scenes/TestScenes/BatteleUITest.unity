@@ -825,7 +825,7 @@ MonoBehaviour:
   m_Padding:
     m_Left: 0
     m_Right: 0
-    m_Top: 20
+    m_Top: 30
     m_Bottom: 0
   m_ChildAlignment: 0
   m_StartCorner: 0
@@ -2057,7 +2057,7 @@ MonoBehaviour:
   monsterZone: {fileID: 1253528623}
   combatGrid: {fileID: 860349042}
   playerGrid: {fileID: 916932324}
-  battlePlayerPrefab: {fileID: 1514586635453666, guid: e7c3111d764a8b54eb86c4be7768549d,
+  battlePlayerPrefab: {fileID: 1184272330607346, guid: f05ee0dae4957874d94f4756b30f6992,
     type: 2}
   battleMonsterPrefab: {fileID: 1663903746640328, guid: cf4514560e71d3c4998188a570a8e892,
     type: 2}
@@ -2171,6 +2171,7 @@ MonoBehaviour:
   skillItemPrefab: {fileID: 1589399928477768, guid: 4db8307328522ad45b5aa99b0af74860,
     type: 2}
   turnText: {fileID: 885940265}
+  beforeGrid: {fileID: 0}
 --- !u!1001 &1926711948
 Prefab:
   m_ObjectHideFlags: 0

@@ -24,9 +24,6 @@ public class BattleMonster : BattleCharacter
         // 一番HPの高いキャラクターを攻撃
         var target = battleController.Players.MaxElement(player => player.CurrentHp);
         var skill = new Skill();
-        skill.Target = SingltonSkillManager.Target.Enemy;
-        skill.Scope = SingltonSkillManager.Scope.Simplex;
-        skill.Category = SingltonSkillManager.Category.Damage;
 
         Observable.Timer(System.TimeSpan.FromMilliseconds(800.0))
             .Take(1)

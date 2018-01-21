@@ -122,8 +122,6 @@ public class BattleController : MonoBehaviour
 
         characters = new List<BattleCharacter>();
         createDamyData();
-
-        int id = 0;
         foreach (var character in characters) {
             // TODO: ロードIDはプレイヤーとモンスターで今後分ける
             // 仮ID読み込み
