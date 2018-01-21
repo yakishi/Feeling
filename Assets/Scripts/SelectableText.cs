@@ -20,7 +20,8 @@ public class SelectableText : MonoBehaviour {
             var name = button.GetComponentInChildren<Text>().text;
             if (name == skill.SkillInfo.skill) {
                 battleUI.skillDetailText.GetComponent<Text>().text =
-                    "種類 :" + Category(skill.SkillInfo.myCategory) +
+                    "消費MP :" + skill.SkillInfo.MP +
+                    ", 種類 :" + Category(skill.SkillInfo.myCategory) +
                     ", 対象 :" + Target(skill.SkillInfo.myTarget) +
                     ", 範囲 :" + Scope(skill.SkillInfo.myScope);
             }

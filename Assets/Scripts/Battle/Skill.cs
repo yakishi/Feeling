@@ -6,46 +6,13 @@ public class Skill
 {
     SingltonSkillManager.SkillInfo skill;
 
-    /// <summary>
-    /// スキルの種類
-    /// </summary>
-    //protected TargetRange range;
-    //public TargetRange Range { get { return range; } }
-    public SingltonSkillManager.Category Category
-    {
-        set
-        {
-            skill.myCategory = value;
-        }
-    }
-
-    /// <summary>
-    /// スキル範囲
-    /// </summary>
-    //protected TargetType target;
-    //public TargetType Target { get { return target; } }
-    public SingltonSkillManager.Scope Scope
-    {
-        set
-        {
-            skill.myScope = value;
-        }
-    }
-
-    /// <summary>
-    /// スキル対象
-    /// </summary>
-    public SingltonSkillManager.Target Target
-    { 
-        set
-        {
-            skill.myTarget = value;
-        }
-    }
-
     public Skill()
     {
         skill = new SingltonSkillManager.SkillInfo();
+        skill.MP = 0;
+        skill.myTarget = SingltonSkillManager.Target.Enemy;
+        skill.myScope = SingltonSkillManager.Scope.Simplex;
+        skill.myCategory = SingltonSkillManager.Category.Damage;
     }
 
     public Skill(SingltonSkillManager.SkillInfo info)
@@ -101,6 +68,15 @@ public class Skill
             default:
                 break;
         }
+
+        ret.Add(new BattleAction()
+        {
+            targets = new BattleCharacter[] { from },
+            effects = new Dictionary<BattleParam, int>
+            {
+                {BattleParam.MP, -skill.MP}
+            }
+        });
         return ret;
     }
 }

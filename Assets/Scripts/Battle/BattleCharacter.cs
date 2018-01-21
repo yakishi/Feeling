@@ -52,6 +52,23 @@ public abstract class BattleCharacter : MonoBehaviour
         }
     }
 
+    public int Mp
+    {
+        get
+        {
+            return status.MP;
+        }
+    }
+
+    protected int currentMp;
+    public int CurrentMp
+    {
+        get
+        {
+            return currentMp;
+        }
+    }
+
     public int Atk {
         get
         {
@@ -154,6 +171,7 @@ public abstract class BattleCharacter : MonoBehaviour
     /// <param name="id"></param>
     public virtual void loadData(string id, GameManager gameManager, bool dummy = false)
     {
+        //モンスター用ダミーデータ
         if (dummy) {
             status = new SingltonPlayerManager.Status(100, 100, 10, 10, 10, 10, 10, Random.Range(1, 20), SingltonSkillManager.Feel.Do, 20);
             currentHp = status.HP;
@@ -171,6 +189,7 @@ public abstract class BattleCharacter : MonoBehaviour
         }
         status = param.STATUS;
         currentHp = param.STATUS.HP;
+        currentMp = param.STATUS.MP;
         buffList = new List<BuffManager>();
         skillManager = gameManager.SkillManager;
         //ToDo PlayerParamにスキルリストが追加され次第変更
@@ -207,7 +226,7 @@ public abstract class BattleCharacter : MonoBehaviour
     /// </remarks>
     public abstract void startAction();
 
-    public void endAction()
+    public virtual void endAction()
     {
         foreach (var n in buffList) {
             n.AdvanceBuffTurn();
@@ -278,6 +297,9 @@ public abstract class BattleCharacter : MonoBehaviour
             switch (targetParam) {
                 case BattleParam.HP:
                     currentHp += effects[targetParam];
+                    break;
+                case BattleParam.MP:
+                    currentMp += effects[targetParam];
                     break;
                 case BattleParam.Atk:
                     status.HP += effects[targetParam];
