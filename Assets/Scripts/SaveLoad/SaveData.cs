@@ -110,6 +110,15 @@ public class SaveData
     {
         SaveObj[saveSlot].setList<T>(key, list);
     }
+	/// <summary>
+	/// Dictionary 型を書き込みます
+	/// </summary>
+	/// <param name="key">key</param>
+	/// <param name="list">書き込む値</param>
+	static public void setDictionary<TKey, TValue>( string key, Dictionary<TKey, TValue> dictionary )
+	{
+		SaveObj [ saveSlot ].setDictionary<TKey, TValue>( key, dictionary );
+	}
     #endregion
 
     #region Getter
@@ -173,6 +182,16 @@ public class SaveData
     {
         return SaveObj[saveSlot].getList(key, defaultValue);
     }
+	/// <summary>
+	/// Dictionary 型を読み込みます
+	/// </summary>
+	/// <param name="key">key</param>
+	/// <param name="defaultValue">keyが見つからなかったときの値</param>
+	/// <returns>見つかった値を返します</returns>
+	static public Dictionary<TKey, TValue> getDictionary<TKey, TValue>( string key, Dictionary<TKey, TValue> defaultValue = null )
+	{
+		return SaveObj [ saveSlot ].getDictionary( key, defaultValue );
+	}
     #endregion
 
     /// <summary>
@@ -285,6 +304,10 @@ public class SaveData
             var json = JsonUtility.ToJson(new Serialization<T>(list));
             saveData[key] = json;
         }
+		public void setDictionary<TKey, TValue>( string key, Dictionary<TKey, TValue> dictionary ) {
+			var json = JsonUtility.ToJson( new Serialization<TKey, TValue>( dictionary ) );
+			saveData [ key ] = json;
+		}
         #endregion
 
         #region Getter
@@ -341,6 +364,16 @@ public class SaveData
             var list = JsonUtility.FromJson<Serialization<T>>(json).Target;
             return list;
         }
+		public Dictionary<TKey, TValue>getDictionary<TKey,TValue>( string key, Dictionary<TKey, TValue> defaultValue )
+		{
+			if ( !saveData.ContainsKey( key ) ) {
+				return defaultValue;
+			}
+
+			var json = saveData [ key ];
+			var dictionary = JsonUtility.FromJson<Serialization<TKey, TValue>>( json ).Target;
+			return dictionary;
+		}
         #endregion
 
         public void save()
