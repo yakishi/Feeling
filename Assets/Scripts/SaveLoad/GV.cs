@@ -48,8 +48,7 @@ public sealed class GV {
 		gameData.Items.Stock = new List<int>( );
 		// event
 		gameData.Flag = new FlagManage( );
-		gameData.Flag.Key = new List<string>( );
-		gameData.Flag.Value = new List<bool>( );
+		gameData.Flag.EventFlag = new Dictionary<string, bool>( );
 
 		for( int i = 0; i < PLAYERS /* !変更しない! */; i++ ) {
 			// player
@@ -323,11 +322,10 @@ public sealed class GV {
 
 		/*===============================================================*/
 		// イベント情報読込
-		SingltonFlagManager.FlagManage myFlag = SaveData.getClass<SingltonFlagManager.FlagManage>( GV.SaveDataKey.FLAG_PARAM );
+		Dictionary<string, bool> myFlag = SaveData.getDictionary<string, bool>( GV.SaveDataKey.FLAG_PARAM );
 
 		if ( myFlag != null ) {
-			gameData.Flag.Key = myFlag.Key;
-			gameData.Flag.Value = myFlag.Value;
+			gameData.Flag.EventFlag = myFlag;
 
 		}
 
@@ -366,7 +364,8 @@ public sealed class GV {
 		SaveData.setList( SaveDataKey.EQUIPMENT_PARAM, SingltonEquipmentManager.Instance.SaveDataPlayerEquipmentParam ); // プレイヤー装備パラメーター
 		SaveData.setList( SaveDataKey.SKILL_PARAM, SingltonSkillManager.Instance.SDSkill ); // プレイヤースキルパラメーター
 		SaveData.setClass( SaveDataKey.ITEM_PARAM, SingltonItemManager.Instance.SDItem ); // アイテムパラメーター
-		SaveData.setClass( SaveDataKey.FLAG_PARAM, SingltonFlagManager.Instance.SDFlg ); // イベントパラメーター
+		SaveData.setDictionary( SaveDataKey.FLAG_PARAM, SingltonFlagManager.Instance.SDFlg.EventFlag ); // イベントパラメーター
+		
 
 		// セーブデータへの値セット部 END
 		/*===============================================================*/
@@ -473,10 +472,8 @@ public sealed class GV {
 	/// イベント管理クラス
 	/// </summary>
 	public class FlagManage {
-		/// <summary>イベントフラグキー</summary>
-		public List<string> Key;
-		/// <summary>イベントフラグ</summary>
-		public List<bool> Value;
+		/// <summary>イベントキー名, イベントフラグで管理するディクショナリ</summary>
+		public Dictionary<string, bool> EventFlag;
 
 
 	}

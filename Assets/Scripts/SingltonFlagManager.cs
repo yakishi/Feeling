@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public sealed class SingltonFlagManager {
@@ -29,8 +28,7 @@ public sealed class SingltonFlagManager {
 		myGV = GV.Instance; // Save/Load クラスのインスタンスを取得
 
 		// Save 情報フラグのインスタンス生成
-		myFM.Key = new List<string>( );
-		myFM.Value = new List<bool>( );
+		myFM.EventFlag = new Dictionary<string, bool>( );
 
 		// SaveData 読込
 		LoadFlag( myGV.slot );
@@ -44,8 +42,7 @@ public sealed class SingltonFlagManager {
 	/// <remarks>GV.cs:newGame( )から呼ばれる</remarks>
 	public void NewGame( ) {
 		// Save 情報フラグのインスタンス生成
-		myFM.Key = new List<string>( );
-		myFM.Value = new List<bool>( );
+		myFM.EventFlag = new Dictionary<string, bool>( );
 
 
 	}
@@ -60,29 +57,8 @@ public sealed class SingltonFlagManager {
 
 		if ( myGV.GData != null ) {
 			// 読み込んだ値を入れていきます
-			myFM.Key = myGV.GData.Flag.Key;
-			myFM.Value = myGV.GData.Flag.Value;
-
-		}
-
-		KeyCheck( myFM.Key );
-
-
-	}
-	/*===============================================================*/
-
-	/*===============================================================*/
-	/// <summary>保存されているキー重複検査</summary>
-	/// <param name="keyList">キーが保存されたリスト(string型)</param>
-	private void KeyCheck( List<string> keyList ) {
-		// 元の配列の要素数
-		int baseCount = keyList.Count;
-		// 元の配列から重複要素を無くした配列の要素数
-		int distinctCount = ( from x in keyList select x ).Distinct( ).Count( );
-
-		if ( baseCount != distinctCount ) {
-			Debug.LogWarning( "イベントフラグキーに重複したキーが存在しています。" );
-			//myFM.Key = ( from x in keyList select x ).Distinct( ).ToList( );
+			myFM.EventFlag = myGV.GData.Flag.EventFlag;
+			
 
 		}
 
@@ -94,10 +70,8 @@ public sealed class SingltonFlagManager {
 	/// <summary>イベント管理クラス</summary>
 	[System.Serializable]
 	public class FlagManage {
-		/// <summary>イベントフラグキー</summary>
-		public List<string> Key;
-		/// <summary>イベントフラグ</summary>
-		public List<bool> Value;
+		/// <summary>イベントキー名, イベントフラグで管理するディクショナリ</summary>
+		public Dictionary<string, bool> EventFlag;
 
 
 	}

@@ -69,9 +69,9 @@ public class ExampleTestSaveLoad {
 
 		}
 
-		for( int i = 0; i < example5.SDFlg.Key.Count; i++ ) {
+		foreach( string key in example5.SDFlg.EventFlag.Keys ) {
 			Debug.Log( "<color='red'>セーブデータ ( イベント ) " +
-				"( Key : Value ) : ( " + example5.SDFlg.Key[ i ] + " : " + example5.SDFlg.Value[ i ] + " )</color>" );
+				"( Key : Value ) : ( " + key + " : " + example5.SDFlg.EventFlag[ key ] + " )</color>" );
 
 		}
 
@@ -112,8 +112,14 @@ public class ExampleTestSaveLoad {
 			example4.SDItem.Stock.Add( i );
 
 			// event
-			example5.SDFlg.Key.Add( "Event:Talk" + ( i + saveTest ) );
-			example5.SDFlg.Value.Add( false );
+			example5.SDFlg.EventFlag.Add( "Event:Talk" + ( i + saveTest ), false );
+			//try {
+			//	example5.SDFlg.EventFlag.Add( "Event:Talk" + ( i + saveTest ), false ); 
+
+			//} catch ( ArgumentException e ) /* 状況によって使い分けてください 例外をキャッチしない場合, セーブ段階で止まりセーブされません */ {
+			//	Debug.LogError( e.Message );
+
+			//}
 
 		}
 		example1.SaveDataPlayerState[ 0 ].Lv = saveTest;
