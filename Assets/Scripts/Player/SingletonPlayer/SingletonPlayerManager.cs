@@ -130,37 +130,80 @@ public sealed class SingltonPlayerManager {
 
 		PlayerArray = new PlayerParameters[ myGV.GData.Players.Count, CSVLoader.csvId ];
 
-		//Debug.Log( "プレイヤーステータス CSV1 ファイル当りのデータ数 : " + CSVLoader.csvRecordAll );
-
 		// 配列にデータを格納していく
 		for( int i = 0; i < PlayerArray.GetLength( 0 ); i++ ) { // Player 人数
 			for( int j = 0; j < PlayerArray.GetLength( 1 ); j++ ) { // CSV 1 ヘッダー当りのデータ量
 				PlayerArray[ i, j ] = new PlayerParameters( );
-				PlayerArray[ i, j ].ID = myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_ID" );
-				PlayerArray[ i, j ].Name = "P" + ( i + 1 );
+				PlayerArray[ i, j ].ID = myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, "P" + ( i + 1 ) + "_" + j + "_ID" );
+				if( PlayerArray[ i, j ].ID == "P" + ( i + 1 ) + "_" + j ) {
+					PlayerArray[ i, j ].Name = PlayerName( "P" + ( i + 1 ) + "_0" );
+					PlayerArray[ i, j ].RF = ( SingltonSkillManager.Feel )Enum.ToObject( typeof( SingltonSkillManager.Feel ), PlayerFeeling( PlayerArray[ i, j ].Name ) );
 
-				// TODO : index i で, Enum Feel をテキトウに入れる
-				PlayerArray[ i, j ].RF = ( SingltonSkillManager.Feel )Enum.ToObject( typeof( SingltonSkillManager.Feel ), i );
-
+				}
 				PlayerArray[ i, j ].STATUS = new Status( );
-				PlayerArray[ i, j ].STATUS.HP = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_HP" ) );
-				PlayerArray[ i, j ].STATUS.MP = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_MP" ) );
-				PlayerArray[ i, j ].STATUS.Atk = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_ATK" ) );
-				PlayerArray[ i, j ].STATUS.Def = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_DEF" ) );
-				PlayerArray[ i, j ].STATUS.Matk = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_MATK" ) );
-				PlayerArray[ i, j ].STATUS.Mgr = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_MGR" ) );
-				PlayerArray[ i, j ].STATUS.Luc = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_LUC" ) );
-				PlayerArray[ i, j ].STATUS.Agl = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_AGL" ) );
-				PlayerArray[ i, j ].STATUS.Feeling = ( SingltonSkillManager.Feel )Enum.ToObject( typeof( SingltonSkillManager.Feel ), int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, i + "_FEELING" ) ) );
-				PlayerArray[ i, j ].STATUS.FeelingValue = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_FEELINGVALUE" ) );
+				PlayerArray[ i, j ].STATUS.HP = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, "P" + ( i + 1 ) + "_" + j + "_HP" ) );
+				PlayerArray[ i, j ].STATUS.MP = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, "P" + ( i + 1 ) + "_" + j + "_MP" ) );
+				PlayerArray[ i, j ].STATUS.Atk = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, "P" + ( i + 1 ) + "_" + j + "_ATK" ) );
+				PlayerArray[ i, j ].STATUS.Def = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, "P" + ( i + 1 ) + "_" + j + "_DEF" ) );
+				PlayerArray[ i, j ].STATUS.Matk = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, "P" + ( i + 1 ) + "_" + j + "_MATK" ) );
+				PlayerArray[ i, j ].STATUS.Mgr = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, "P" + ( i + 1 ) + "_" + j + "_MGR" ) );
+				PlayerArray[ i, j ].STATUS.Luc = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, "P" + ( i + 1 ) + "_" + j + "_LUC" ) );
+				PlayerArray[ i, j ].STATUS.Agl = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, "P" + ( i + 1 ) + "_" + j + "_AGL" ) );
+				PlayerArray[ i, j ].STATUS.Feeling = ( SingltonSkillManager.Feel )Enum.ToObject( typeof( SingltonSkillManager.Feel ), int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, "P" + ( i + 1 ) + "_" + j + "_FEELING" ) ) );
+				PlayerArray[ i, j ].STATUS.FeelingValue = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, "P" + ( i + 1 ) + "_" + j + "_FEELINGVALUE" ) );
 
 				PlayerArray[ i, j ].SkillList = new List<string>( );
-				List<string> div = new List<string>( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, j + "_InitSkillList(ID/ID・・・)" ).Split( '/' ) );
+				List<string> div = new List<string>( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, "P" + ( i + 1 ) + "_" + j + "_InitSkillList(ID/ID・・・)" ).Split( '/' ) );
 				foreach( string items in div ) PlayerArray[ i, j ].SkillList.Add( items );
 
 				PlayerCsvList.Add( PlayerArray[ i, j ] ); // 入れ込む
 
 			}
+
+		}
+
+
+	}
+	/*===============================================================*/
+
+	/*===============================================================*/
+	/// <summary>プレイヤー名定義</summary>
+	/// <param name="id">CSVのIDを指定します</param>
+	/// <returns>IDに対応したプレイヤーネームを返します</returns>
+	private string PlayerName( string id ) {
+		switch( id ) {
+			default : {
+				Debug.LogError( "Player_ID定義外です。" );
+				return "Not Found";
+
+			}
+			case "P1_0" : { return "カイウス・スノードロップ"; }
+			case "P2_0" : { return "アイリ・スノードロップ"; }
+			case "P3_0" : { return "ディオス・スノードロップ"; }
+			case "P4_0" : { return "カリス・スノードロップ"; }
+			case "P5_0" : { return "フィリア・スノードロップ"; }
+			case "P6_0" : { return "セレーマ・スノードロップ"; }
+
+		}
+
+
+	}
+	/*===============================================================*/
+
+	/*===============================================================*/
+	/// <summary>名前を元に感情を取得する</summary>
+	/// <param name="playerName">プレイヤーの名前</param>
+	/// <returns>プレイヤーの名前に対応した感情を整数型で返します</returns>
+	private int PlayerFeeling( string playerName ) {
+		if( playerName == PlayerName( "P1_0" ) ) return (int)SingltonSkillManager.Feel.Do;
+		else if( playerName == PlayerName( "P2_0" ) ) return (int)SingltonSkillManager.Feel.Zou;
+		else if( playerName == PlayerName( "P3_0" ) ) return (int)SingltonSkillManager.Feel.Raku;
+		else if( playerName == PlayerName( "P4_0" ) ) return (int)SingltonSkillManager.Feel.Ki;
+		else if( playerName == PlayerName( "P5_0" ) ) return (int)SingltonSkillManager.Feel.Love;
+		else if( playerName == PlayerName( "P6_0" ) ) return (int)SingltonSkillManager.Feel.Ai;
+		else {
+			Debug.LogError( "プレイヤーネーム定義外です。" );
+			return -1;
 
 		}
 
