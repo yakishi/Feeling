@@ -29,8 +29,7 @@ public class ExampleTestPlayer : MonoBehaviour {
 				// CSV データ取得例したものをセーブデータに格納する例
 				for( int j = 0; j < example1.GetCsvDataPlayerState.Count; j++ ) {
 					// 例 : P1 ～ P6 ( Player1 から Player6 ) かつ ID が 7 のデータ
-					if( example1.GetCsvDataPlayerState[ j ].Name == "P" + ( i + 1 ) &&
-						example1.GetCsvDataPlayerState[ j ].ID == "7" ) {
+					if( example1.GetCsvDataPlayerState[ j ].ID == "P" + ( i + 1 ) + "_7" ) {
 						// 上の条件の時の, 感情値 ( CSV ) データを 現在の感情値 ( セーブデータ ) にいれる
 						example1.SaveDataPlayerState[ i ].CFV = example1.GetCsvDataPlayerState[ j ].STATUS.FeelingValue;
 
@@ -61,9 +60,12 @@ public class ExampleTestPlayer : MonoBehaviour {
 		}
 
 		foreach ( SingltonPlayerManager.PlayerParameters items in example1.GetCsvDataPlayerState ) {
-			Debug.Log( "-----------------------\nforeach ( CSV データ ) 出力\nプレイヤー種別 : " + items.Name + "\nHP : " +
-				items.STATUS.HP + "\nMP : " + items.STATUS.MP + "\nID : "
-					+ items.ID + "\n-----------------------" );
+			Debug.Log( "-----------------------\nforeach ( CSV データ ) 出力\nプレイヤー種別 : " + items.Name
+				+ "\nHP : " + items.STATUS.HP
+				+ "\nMP : " + items.STATUS.MP
+				+ "\nID : " + items.ID
+				+ "\nEnum 型 上昇しやすい感情 ( RF ) : " + items.RF
+				+ "\n-----------------------" );
 
 			foreach( string items2 in items.SkillList ) Debug.Log( "レベル毎に初期で覚えているスキルIDリスト(CSV) : " + items2 );
 
