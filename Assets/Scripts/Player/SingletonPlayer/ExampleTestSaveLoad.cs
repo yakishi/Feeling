@@ -46,18 +46,22 @@ public class ExampleTestSaveLoad {
 			+ "GV.slot : " + myGV.slot + "</color>" );
 
 		foreach( SingltonSkillManager.SkillParam items1 in example3.SDSkill ) {
-			foreach( string items2 in items1.Name ) {
+			foreach( string items2 in items1.Name) {
 				Debug.Log( "<color='red'>セーブデータ ( スキル ) : " + items2 + "</color>" );
 
 			}
 
 		}
 
-		for( int i = 0; i < example4.SDItem.Name.Count; i++ ) {
+		/*for( int i = 0; i < example4.SDItem.Name.Count; i++ ) {
 			Debug.Log( "<color='red'>セーブデータ ( アイテム )\n現在所持しているアイテム : " + example4.SDItem.Name[ i ]
 			+ "\n現在所持しているアイテムに対するアイテム所持数 : " + example4.SDItem.Stock[ i ] + "</color>" );
 
-		}
+		}*/
+        foreach( var i in example4.SDItem.itemList) {
+            Debug.Log("<color='red'>セーブデータ ( アイテム )\n現在所持しているアイテム : " + i.Key
+            + "\n現在所持しているアイテムに対するアイテム所持数 : " + i.Value + "</color>");
+        }
 
 		TimeSpan t = new TimeSpan( 0, 0, myGV.GData.timeSecond );
 		Debug.Log( "slot " + myGV.slot + " load time : " + t ); 
@@ -90,9 +94,8 @@ public class ExampleTestSaveLoad {
 			// skill
 			example3.SDSkill[ i ].Name.Add( "プレイヤー " + i + " にスキル" + i + saveTest + "名を追加しました。" );
 
-			// item
-			example4.SDItem.Name.Add( "アイテム" + i + "を追加しました。" );
-			example4.SDItem.Stock.Add( i );
+            // item
+            example4.SDItem.itemList.Add("アイテム" + i + "を追加しました。", i);
 
 		}
 		example1.SaveDataPlayerState[ 0 ].Lv = saveTest;

@@ -42,9 +42,8 @@ public sealed class GV {
 
 		gameData.PlayersSkills = new List<SkillParam>( );
 
-		gameData.Items = new ItemParam( );
-		gameData.Items.Name = new List<string>( );
-		gameData.Items.Stock = new List<int>( );
+		gameData.Items = new SingltonItemManager.ItemParam ( );
+        gameData.Items.itemList = new Dictionary<string, int>();
 
 		for( int i = 0; i < PLAYERS /* !変更しない! */; i++ ) {
 			gameData.Players.Add( new PlayerParam( ) );
@@ -96,7 +95,7 @@ public sealed class GV {
 		//public List<int> Equipments;
 		public List<EquipmentParam> Equipments;
 		/// <summary>現在所持しているアイテム一覧</summary>
-		public ItemParam Items;
+		public SingltonItemManager.ItemParam Items;
 		#endregion
 	}
 
@@ -160,7 +159,7 @@ public sealed class GV {
 		SingltonEquipmentManager.Instance.SaveDataPlayerEquipmentParam.Clear( );
 		SingltonEquipmentManager.Instance.NewGame( );
 		// item
-		SingltonItemManager.Instance.SDItem.Name.Clear( );
+		SingltonItemManager.Instance.SDItem.itemList.Clear( );
 		SingltonItemManager.Instance.NewGame( );
 		// skill
 		SingltonSkillManager.Instance.SDSkill.Clear( );
@@ -287,8 +286,7 @@ public sealed class GV {
 		SingltonItemManager.ItemParam myItem = SaveData.getClass<SingltonItemManager.ItemParam>( GV.SaveDataKey.ITEM_PARAM );
 
 		if( myItem != null ) {
-			gameData.Items.Name = myItem.Name;
-			gameData.Items.Stock = myItem.Stock;
+            gameData.Items.itemList = myItem.itemList;
 
 		}
 
@@ -431,14 +429,14 @@ public sealed class GV {
 	/// <summary>
 	/// アイテム情報
 	/// </summary>
-	public class ItemParam {
-		/// <summary>現在所持しているアイテム一覧</summary>
-		public List<string> Name;
-		/// <summary>現在所持しているアイテムに対するアイテム所持数</summary>
-		public List<int> Stock;
-
-
-	}
+	//public class ItemParam {
+	//	/// <summary>現在所持しているアイテム一覧</summary>
+	//	public List<string> Name;
+	//	/// <summary>現在所持しているアイテムに対するアイテム所持数</summary>
+	//	public List<int> Stock;
+    //
+    //
+	//}
 
 	// パラメーター部 END
 	/*===============================================================*/

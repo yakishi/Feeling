@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 /*===============================================================*/
@@ -48,9 +49,8 @@ public sealed class SingltonItemManager {
 
 		myGV = GV.Instance; // Save/Load クラスのインスタンスを取得
 
-		// Save 情報 Item のインスタンス生成
-		ItemSaveList.Name = new List<string>( );
-		ItemSaveList.Stock = new List<int>( );
+        // Save 情報 Item のインスタンス生成
+        ItemSaveList.itemList = new Dictionary<string, int>();
 
 		LoadItem( myGV.slot ); // セーブデータの読込
 
@@ -69,9 +69,8 @@ public sealed class SingltonItemManager {
 	/// <summary>NewGame時のセーブのインスタンス生成処理</summary>
 	/// <remarks>GV.cs:newGame( )から呼ばれる</remarks>
 	public void NewGame( ) {
-		// Save 情報 Item のインスタンス生成
-		ItemSaveList.Name = new List<string>( );
-		ItemSaveList.Stock = new List<int>( );
+        // Save 情報 Item のインスタンス生成
+        ItemSaveList.itemList = new Dictionary<string, int>();
 
 
 	}
@@ -85,9 +84,8 @@ public sealed class SingltonItemManager {
 		myGV.GameDataLoad( loadSlot ); // セーブデータからの保存したデータを読み込みます
 
 		if ( myGV.GData != null ) {
-			// 読み込んだ値を入れていきます
-			ItemSaveList.Name = myGV.GData.Items.Name;
-			ItemSaveList.Stock = myGV.GData.Items.Stock;
+            // 読み込んだ値を入れていきます
+            ItemSaveList.itemList = myGV.GData.Items.itemList;
 
 		}
 
@@ -100,22 +98,26 @@ public sealed class SingltonItemManager {
 	private void LoadCsvItem( ) {
 		// CSV ファイルからのキーとデータの読込
 		CSVLoader myLoader = new CSVLoader( );
-		myCsvData.data = myLoader.GetCSV_Key_Record( "CSV/CSV_PlayerItem_IdOrder", myCsvData.key );
+		myCsvData.data = myLoader.GetCSV_Key_Record(　"CSV/CSV_PlayerItem_IdOrder", myCsvData.key );
 
 		ItemArray = new ItemList[ CSVLoader.csvId ];
 
 		// 配列にデータを格納していく
 		for ( int i = 0; i < ItemArray.Length; i++ ) {
 			ItemArray[ i ] = new ItemList( );
-			ItemArray[ i ].ID = int.Parse( myLoader.GetCSVData( myCsvData.key, myCsvData.data, i + "_ID" ) );
-			ItemArray[ i ].TYPE = int.Parse( myLoader.GetCSVData( myCsvData.key, myCsvData.data, i + "_TYPE" ) );
-			ItemArray[ i ].TYPE2 = int.Parse( myLoader.GetCSVData( myCsvData.key, myCsvData.data, i + "_TYPE2" ) );
-			ItemArray[ i ].MAX = int.Parse( myLoader.GetCSVData( myCsvData.key, myCsvData.data, i + "_MAX" ) );
-			ItemArray[ i ].HP = int.Parse( myLoader.GetCSVData( myCsvData.key, myCsvData.data, i + "_HP" ) );
-			ItemArray[ i ].MP = int.Parse( myLoader.GetCSVData( myCsvData.key, myCsvData.data, i + "_MP" ) );
-			ItemArray[ i ].FEELINGVALUE = int.Parse( myLoader.GetCSVData( myCsvData.key, myCsvData.data, i + "_FEELINGVALUE" ) );
-			ItemArray[ i ].NAME = myLoader.GetCSVData( myCsvData.key, myCsvData.data, i + "_NAME" );
-			ItemArray[ i ].DETAIL = myLoader.GetCSVData( myCsvData.key, myCsvData.data, i + "_DETAIL" );
+			ItemArray[ i ].id = myLoader.GetCSVData( myCsvData.key, myCsvData.data, "I" + i + "_ID" );
+			ItemArray[ i ].name = myLoader.GetCSVData( myCsvData.key, myCsvData.data, "I" + i + "_NAME" );
+            ItemArray[ i ].max = int.Parse( myLoader.GetCSVData(myCsvData.key, myCsvData.data, "I" + i + "_MAX"));
+			ItemArray[ i ].area = (Area)Enum.ToObject(typeof(Area), int.Parse(myLoader.GetCSVData(myCsvData.key, myCsvData.data, "I" + i + "_AREA")));
+            ItemArray[ i ].value = int.Parse( myLoader.GetCSVData( myCsvData.key, myCsvData.data, "I" + i + "_VALUE" ) );
+            ItemArray[ i ].category = (SingltonSkillManager.Category)Enum.ToObject(typeof(SingltonSkillManager.Category), int.Parse(myLoader.GetCSVData(myCsvData.key, myCsvData.data, "I" + i + "_CATEGORY")));
+            ItemArray[ i ].target = (SingltonSkillManager.Target)Enum.ToObject(typeof(SingltonSkillManager.Target), int.Parse(myLoader.GetCSVData(myCsvData.key, myCsvData.data, "I" + i + "_TARGET")));
+            ItemArray[ i ].scope = (SingltonSkillManager.Scope)Enum.ToObject(typeof(SingltonSkillManager.Scope), int.Parse(myLoader.GetCSVData(myCsvData.key, myCsvData.data, "I" + i + "_SCOPE")));
+            ItemArray[ i ].param = (BattleParam)Enum.ToObject(typeof(BattleParam), int.Parse(myLoader.GetCSVData(myCsvData.key, myCsvData.data, "I" + i + "_INFLUENCE")));
+            ItemArray[ i ].buffTime = int.Parse( myLoader.GetCSVData( myCsvData.key, myCsvData.data, "I" + i + "_DT" ) );
+            ItemArray[ i ].feel = (SingltonSkillManager.Feel)Enum.ToObject(typeof(SingltonSkillManager.Feel), int.Parse(myLoader.GetCSVData(myCsvData.key, myCsvData.data, "I" + i + "_FC")));
+            ItemArray[ i ].feelValue = int.Parse(myLoader.GetCSVData(myCsvData.key, myCsvData.data, "I" + i + "_FVC"));
+            ItemArray[ i ].Detail = myLoader.GetCSVData( myCsvData.key, myCsvData.data, "I" + i + "_DETAIL" );
 
 			ItemCsvList.Add( ItemArray[ i ] ); // 入れ込む
 
@@ -138,23 +140,31 @@ public sealed class SingltonItemManager {
 	/// <remarks>パラメーターは,暫定的です</remarks>
 	public class ItemList {
 		/// <summary>ID:0から順に管理</summary>
-		public int ID;
-		/// <summary>回復アイテムの種類,{回復ヒットポイントアイテム:1},{回復魔法アイテム:2}</summary>
-		public int TYPE;
-		/// <summary>変動する感情値,{Do:1},{Love:2},{Ai:3},{Zou:4},{Raku:5}{Ki:6}</summary>
-		public int TYPE2;
-		/// <summary>所持できる最大アイテム個数</summary>
-		public int MAX;
-		/// <summary>アイテム使用によるヒットポイント回復値</summary>
-		public int HP;
-		/// <summary>アイテム使用によるマジックポイント回復値</summary>
-		public int MP;
-		/// <summary>アイテム使用による感情値変動数値</summary>
-		public int FEELINGVALUE;
+		public string id;
 		/// <summary>アイテム名</summary>
-		public string NAME;
-		/// <summary>アイテムの詳細</summary>
-		public string DETAIL;
+		public string name;
+        /// <summary>最大所持数 </summary>
+        public int max;
+        /// <summary>使用エリア </summary>
+        public Area area;
+		/// <summary>回復、ダメージ量</summary>
+		public int value;
+		/// <summary>アイテムの種類</summary>
+		public SingltonSkillManager.Category category;
+        /// <summary>アイテムの対象</summary>
+        public SingltonSkillManager.Target target;
+		/// <summary>アイテムの範囲</summary>
+		public SingltonSkillManager.Scope scope;
+		/// <summary>影響を与えるステータス</summary>
+		public BattleParam param;
+        /// <summary>バフタイム</summary>
+        public int buffTime;
+        /// <summary>変わる感情</summary>
+		public SingltonSkillManager.Feel feel;
+        /// <summary>変わる感情値 </summary>
+        public int feelValue;
+        /// <summary>アイテムの詳細</summary>
+        public string Detail;
 
 
 	}
@@ -165,15 +175,21 @@ public sealed class SingltonItemManager {
 	/// <remarks>パラメーターは,暫定的です</remarks>
 	[System.Serializable]
 	public class ItemParam {
-		/// <summary>現在所持しているアイテム一覧</summary>
-		public List<string> Name;
-		/// <summary>現在所持しているアイテムに対するアイテム所持数</summary>
-		public List<int> Stock;
-
-
+        /// <summary>現在所持しているアイテム一覧</summary>
+        
+        public Dictionary<string, int> itemList;
 	}
 	/*===============================================================*/
 
+    /// <summary>
+    /// 使用可能エリア
+    /// </summary>
+    public enum Area
+    {
+        Field,
+        Battle,
+        All
+    }
 
 }
 /*===============================================================*/
