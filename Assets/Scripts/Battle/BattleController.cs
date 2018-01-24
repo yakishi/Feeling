@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class BattleController : MonoBehaviour
 {
     [SerializeField]
-    GameManager gameManager;
+    public GameManager gameManager;
     private Transform[] playerIconPos = new Transform[4];
     /// <summary>
     /// モンスターが配置されるグリッド
@@ -113,6 +113,8 @@ public class BattleController : MonoBehaviour
         }
     }
 
+    public SingltonItemManager.ItemParam testList;
+
     void Start()
     {
         //for(int i = 0; i < playerIconPos.Length; i++) {
@@ -160,6 +162,14 @@ public class BattleController : MonoBehaviour
         currentActionCharacter.startAction();
 
         skillList = SingltonSkillManager.Instance.CDSkill;
+        testList = new SingltonItemManager.ItemParam();
+        testList.itemList = new Dictionary<string, int>();
+        testList.itemList.Add("I0", 5);
+        testList.itemList.Add("I1", 10);
+        testList.itemList.Add("I2", 3);
+        testList.itemList.Add("I3", 4);
+        testList.itemList.Add("I4", 10);
+        testList.itemList.Add("I5", 6);
     }
 
     /// <summary>

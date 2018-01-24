@@ -263,8 +263,10 @@ public class CSVLoader
 			}
 
 		}
-		// 戻り値が空の時
-		if ( str == "" ) Debug.LogError( "引数に対するデータが不正です。\nキーを確認して下さい。" );
+        // 戻り値が空の時
+        if (str == "") {
+            Debug.LogError("引数に対するデータが不正です。\nキーを確認して下さい。");
+        }
 		// 格納したデータを返す
 		return str;
 

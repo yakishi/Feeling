@@ -117,20 +117,29 @@ public abstract class BattleCharacter : MonoBehaviour
 
     public class BuffManager
     {
-        private SingltonSkillManager.SkillInfo skill;
+        private string id;
+        private int buffTurn;
         private int remainBuffTurn;
 
         public BuffManager(SingltonSkillManager.SkillInfo info)
         {
-            skill = info;
+            id = info.ID;
+            buffTurn = info.DT;
             remainBuffTurn = info.DT;
         }
 
-        public SingltonSkillManager.SkillInfo GetSkill
+        public BuffManager(SingltonItemManager.ItemList info)
+        {
+            id = info.id;
+            buffTurn = info.buffTime;
+            remainBuffTurn = info.buffTime;
+        }
+
+        public string GetSkillID
         {
             get
             {
-                return skill;
+                return id; ;
             }
         }
 
@@ -144,7 +153,7 @@ public abstract class BattleCharacter : MonoBehaviour
 
         public void ResetBuff()
         {
-            remainBuffTurn = skill.DT;
+            remainBuffTurn = buffTurn;
         }
 
         public void AdvanceBuffTurn()
@@ -153,7 +162,6 @@ public abstract class BattleCharacter : MonoBehaviour
         }
     }
 
-    //後で消す
     SingltonSkillManager skillManager;
     protected List<SingltonSkillManager.SkillInfo> skillList;
 
@@ -192,7 +200,7 @@ public abstract class BattleCharacter : MonoBehaviour
         currentMp = param.STATUS.MP;
         buffList = new List<BuffManager>();
         skillManager = gameManager.SkillManager;
-        //ToDo PlayerParamにスキルリストが追加され次第変更
+
         skillList = CreateSkillList(param.SkillList);
     }
 
@@ -234,14 +242,7 @@ public abstract class BattleCharacter : MonoBehaviour
         foreach (var n in buffList.ToArray()) {
             if (n.RemainBuffTurn <= 0) {
                 buffList.Remove(n);
-
-
             }
-        }
-        if (buffList.Count <= 0) Debug.Log("none");
-        foreach (var n in buffList) {
-            var s = n.GetSkill;
-            Debug.Log(s.skill + " : " + n.RemainBuffTurn);
         }
     }
 
@@ -297,9 +298,17 @@ public abstract class BattleCharacter : MonoBehaviour
             switch (targetParam) {
                 case BattleParam.HP:
                     currentHp += effects[targetParam];
+
+                    if(currentHp >= Hp) {
+                        currentHp = Hp;
+                    }
                     break;
                 case BattleParam.MP:
                     currentMp += effects[targetParam];
+
+                    if (currentMp >= Mp) {
+                        currentMp = Mp;
+                    }
                     break;
                 case BattleParam.Atk:
                     status.HP += effects[targetParam];

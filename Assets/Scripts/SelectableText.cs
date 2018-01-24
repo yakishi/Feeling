@@ -15,15 +15,22 @@ public class SelectableText : MonoBehaviour {
     public void Select(GameObject button)
     {
         button.GetComponent<Text>().color = Color.red;
+        var name = button.GetComponentInChildren<Text>().text;
+
         if (battleUI == null) return;
         foreach(var skill in battleUI.skillButtonList) { 
-            var name = button.GetComponentInChildren<Text>().text;
             if (name == skill.SkillInfo.skill) {
                 battleUI.skillDetailText.GetComponent<Text>().text =
                     "消費MP :" + skill.SkillInfo.MP +
                     ", 種類 :" + Category(skill.SkillInfo.myCategory) +
                     ", 対象 :" + Target(skill.SkillInfo.myTarget) +
                     ", 範囲 :" + Scope(skill.SkillInfo.myScope);
+            }
+        }
+
+        foreach(var item in battleUI.itemButtonList) {
+            if(name == item.ItemInfo.name) {
+                battleUI.ItemDetail.GetComponentInChildren<Text>().text = item.ItemInfo.Detail;
             }
         }
 

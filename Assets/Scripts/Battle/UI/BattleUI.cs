@@ -12,6 +12,7 @@ public class BattleUI : MonoBehaviour
         None,
         Behaviour,
         Skill,
+        Item,
         Monster,
         Supporter
     }
@@ -90,6 +91,59 @@ public class BattleUI : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// スキルの各項目用
+    /// </summary>
+    public struct ItemButton
+    {
+        private SingltonItemManager.ItemList itemInfo;
+        private int itemNumber;
+        private GameObject buttonObject;
+
+        public ItemButton(SingltonItemManager.ItemList info,int number, GameObject button)
+        {
+            itemInfo = info;
+            itemNumber = number;
+            buttonObject = button;
+        }
+
+        public string ItemID
+        {
+            get
+            {
+                return itemInfo.id;
+            }
+        }
+
+        public SingltonItemManager.ItemList ItemInfo
+        {
+            get
+            {
+                return itemInfo;
+            }
+            set
+            {
+                itemInfo = value;
+            }
+        }
+
+        public GameObject setObject
+        {
+            set
+            {
+                buttonObject = value;
+            }
+        }
+
+        public Button getButton
+        {
+            get
+            {
+                return buttonObject.GetComponent<Button>();
+            }
+        }
+    }
+
     public List<SkillButton> skillButtonList;
 
     /// <summary>
@@ -125,12 +179,37 @@ public class BattleUI : MonoBehaviour
     /// スキルの各項目のPrefab
     /// </summary>
     [SerializeField]
-    GameObject skillItemPrefab;
+    GameObject skillPrefab;
+
+    [SerializeField]
+    GameObject itemPrefab;
+
+    public List<ItemButton> itemButtonList;
+
+    [SerializeField]
+    GameObject itemWindow;
+    public GameObject ItemWindow
+    {
+        get
+        {
+            return itemWindow;
+        }
+    }
+
+    [SerializeField]
+    GameObject itemDetail;
+    public GameObject ItemDetail
+    {
+        get
+        {
+            return itemDetail;
+        }
+    }
 
     /// <summary>
-    /// 一時的スキルID格納
+    /// 一時的ID格納
     /// </summary>
-    string tempSkillid;
+    string tempId;
 
     bool isSkillScopeAll;
 
@@ -178,13 +257,10 @@ public class BattleUI : MonoBehaviour
         }
 
         skillButtonList = new List<SkillButton>();
-        NotActiveButton(SkillWindow);
-        ActiveButton(battleController.combatGrid);
-        NotActiveButton(battleController.monsterZone);
-        NotActiveButton(battleController.playerGrid);
-        skillWindow.SetActive(false);
-        skillDetail.SetActive(false);
-        tempSkillid = "none";
+        itemButtonList = new List<ItemButton>();
+        InitializeGrids();
+
+        tempId = "none";
         isSkillScopeAll = false;
         beforeSelect = new List<Button>();
 
@@ -213,7 +289,7 @@ public class BattleUI : MonoBehaviour
                     UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
 
                     LeanTween.alpha(target.GetComponent<RectTransform>(), 1.0f, 0.3f).setFrom(0.0f).setLoopCount(3).setLoopType(LeanTweenType.pingPong).setOnComplete(() => {
-                        playerAttack(tempSkillid);
+                        playerAttack(tempId);
                     });
                 });
 
@@ -226,7 +302,7 @@ public class BattleUI : MonoBehaviour
                         LeanTween.alpha(monsters[i].GetComponent<RectTransform>(), 1.0f, 0.3f).setFrom(0.0f).setLoopCount(3).setLoopType(LeanTweenType.pingPong);
 
                     }
-                    currentCharacter.GetComponent<BattlePlayer>().attackAction(monsters, tempSkillid);
+                    currentCharacter.GetComponent<BattlePlayer>().attackAction(monsters, tempId);
                     ClearSelecter();
                     isSkillScopeAll = false;
                     selectMode = SelectMode.Behaviour;
@@ -246,7 +322,7 @@ public class BattleUI : MonoBehaviour
                     UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
 
                     LeanTween.alpha(target.GetComponent<RectTransform>(), 1.0f, 0.3f).setFrom(0.0f).setLoopCount(3).setLoopType(LeanTweenType.pingPong).setOnComplete(() => {
-                        playerAttack(tempSkillid);
+                        playerAttack(tempId);
                     });
                 });
 
@@ -259,13 +335,26 @@ public class BattleUI : MonoBehaviour
                         LeanTween.alpha(players[i].GetComponent<RectTransform>(), 1.0f, 0.3f).setFrom(0.0f).setLoopCount(3).setLoopType(LeanTweenType.pingPong);
 
                     }
-                    currentCharacter.GetComponent<BattlePlayer>().attackAction(players, tempSkillid);
+                    currentCharacter.GetComponent<BattlePlayer>().attackAction(players, tempId);
                     ClearSelecter();
                     isSkillScopeAll = false;
                     selectMode = SelectMode.Behaviour;
                 });
         }
 
+    }
+
+    void InitializeGrids()
+    {
+        ActiveButton(battleController.combatGrid);
+        NotActiveButton(SkillWindow);
+        NotActiveButton(battleController.monsterZone);
+        NotActiveButton(battleController.playerGrid);
+        NotActiveButton(itemWindow);
+        skillWindow.SetActive(false);
+        skillDetail.SetActive(false);
+        itemWindow.SetActive(false);
+        itemDetail.SetActive(false);
     }
 
     public void SkillMode()
@@ -284,8 +373,30 @@ public class BattleUI : MonoBehaviour
                     UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
                     currentCharacter.GetComponent<BattlePlayer>().playerSelect.DeSelect();
                     DecisionScope(n);
-                    DecisionTarget(n);
+                    DecisionTarget(n.SkillInfo.myTarget);
 
+                });
+        }
+    }
+
+    public void ItemMode()
+    {
+        beforeGrid = itemWindow;
+
+        foreach (var n in itemButtonList) {
+            var button = n.getButton;
+
+            button.OnClickAsObservable()
+                .Where(_ => selectMode == SelectMode.Item)
+                .Subscribe(_ => {
+                    beforeGrid = itemWindow;
+                    beforeSelect.Add(button);
+                    UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
+                    currentCharacter.GetComponent<BattlePlayer>().playerSelect.DeSelect();
+                    DecisionScope(n);
+                    DecisionTarget(n.ItemInfo.target);
+
+                    cutNumber(n.ItemInfo);
                 });
         }
     }
@@ -298,7 +409,7 @@ public class BattleUI : MonoBehaviour
 
         EndDisplay();
 
-        if(Input.GetKeyDown(KeyCode.Escape) && selectMode == SelectMode.Skill) {
+        if(Input.GetKeyDown(KeyCode.Backspace) && selectMode == SelectMode.Skill) {
             UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
             BattleUI.NotActiveButton(skillWindow);
             BattleUI.ActiveButton(battleController.combatGrid,beforeSelect[beforeSelect.Count - 1].gameObject);
@@ -309,7 +420,18 @@ public class BattleUI : MonoBehaviour
 
             selectMode = SelectMode.Behaviour;
         }
-        if (Input.GetKeyDown(KeyCode.Escape) && selectMode == SelectMode.Monster) {
+        if (Input.GetKeyDown(KeyCode.Backspace) && selectMode == SelectMode.Item) {
+            UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
+            BattleUI.NotActiveButton(itemWindow);
+            BattleUI.ActiveButton(battleController.combatGrid, beforeSelect[beforeSelect.Count - 1].gameObject);
+            beforeSelect.RemoveAt(beforeSelect.Count - 1);
+            ClearSelecter();
+            itemWindow.SetActive(false);
+            itemDetail.SetActive(false);
+
+            selectMode = SelectMode.Behaviour;
+        }
+        if (Input.GetKeyDown(KeyCode.Backspace) && selectMode == SelectMode.Monster) {
             UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
             BattleUI.NotActiveButton(battleController.monsterZone);
             ClearSelecter();
@@ -323,12 +445,13 @@ public class BattleUI : MonoBehaviour
             }
 
             ClearSelecter();
+            isSkillScopeAll = false;
             currentCharacter.GetComponent<BattlePlayer>().playerSelect.Select();
             BattleUI.ActiveButton(beforeGrid, beforeSelect[beforeSelect.Count - 1].gameObject);
             beforeSelect.RemoveAt(beforeSelect.Count - 1);
 
         }
-        if(Input.GetKeyDown(KeyCode.Escape) && selectMode == SelectMode.Supporter) {
+        if(Input.GetKeyDown(KeyCode.Backspace) && selectMode == SelectMode.Supporter) {
             UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
             BattleUI.NotActiveButton(battleController.playerGrid);
             if (beforeGrid == skillWindow) {
@@ -341,6 +464,7 @@ public class BattleUI : MonoBehaviour
             }
 
             ClearSelecter();
+            isSkillScopeAll = false;
             currentCharacter.GetComponent<BattlePlayer>().playerSelect.Select();
             BattleUI.ActiveButton(beforeGrid,beforeSelect[beforeSelect.Count - 1].gameObject);
             beforeSelect.RemoveAt(beforeSelect.Count - 1);
@@ -349,7 +473,6 @@ public class BattleUI : MonoBehaviour
         if (currentState == null) return;
         turnText.text = currentState;
     }
-
 
     /// <summary>
     /// スキル範囲毎の処理
@@ -390,7 +513,48 @@ public class BattleUI : MonoBehaviour
             skillWindow.SetActive(false);
             skillDetail.SetActive(false);
 
-            tempSkillid = n.SkillID;
+            tempId = n.SkillID;
+        }
+    }
+
+    void DecisionScope(ItemButton n)
+    {
+        if (n.ItemInfo.scope == SingltonSkillManager.Scope.OverAll) {
+            NotActiveButton(itemWindow);
+            itemWindow.SetActive(false);
+            itemDetail.SetActive(false);
+
+
+            monsterSelecter = new GameObject[monsters.Length];
+            isSkillScopeAll = true;
+
+            if (n.ItemInfo.target == SingltonSkillManager.Target.Supporter) {
+                foreach (var p in players) {
+                    p.gameObject.GetComponent<PlayerSelect>().enabled = false;
+                    BattlePlayer player = p.GetComponent<BattlePlayer>();
+
+                    defScale = player.img.transform.localScale;
+                    player.img.glowSize = 10;
+                    player.img.transform.localScale = player.img.transform.localScale * 1.2f;
+                }
+
+            }
+            else if (n.ItemInfo.target == SingltonSkillManager.Target.Enemy) {
+                //モンスターセレクターを全モンスター上に表示
+                for (int i = 0; i < monsters.Length; ++i) {
+                    if (monsters[i].transform.childCount >= 1) continue;
+                    monsterSelecter[i] = GameObject.Instantiate(monsterSelecterPrefab, monsters[i].transform);
+                    monsterSelecter[i].transform.position = monsters[i].gameObject.transform.position + Vector3.up * 180.0f;
+                }
+            }
+        }
+        else if (n.ItemInfo.scope == SingltonSkillManager.Scope.Simplex) {
+            UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
+            NotActiveButton(itemWindow);
+            itemWindow.SetActive(false);
+            itemDetail.SetActive(false);
+
+            tempId = n.ItemID;
         }
     }
 
@@ -398,38 +562,77 @@ public class BattleUI : MonoBehaviour
     /// スキル対象毎の処理
     /// </summary>
     /// <param name="n"></param>
-    void DecisionTarget(SkillButton n)
+    void DecisionTarget(SingltonSkillManager.Target target)
     {
-        if (n.SkillInfo.myTarget == SingltonSkillManager.Target.Enemy) {
+        if (target == SingltonSkillManager.Target.Enemy) {
             ActiveButton(battleController.monsterZone);
             selectMode = SelectMode.Monster;
         }
-        else if (n.SkillInfo.myTarget == SingltonSkillManager.Target.Supporter) {
+        else if (target == SingltonSkillManager.Target.Supporter) {
             ActiveButton(battleController.playerGrid);
             selectMode = SelectMode.Supporter;
         }
-        else if(n.SkillInfo.myTarget == SingltonSkillManager.Target.MySelf) {
+        else if(target == SingltonSkillManager.Target.MySelf) {
             OnlyActiveButton(currentCharacter.gameObject);
+        }
+    }
+
+    void cutNumber(SingltonItemManager.ItemList item)
+    {
+        List<string> tempList = new List<string>(battleController.testList.itemList.Keys);
+        foreach (var i in tempList) {
+            if(item.id == i) {
+                battleController.testList.itemList[i] -= 1;
+            }
         }
     }
 
     public void ClearTempSkillID()
     {
-        tempSkillid = "none";
+        tempId = "none";
     }
 
     public void SetSkill(SingltonSkillManager.SkillInfo info)
     {
-        GameObject tempObject = Instantiate(skillItemPrefab, skillWindow.transform);
+        GameObject tempObject = Instantiate(skillPrefab, skillWindow.transform);
         tempObject.GetComponentInChildren<Text>().text = info.skill;
         SkillButton temp = new SkillButton(info, tempObject);
         skillButtonList.Add(temp);
     }
 
-    public void ClearSkillWindow()
+    public void SetItem(Dictionary<string,int> info)
+    {
+        foreach(string id in info.Keys) {
+            foreach(var item in battleController.gameManager.ItemManager.CDItem) {
+                if(id == item.id) {
+                    GameObject tempObject = Instantiate(itemPrefab, itemWindow.transform);
+                    foreach(Transform child in tempObject.transform) {
+                        if (child.name == "itemName") child.GetComponent<Text>().text = item.name;
+                        if (child.name == "itemNumber") child.GetComponent<Text>().text = info[id].ToString();
+                    }
+
+                    ItemButton temp = new ItemButton(item, info[id], tempObject);
+                    itemButtonList.Add(temp);
+                }
+            }
+        }
+
+    }
+
+    public void ClearWindow()
     {
         if (skillButtonList.Count != 0) {
             skillButtonList.Clear();
+            foreach (Transform n in skillWindow.transform) {
+                GameObject.Destroy(n.gameObject);
+            }
+        }
+
+        if (itemButtonList.Count != 0) {
+            itemButtonList.Clear();
+            foreach (Transform n in itemWindow.transform) {
+                GameObject.Destroy(n.gameObject);
+            }
         }
     }
 

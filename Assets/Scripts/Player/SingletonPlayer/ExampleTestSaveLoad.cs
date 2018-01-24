@@ -56,18 +56,22 @@ public class ExampleTestSaveLoad {
 		}
 		
 		foreach( SingltonSkillManager.SkillParam items1 in example3.SDSkill ) {
-			foreach( string items2 in items1.Name ) {
+			foreach( string items2 in items1.Name) {
 				Debug.Log( "<color='red'>セーブデータ ( スキル ) : " + items2 + "</color>" );
 
 			}
 
 		}
 
-		for( int i = 0; i < example4.SDItem.Name.Count; i++ ) {
+		/*for( int i = 0; i < example4.SDItem.Name.Count; i++ ) {
 			Debug.Log( "<color='red'>セーブデータ ( アイテム )\n現在所持しているアイテム : " + example4.SDItem.Name[ i ]
 			+ "\n現在所持しているアイテムに対するアイテム所持数 : " + example4.SDItem.Stock[ i ] + "</color>" );
 
-		}
+		}*/
+        foreach( var i in example4.SDItem.itemList) {
+            Debug.Log("<color='red'>セーブデータ ( アイテム )\n現在所持しているアイテム : " + i.Key
+            + "\n現在所持しているアイテムに対するアイテム所持数 : " + i.Value + "</color>");
+        }
 
 		foreach( string key in example5.SDFlg.EventFlag.Keys ) {
 			Debug.Log( "<color='red'>セーブデータ ( イベント ) " +
@@ -107,9 +111,8 @@ public class ExampleTestSaveLoad {
 			// skill
 			example3.SDSkill[ i ].Name.Add( "プレイヤー " + i + " にスキル" + i + saveTest + "名を追加しました。" );
 
-			// item
-			example4.SDItem.Name.Add( "アイテム" + i + "を追加しました。" );
-			example4.SDItem.Stock.Add( i );
+            // item
+            example4.SDItem.itemList.Add("アイテム" + i + "を追加しました。", i);
 
 			// event
 			example5.SDFlg.EventFlag.Add( "Event:Talk" + ( i + saveTest ), false );

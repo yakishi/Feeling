@@ -39,6 +39,13 @@ public class GameManager : MonoBehaviour {
         }
     }
     SingltonItemManager mySIM;
+    public SingltonItemManager ItemManager
+    {
+        get
+        {
+            return mySIM;
+        }
+    }
 
     List<SingltonPlayerManager.PlayerParameters> players;
     public List<SingltonPlayerManager.PlayerParameters> PlayerList
@@ -50,13 +57,16 @@ public class GameManager : MonoBehaviour {
     }
 	SingltonFlagManager mySFM;
 
-	/*===============================================================*/
-	/// <summary>brief UnityEngine ライフサイクルによる初期化 </summary>
-	void Awake( ) {
+    public SingltonItemManager.ItemParam possessionItem;
+
+    /*===============================================================*/
+    /// <summary>brief UnityEngine ライフサイクルによる初期化 </summary>
+    void Awake( ) {
+
 		// 初期化関数を呼び出す
 		Initialize( );
 
-        players = mySPM.GetCsvDataPlayerState;
+        possessionItem = mySIM.SDItem;
 	}
 	/*===============================================================*/
 
@@ -75,7 +85,15 @@ public class GameManager : MonoBehaviour {
 		Application.targetFrameRate = 60; // 60 FPS に設定
 		Debug.Log( "現在のシーン : " + state.ToString( ) );
 
+        players = new List<SingltonPlayerManager.PlayerParameters>();
+        int cnt = 0;
+        foreach(var i in mySPM.GetCsvDataPlayerState) {
+            if(cnt % 11 == 0) {
+                players.Add(i);
+            }
 
+            cnt++;
+        }
 	}
 	/*===============================================================*/
 

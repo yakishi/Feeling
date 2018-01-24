@@ -21,7 +21,7 @@ public class Skill
     }
 
 
-    public virtual List<BattleAction> use(BattleCharacter from, BattleCharacter[] targets)
+    public List<BattleAction> use(BattleCharacter from, BattleCharacter[] targets)
     {
         var ret = new List<BattleAction>();
         // 仮で攻撃力分のHPを減らす処理を作成
@@ -30,14 +30,14 @@ public class Skill
         Debug.Log(skill.skill + ", " + skill.myCategory.ToString() + ", " + skill.myTarget + " = " + targets[0]);
         switch (skill.myCategory) {
             case SingltonSkillManager.Category.Damage:
-                ret.Add(new BattleAction()
-                {
-                    targets = targets,
-                    effects = new Dictionary<BattleParam, int>
+                    ret.Add(new BattleAction()
                     {
-                        { BattleParam.HP, -from.Atk }
-                    }
-                });
+                        targets = targets,
+                        effects = new Dictionary<BattleParam, int>
+                        {
+                            { BattleParam.HP, -from.Atk }
+                        }
+                    });
                 break;
 
             case SingltonSkillManager.Category.Buff:
@@ -77,6 +77,53 @@ public class Skill
                 {BattleParam.MP, -skill.MP}
             }
         });
+        return ret;
+    }
+
+    public List<BattleAction> ItemUse(BattleCharacter from, BattleCharacter[] targets, SingltonItemManager.ItemList item)
+    {
+        var ret = new List<BattleAction>();
+        switch (item.category) {
+            case SingltonSkillManager.Category.Damage:
+                ret.Add(new BattleAction()
+                {
+                    targets = targets,
+                    effects = new Dictionary<BattleParam, int>
+                        {
+                            { item.param, item.value }
+                        }
+                });
+                break;
+
+            case SingltonSkillManager.Category.Buff:
+                ret.Add(new BattleAction()
+                {
+                    targets = targets,
+                    effects = new Dictionary<BattleParam, int>
+                    {
+                        {item.param, 5 }
+                    }
+                });
+
+                foreach (var c in targets) {
+                    BattleCharacter.BuffManager tempManager = new BattleCharacter.BuffManager(item);
+
+                    if (!c.buffList.Contains(tempManager)) {
+                        c.buffList.Add(tempManager);
+                    }
+                    else {
+                        foreach (var s in c.buffList) {
+                            if (s == tempManager) {
+                                s.ResetBuff();
+                            }
+                        }
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+
         return ret;
     }
 }
