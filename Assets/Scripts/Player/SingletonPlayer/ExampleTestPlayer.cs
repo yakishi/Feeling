@@ -24,24 +24,20 @@ public class ExampleTestPlayer : MonoBehaviour {
 		// インスタンス作成前に GV クラスに定義された関数を用いて保存を行います
 		// セーブデータへの変動値保存 保存を実行した後にアンコメントアウトするとセーブされたのがロードされていると実感できます
 		bool test = false;
-		if ( test ) {
-			// コンストラクタで呼び出して書き換える場合, セーブデータの削除が必要
-			SaveData.remove( myGV.slot );
-
+		if( test ) {
 			for( int i = 0; i < example1.SaveDataPlayerState.Count; i++ ) {
 				// CSV データ取得例したものをセーブデータに格納する例
 				for( int j = 0; j < example1.GetCsvDataPlayerState.Count; j++ ) {
 					// 例 : P1 ～ P6 ( Player1 から Player6 ) かつ ID が 7 のデータ
-					if( example1.GetCsvDataPlayerState[ j ].Name == "P" + ( i + 1 ) &&
-						example1.GetCsvDataPlayerState[ j ].ID == "7" ) {
+					if( example1.GetCsvDataPlayerState[ j ].ID == "P" + ( i + 1 ) + "_7" ) {
 						// 上の条件の時の, 感情値 ( CSV ) データを 現在の感情値 ( セーブデータ ) にいれる
 						example1.SaveDataPlayerState[ i ].CFV = example1.GetCsvDataPlayerState[ j ].STATUS.FeelingValue;
 
 					}
 
 				}
-				example1.SaveDataPlayerState[ i ].STATUS.HP = 100;
-				example1.SaveDataPlayerState[ i ].STATUS.MP = 200;
+				example1.SaveDataPlayerState[ i ].EquipmentStatus.HP = 100;
+				example1.SaveDataPlayerState[ i ].EquipmentStatus.MP = 200;
 
 				for( int cnt = 0; cnt < i + 1; cnt++ ) {
 					example1.SaveDataPlayerState[ i ].SkillList.Add( cnt.ToString( ) );
@@ -51,12 +47,12 @@ public class ExampleTestPlayer : MonoBehaviour {
 			}
 			myGV.GameDataSave( myGV.slot ); // セーブを行います
 
-		}
+		} else SaveData.remove( myGV.slot ); // コンストラクタで呼び出して書き換える場合, セーブデータの削除が必要
 
 		int cntTest = 0;
 		foreach ( SingltonPlayerManager.PlayerParameters items in example1.SaveDataPlayerState ) {
 			Debug.Log( "-----------------------\nforeach ( セーブデータ ) 出力\n現在の感情値 : " + items.CFV + "\nHP : " +
-				items.STATUS.HP + "\nMP : " + items.STATUS.MP + "\n-----------------------" );
+				items.EquipmentStatus.HP + "\nMP : " + items.EquipmentStatus.MP + "\n-----------------------" );
 			cntTest++;
 
 			foreach( string items2 in items.SkillList ) Debug.Log( "現在覚えているスキルIDリスト(Save) : " + items2 );
@@ -64,9 +60,12 @@ public class ExampleTestPlayer : MonoBehaviour {
 		}
 
 		foreach ( SingltonPlayerManager.PlayerParameters items in example1.GetCsvDataPlayerState ) {
-			Debug.Log( "-----------------------\nforeach ( CSV データ ) 出力\nプレイヤー種別 : " + items.Name + "\nHP : " +
-				items.STATUS.HP + "\nMP : " + items.STATUS.MP + "\nID : "
-					+ items.ID + "\n-----------------------" );
+			Debug.Log( "-----------------------\nforeach ( CSV データ ) 出力\nプレイヤー種別 : " + items.Name
+				+ "\nHP : " + items.STATUS.HP
+				+ "\nMP : " + items.STATUS.MP
+				+ "\nID : " + items.ID
+				+ "\nEnum 型 上昇しやすい感情 ( RF ) : " + items.RF
+				+ "\n-----------------------" );
 
 			foreach( string items2 in items.SkillList ) Debug.Log( "レベル毎に初期で覚えているスキルIDリスト(CSV) : " + items2 );
 
@@ -87,8 +86,8 @@ public class ExampleTestPlayer : MonoBehaviour {
 		saveTest += 10;
 
 		for ( int i = 0; i < myGV.GData.Players.Count; i++ ) {
-			SingltonPlayerManager.Instance.SaveDataPlayerState[ i ].STATUS.HP = i + 100 * ( i + saveTest );
-			SingltonPlayerManager.Instance.SaveDataPlayerState[ i ].STATUS.MP = i + 200 * ( i + saveTest );
+			SingltonPlayerManager.Instance.SaveDataPlayerState[ i ].EquipmentStatus.HP = i + 100 * ( i + saveTest );
+			SingltonPlayerManager.Instance.SaveDataPlayerState[ i ].EquipmentStatus.MP = i + 200 * ( i + saveTest );
 
 		}
 		myGV.GameDataSave( myGV.slot ); // セーブを行います
