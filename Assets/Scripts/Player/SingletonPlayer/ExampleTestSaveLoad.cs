@@ -9,6 +9,7 @@ public class ExampleTestSaveLoad {
 	SingltonEquipmentManager example2;
 	SingltonSkillManager example3;
 	SingltonItemManager example4;
+	SingltonFlagManager example5;
 	//
 	static int saveTest;
 
@@ -22,6 +23,7 @@ public class ExampleTestSaveLoad {
 		example2 = SingltonEquipmentManager.Instance;
 		example3 = SingltonSkillManager.Instance;
 		example4 = SingltonItemManager.Instance;
+		example5 = SingltonFlagManager.Instance;
 		//
 		saveTest = example1.SaveDataPlayerState[ 0 ].Lv;
 		Debug.Log( saveTest );
@@ -38,13 +40,21 @@ public class ExampleTestSaveLoad {
 
 		Debug.Log( "<color='red'>SaveDataPlayerState[ 0 ].LV : " + example1.SaveDataPlayerState[ 0 ].Lv + "\n"
 			/* player */
-			+ "SaveDataPlayerState[ 1 ].HP : " + example1.SaveDataPlayerState[ 1 ].STATUS.HP + "\n"
-			+ "SaveDataPlayerState[ 2 ].HP : " + example1.SaveDataPlayerState[ 2 ].STATUS.HP + "\n"
+			+ "SaveDataPlayerState[ 1 ].HP : " + example1.SaveDataPlayerState[ 1 ].EquipmentStatus.HP + "\n"
+			+ "SaveDataPlayerState[ 2 ].HP : " + example1.SaveDataPlayerState[ 2 ].EquipmentStatus.HP + "\n"
 			/* equip */
 			+ "SaveDataPlayerEquipmentParam[ 0 ].ID : " + example2.SaveDataPlayerEquipmentParam[ 0 ].ID + "\n"
 			+ "SaveDataPlayerEquipmentParam[ 1 ].Accessory2 : " + example2.SaveDataPlayerEquipmentParam[ 1 ].Accessory2 + "\n"
 			+ "GV.slot : " + myGV.slot + "</color>" );
 
+		foreach( SingltonPlayerManager.PlayerParameters items1 in example1.SaveDataPlayerState ) {
+			foreach( string items2 in items1.SkillList ) {
+				Debug.Log( "<color='red'>セーブデータ ( スキルリスト ) : " + items2 + "</color>" );
+
+			}
+
+		}
+		
 		foreach( SingltonSkillManager.SkillParam items1 in example3.SDSkill ) {
 			foreach( string items2 in items1.Name) {
 				Debug.Log( "<color='red'>セーブデータ ( スキル ) : " + items2 + "</color>" );
@@ -62,6 +72,12 @@ public class ExampleTestSaveLoad {
             Debug.Log("<color='red'>セーブデータ ( アイテム )\n現在所持しているアイテム : " + i.Key
             + "\n現在所持しているアイテムに対するアイテム所持数 : " + i.Value + "</color>");
         }
+
+		foreach( string key in example5.SDFlg.EventFlag.Keys ) {
+			Debug.Log( "<color='red'>セーブデータ ( イベント ) " +
+				"( Key : Value ) : ( " + key + " : " + example5.SDFlg.EventFlag[ key ] + " )</color>" );
+
+		}
 
 		TimeSpan t = new TimeSpan( 0, 0, myGV.GData.timeSecond );
 		Debug.Log( "slot " + myGV.slot + " load time : " + t ); 
@@ -84,8 +100,9 @@ public class ExampleTestSaveLoad {
 		Debug.Log( saveTest );
 		for( int i = 0; i < myGV.GData.Players.Count; i++ ) {
 			// player
-			example1.SaveDataPlayerState[ i ].STATUS.HP = i + 100 * ( i + saveTest );
-			example1.SaveDataPlayerState[ i ].STATUS.MP = i + 200 * ( i + saveTest );
+			example1.SaveDataPlayerState[ i ].EquipmentStatus.HP = i + 100 * ( i + saveTest );
+			example1.SaveDataPlayerState[ i ].EquipmentStatus.MP = i + 200 * ( i + saveTest );
+			example1.SaveDataPlayerState[ i ].SkillList.Add( "プレイヤー " + i + " にスキル" + ( i + saveTest + 10 ) + "名を追加しました。" );
 
 			// equip
 			example2.SaveDataPlayerEquipmentParam[ i ].ID = i + ( saveTest + 1000 );
@@ -96,6 +113,16 @@ public class ExampleTestSaveLoad {
 
             // item
             example4.SDItem.itemList.Add("アイテム" + i + "を追加しました。", i);
+
+			// event
+			example5.SDFlg.EventFlag.Add( "Event:Talk" + ( i + saveTest ), false );
+			//try {
+			//	example5.SDFlg.EventFlag.Add( "Event:Talk" + ( i + saveTest ), false ); 
+
+			//} catch ( ArgumentException e ) /* 状況によって使い分けてください 例外をキャッチしない場合, セーブ段階で止まりセーブされません */ {
+			//	Debug.LogError( e.Message );
+
+			//}
 
 		}
 		example1.SaveDataPlayerState[ 0 ].Lv = saveTest;

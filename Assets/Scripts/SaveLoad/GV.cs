@@ -36,21 +36,35 @@ public sealed class GV {
 		// 毎回 new すると前のセーブデータが消えるので一回だけ new する
 		gameData = new GameData( );
 
+		// player
 		gameData.Players = new List<PlayerParam>( );
-
+		// equip
 		gameData.Equipments = new List<EquipmentParam>( );
-
+		// skill
 		gameData.PlayersSkills = new List<SkillParam>( );
+<<<<<<< HEAD
 
 		gameData.Items = new SingltonItemManager.ItemParam ( );
         gameData.Items.itemList = new Dictionary<string, int>();
+=======
+		// item
+		gameData.Items = new ItemParam( );
+		gameData.Items.Name = new List<string>( );
+		gameData.Items.Stock = new List<int>( );
+		// event
+		gameData.Flag = new FlagManage( );
+		gameData.Flag.EventFlag = new Dictionary<string, bool>( );
+>>>>>>> Master/master
 
 		for( int i = 0; i < PLAYERS /* !変更しない! */; i++ ) {
+			// player
 			gameData.Players.Add( new PlayerParam( ) );
+			// skill
 			gameData.Players[ i ].SkillList = new List<string>( );
-			gameData.Equipments.Add( new EquipmentParam( ) );
 			gameData.PlayersSkills.Add( new SkillParam( ) );
 			gameData.PlayersSkills[ i ].Name = new List<string>( );
+			// equip
+			gameData.Equipments.Add( new EquipmentParam( ) );
 
 		}
 
@@ -82,6 +96,8 @@ public sealed class GV {
 		/// 上の様に変換しプレイ時間を取得します
 		/// </remarks>
 		public int timeSecond;
+		/// <summary>イベントフラグ管理</summary>
+		public FlagManage Flag;
 		#endregion
 
 		#region Player
@@ -164,6 +180,8 @@ public sealed class GV {
 		// skill
 		SingltonSkillManager.Instance.SDSkill.Clear( );
 		SingltonSkillManager.Instance.NewGame( );
+		// Event
+		SingltonFlagManager.Instance.NewGame( );
 		// time
 		gameData.timeSecond = 0;
 
@@ -181,6 +199,7 @@ public sealed class GV {
 		SingltonEquipmentManager.Instance.LoadEquipment( slotIndex );
 		SingltonSkillManager.Instance.LoadSkill( slotIndex );
 		SingltonItemManager.Instance.LoadItem( slotIndex );
+		SingltonFlagManager.Instance.LoadFlag( slotIndex );
 
 
 	}
@@ -219,6 +238,7 @@ public sealed class GV {
 		public const string ITEM_PARAM = "ITEM_PARAM";
 		public const string SKILL_PARAM = "SKILL_PARAM";
 		public const string KEY_CURRENT_TIME = "KEY_CURRENT_TIME";
+		public const string FLAG_PARAM = "FLAG_PARAM";
 
 
 	}
@@ -247,16 +267,16 @@ public sealed class GV {
 				gameData.Players[ i ].Lv = myPlayerState[ i ].Lv;
 				gameData.Players[ i ].CFV = myPlayerState[ i ].CFV;
 				gameData.Players[ i ].SkillList = myPlayerState[ i ].SkillList;
-				gameData.Players[ i ].HP = myPlayerState[ i ].STATUS.HP;
-				gameData.Players[ i ].MP = myPlayerState[ i ].STATUS.MP;
-				gameData.Players[ i ].Atk = myPlayerState[ i ].STATUS.Atk;
-				gameData.Players[ i ].Def = myPlayerState[ i ].STATUS.Def;
-				gameData.Players[ i ].Matk = myPlayerState[ i ].STATUS.Matk;
-				gameData.Players[ i ].Mgr = myPlayerState[ i ].STATUS.Mgr;
-				gameData.Players[ i ].Luc = myPlayerState[ i ].STATUS.Luc;
-				gameData.Players[ i ].Agl = myPlayerState[ i ].STATUS.Agl;
-				gameData.Players[ i ].Feeling = myPlayerState[ i ].STATUS.Feeling;
-				gameData.Players[ i ].FeelingValue = myPlayerState[ i ].STATUS.FeelingValue;
+				gameData.Players[ i ].HP = myPlayerState[ i ].EquipmentStatus.HP;
+				gameData.Players[ i ].MP = myPlayerState[ i ].EquipmentStatus.MP;
+				gameData.Players[ i ].Atk = myPlayerState[ i ].EquipmentStatus.Atk;
+				gameData.Players[ i ].Def = myPlayerState[ i ].EquipmentStatus.Def;
+				gameData.Players[ i ].Matk = myPlayerState[ i ].EquipmentStatus.Matk;
+				gameData.Players[ i ].Mgr = myPlayerState[ i ].EquipmentStatus.Mgr;
+				gameData.Players[ i ].Luc = myPlayerState[ i ].EquipmentStatus.Luc;
+				gameData.Players[ i ].Agl = myPlayerState[ i ].EquipmentStatus.Agl;
+				gameData.Players[ i ].Feeling = myPlayerState[ i ].EquipmentStatus.Feeling;
+				gameData.Players[ i ].FeelingValue = myPlayerState[ i ].EquipmentStatus.FeelingValue;
 
 			}
 
@@ -305,6 +325,17 @@ public sealed class GV {
 		}
 		/*===============================================================*/
 
+		/*===============================================================*/
+		// イベント情報読込
+		Dictionary<string, bool> myFlag = SaveData.getDictionary<string, bool>( GV.SaveDataKey.FLAG_PARAM );
+
+		if ( myFlag != null ) {
+			gameData.Flag.EventFlag = myFlag;
+
+		}
+
+		/*===============================================================*/
+
 		// ロードスロット + キーでプレイ時間を読み込む
 		if ( loadSlot > 0 ) {
 			gameData.timeSecond = SaveData.getInt( SaveDataKey.KEY_CURRENT_TIME, 0 );
@@ -320,16 +351,16 @@ public sealed class GV {
 
 	/*===============================================================*/
 	/// <summary>セーブを行います</summary>
-	/// <param name="savSTATUSlot">セーブするセーブデータスロットを指定します</param>
-	public void GameDataSave( int savSTATUSlot ) {
+	/// <param name="saveSlot">セーブするセーブデータスロットを指定します</param>
+	public void GameDataSave( int saveSlot ) {
 
-		SData.usedSave[ savSTATUSlot - 1 ] = true;
+		SData.usedSave[ saveSlot - 1 ] = true;
 
 		SaveData.setSlot( 0 );
 		SaveData.setClass( "SystemData", SData );
 		SaveData.save( );
 
-		SaveData.setSlot( savSTATUSlot );
+		SaveData.setSlot( saveSlot );
 
 		/*===============================================================*/
 		// セーブデータへの値セット部 START
@@ -338,6 +369,8 @@ public sealed class GV {
 		SaveData.setList( SaveDataKey.EQUIPMENT_PARAM, SingltonEquipmentManager.Instance.SaveDataPlayerEquipmentParam ); // プレイヤー装備パラメーター
 		SaveData.setList( SaveDataKey.SKILL_PARAM, SingltonSkillManager.Instance.SDSkill ); // プレイヤースキルパラメーター
 		SaveData.setClass( SaveDataKey.ITEM_PARAM, SingltonItemManager.Instance.SDItem ); // アイテムパラメーター
+		SaveData.setDictionary( SaveDataKey.FLAG_PARAM, SingltonFlagManager.Instance.SDFlg.EventFlag ); // イベントパラメーター
+		
 
 		// セーブデータへの値セット部 END
 		/*===============================================================*/
@@ -346,8 +379,8 @@ public sealed class GV {
 
 		SaveData.save( );
 
-		//TimeSpan t = new TimeSpan( 0, 0, gameData.timeSecond[ savSTATUSlot ] );
-		//Debug.Log( "<color='red'>" + savSTATUSlot + ", " + saveLoadSlot + ", playTime : " + t + "</color>" );
+		//TimeSpan t = new TimeSpan( 0, 0, gameData.timeSecond[ saveSlot ] );
+		//Debug.Log( "<color='red'>" + saveSlot + ", " + saveLoadSlot + ", playTime : " + t + "</color>" );
 
 
 	}
@@ -429,6 +462,7 @@ public sealed class GV {
 	/// <summary>
 	/// アイテム情報
 	/// </summary>
+<<<<<<< HEAD
 	//public class ItemParam {
 	//	/// <summary>現在所持しているアイテム一覧</summary>
 	//	public List<string> Name;
@@ -437,6 +471,28 @@ public sealed class GV {
     //
     //
 	//}
+=======
+	[Serializable]
+	public class ItemParam {
+		/// <summary>現在所持しているアイテム一覧</summary>
+		public List<string> Name;
+		/// <summary>現在所持しているアイテムに対するアイテム所持数</summary>
+		public List<int> Stock;
+
+
+	}
+>>>>>>> Master/master
+
+	[Serializable]
+	/// <summary>
+	/// イベント管理クラス
+	/// </summary>
+	public class FlagManage {
+		/// <summary>イベントキー名, イベントフラグで管理するディクショナリ</summary>
+		public Dictionary<string, bool> EventFlag;
+
+
+	}
 
 	// パラメーター部 END
 	/*===============================================================*/
