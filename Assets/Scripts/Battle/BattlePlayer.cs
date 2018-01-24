@@ -76,6 +76,24 @@ public class BattlePlayer : BattleCharacter
             })
             .AddTo(this);
 
+        combatButtons[3].OnClickAsObservable()
+            .Where(_ => isPlayerAction)
+            .Subscribe(_ => {
+                if(battleUI.itemButtonList.Count == 0) {
+                    battleUI.SetItem(battleController.testList.itemList);
+                }
+
+                battleUI.beforeSelect.Add(combatButtons[3]);
+                battleUI.ItemWindow.SetActive(true);
+                battleUI.ItemDetail.SetActive(true);
+                battleUI.ItemMode();
+
+                BattleUI.NotActiveButton(battleController.combatGrid);
+                BattleUI.ActiveButton(battleUI.ItemWindow);
+                battleUI.Mode = BattleUI.SelectMode.Item;
+            })
+            .AddTo(this);
+
         combatButtons[5].OnClickAsObservable()
             .Where(_ => isPlayerAction)
             .Subscribe(_ => {
@@ -104,6 +122,12 @@ public class BattlePlayer : BattleCharacter
                 skill = s;
             }
         }
+        
+        foreach(var i in battleController.gameManager.ItemManager.CDItem) {
+            if(i.id == id) {
+                var temp = new Skill();
+            }
+        }
 
         return new Skill(skill);
     }
@@ -128,6 +152,7 @@ public class BattlePlayer : BattleCharacter
     public override void endAction()
     {
         playerSelect.DeSelect();
+        battleUI.ClearWindow();
         base.endAction();
     }
 
