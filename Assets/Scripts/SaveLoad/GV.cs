@@ -43,9 +43,8 @@ public sealed class GV {
 		// skill
 		gameData.PlayersSkills = new List<SkillParam>( );
 		// item
-		gameData.Items = new ItemParam( );
-		gameData.Items.Name = new List<string>( );
-		gameData.Items.Stock = new List<int>( );
+		gameData.Items = new SingltonItemManager.ItemParam ( );
+        gameData.Items.itemList = new Dictionary<string, int>();
 		// event
 		gameData.Flag = new FlagManage( );
 		gameData.Flag.EventFlag = new Dictionary<string, bool>( );
@@ -105,7 +104,7 @@ public sealed class GV {
 		//public List<int> Equipments;
 		public List<EquipmentParam> Equipments;
 		/// <summary>現在所持しているアイテム一覧</summary>
-		public ItemParam Items;
+		public SingltonItemManager.ItemParam Items;
 		#endregion
 	}
 
@@ -169,7 +168,7 @@ public sealed class GV {
 		SingltonEquipmentManager.Instance.SaveDataPlayerEquipmentParam.Clear( );
 		SingltonEquipmentManager.Instance.NewGame( );
 		// item
-		SingltonItemManager.Instance.SDItem.Name.Clear( );
+		SingltonItemManager.Instance.SDItem.itemList.Clear( );
 		SingltonItemManager.Instance.NewGame( );
 		// skill
 		SingltonSkillManager.Instance.SDSkill.Clear( );
@@ -297,11 +296,10 @@ public sealed class GV {
 
 		/*===============================================================*/
 		// アイテム情報読込
-		SingltonItemManager.ItemParam myItem = SaveData.getClass<SingltonItemManager.ItemParam>( GV.SaveDataKey.ITEM_PARAM );
+		Dictionary<string, int> myItem = SaveData.getDictionary<string, int>( GV.SaveDataKey.ITEM_PARAM );
 
 		if( myItem != null ) {
-			gameData.Items.Name = myItem.Name;
-			gameData.Items.Stock = myItem.Stock;
+			gameData.Items.itemList = myItem;
 
 		}
 
@@ -363,7 +361,7 @@ public sealed class GV {
 		SaveData.setList( SaveDataKey.PRAYER_PARAM, SingltonPlayerManager.Instance.SaveDataPlayerState ); // プレイヤーパラメーター
 		SaveData.setList( SaveDataKey.EQUIPMENT_PARAM, SingltonEquipmentManager.Instance.SaveDataPlayerEquipmentParam ); // プレイヤー装備パラメーター
 		SaveData.setList( SaveDataKey.SKILL_PARAM, SingltonSkillManager.Instance.SDSkill ); // プレイヤースキルパラメーター
-		SaveData.setClass( SaveDataKey.ITEM_PARAM, SingltonItemManager.Instance.SDItem ); // アイテムパラメーター
+		SaveData.setDictionary( SaveDataKey.ITEM_PARAM, SingltonItemManager.Instance.SDItem.itemList ); // アイテムパラメーター
 		SaveData.setDictionary( SaveDataKey.FLAG_PARAM, SingltonFlagManager.Instance.SDFlg.EventFlag ); // イベントパラメーター
 		
 
@@ -457,20 +455,20 @@ public sealed class GV {
 	/// <summary>
 	/// アイテム情報
 	/// </summary>
-	[Serializable]
-	public class ItemParam {
-		/// <summary>現在所持しているアイテム一覧</summary>
-		public List<string> Name;
-		/// <summary>現在所持しているアイテムに対するアイテム所持数</summary>
-		public List<int> Stock;
+	//[Serializable]
+	//public class ItemParam {
+	//	/// <summary>現在所持しているアイテム一覧</summary>
+	//	public List<string> Name;
+	//	/// <summary>現在所持しているアイテムに対するアイテム所持数</summary>
+	//	public List<int> Stock;
+    //
+    //
+	//}
 
-
-	}
-
-	[Serializable]
 	/// <summary>
 	/// イベント管理クラス
 	/// </summary>
+	[Serializable]
 	public class FlagManage {
 		/// <summary>イベントキー名, イベントフラグで管理するディクショナリ</summary>
 		public Dictionary<string, bool> EventFlag;

@@ -40,12 +40,12 @@ public class ExampleTestItem : MonoBehaviour {
 
 			// アイテム一覧 CSV を参照
 			foreach( SingltonItemManager.ItemList item in myItem.CDItem ) {
-				if( item.id == "0" ) /* CSV の ID 0 番目を参照してセーブデータに入れる */ {
+				if( item.id == "I0" ) /* CSV の ID 0 番目を参照してセーブデータに入れる */ {
                     // 特定のアイテムの所持した時に, ID を用いて CSV から情報を持ってくる時に使えます ( 参考程度 )
                     myItem.SDItem.itemList.Add(item.id, item.max);
 
 				}
-				if( item.id == "1" ) {
+				if( item.id == "I1" ) {
                     myItem.SDItem.itemList.Add(item.id, item.max);
                 }
 

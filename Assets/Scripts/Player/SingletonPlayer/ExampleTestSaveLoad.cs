@@ -63,17 +63,14 @@ public class ExampleTestSaveLoad {
 
 		}
 
-		/*for( int i = 0; i < example4.SDItem.Name.Count; i++ ) {
-			Debug.Log( "<color='red'>セーブデータ ( アイテム )\n現在所持しているアイテム : " + example4.SDItem.Name[ i ]
-			+ "\n現在所持しているアイテムに対するアイテム所持数 : " + example4.SDItem.Stock[ i ] + "</color>" );
+		foreach ( string key in example4.SDItem.itemList.Keys ) {
+			Debug.Log( "<color='red'>セーブデータ ( アイテム )\n"
+				+ "( Key : Value ) = ( " + key + " : " + example4.SDItem.itemList[ key ] + " )"
+				+ "</color>" );
 
-		}*/
-        foreach( var i in example4.SDItem.itemList) {
-            Debug.Log("<color='red'>セーブデータ ( アイテム )\n現在所持しているアイテム : " + i.Key
-            + "\n現在所持しているアイテムに対するアイテム所持数 : " + i.Value + "</color>");
-        }
+		}
 
-		foreach( string key in example5.SDFlg.EventFlag.Keys ) {
+		foreach ( string key in example5.SDFlg.EventFlag.Keys ) {
 			Debug.Log( "<color='red'>セーブデータ ( イベント ) " +
 				"( Key : Value ) : ( " + key + " : " + example5.SDFlg.EventFlag[ key ] + " )</color>" );
 

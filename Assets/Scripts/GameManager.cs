@@ -62,7 +62,6 @@ public class GameManager : MonoBehaviour {
     /*===============================================================*/
     /// <summary>brief UnityEngine ライフサイクルによる初期化 </summary>
     void Awake( ) {
-
 		// 初期化関数を呼び出す
 		Initialize( );
 
