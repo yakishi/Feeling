@@ -2,79 +2,105 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UniRx;
 
 public class UI_Menu : MonoBehaviour {
+    [SerializeField]
+    public GameManager gameManager;
 
-    static GameObject[] MenuItems = new GameObject[5];      //メニューの項目
-    static GameObject[] ItemWindows = new GameObject[5];    //項目ごとの開くべきウィンドウ
-    int choiceElement;
+    [SerializeField]
+    public GameObject menuWindow;
 
-    //ほかウィンドウが開いているか
-    private bool isOpen;
+    [SerializeField]
+    public GameObject statusWindow;
+    [SerializeField]
+    public GameObject statusGrid;
 
-    public bool IsOpen
-    {
-        get
-        {
-            return isOpen;
-        }
-        set
-        {
-            isOpen = value;
-        }
-    }
+    [SerializeField]
+    public GameObject equipmentWindow;
+    [SerializeField]
+    public GameObject equipGrid;
+
+    [SerializeField]
+    public GameObject itemWindow;
+    [SerializeField]
+    public GameObject itemGrid;
+
+    [System.NonSerialized]
+    public SingltonPlayerManager.PlayerParameters[] playerList = new SingltonPlayerManager.PlayerParameters[4];
+    private Button[] MenuItems = new Button[4];      //メニューの項目
+
+    public List<GameObject> beforeTarget;
 
 	// Use this for initialization
 	void Start () {
-        MenuItems[0] = GameObject.Find("Items");
-        MenuItems[1] = GameObject.Find("Status");
-        MenuItems[2] = GameObject.Find("Equipments");
-        MenuItems[3] = GameObject.Find("MonsterList");
-        MenuItems[4] = GameObject.Find("ItemList");
+        playerList[0] = gameManager.PlayerList[0];
+        playerList[1] = gameManager.PlayerList[1];
+        playerList[2] = gameManager.PlayerList[2];
+        playerList[3] = gameManager.PlayerList[3];
+
+        MenuItems[0] = GameObject.Find("Items").GetComponent<Button>();
+        MenuItems[1] = GameObject.Find("Status").GetComponent<Button>();
+        MenuItems[2] = GameObject.Find("Equipments").GetComponent<Button>();
+        MenuItems[3] = GameObject.Find("BackTitle").GetComponent<Button>();
+
+        Initialize();
+        beforeTarget = new List<GameObject>();
+
+
+        BattleUI.ActiveButton(menuWindow);
+        BattleUI.NotActiveButton(statusGrid);
+        BattleUI.NotActiveButton(equipGrid);
+        BattleUI.NotActiveButton(itemGrid);
+        statusWindow.SetActive(false);
+        equipmentWindow.SetActive(false);
+        itemWindow.SetActive(false);
 
     }
 
-    void Awake()
+    void Initialize()
     {
-        ItemWindows[1] = GameObject.Find("StatusWindow");
-        ItemWindows[1].SetActive(false);
-        ItemWindows[2] = GameObject.Find("EquipmentWindow");
-        ItemWindows[2].SetActive(false);
+        MenuItems[0].OnClickAsObservable()
+            .Subscribe(_ => {
+                itemWindow.SetActive(true);
+                BattleUI.NotActiveButton(menuWindow);
+                BattleUI.ActiveButton(itemGrid);
 
-    }
+                beforeTarget.Add(MenuItems[0].gameObject);
+            })
+            .AddTo(this);
 
-    void OnEnable()
-    {
-        choiceElement = 0;
+        MenuItems[1].OnClickAsObservable()
+            .Subscribe(_ => {
+                statusWindow.SetActive(true);
+                BattleUI.NotActiveButton(menuWindow);
+                BattleUI.ActiveButton(statusGrid);
+
+                beforeTarget.Add(MenuItems[1].gameObject);
+            })
+            .AddTo(this);
+
+        MenuItems[2].OnClickAsObservable()
+            .Subscribe(_ => {
+                equipmentWindow.SetActive(true);
+                BattleUI.NotActiveButton(menuWindow);
+                BattleUI.ActiveButton(equipGrid);
+
+                beforeTarget.Add(MenuItems[2].gameObject);
+            })
+            .AddTo(this);
+
+        MenuItems[3].OnClickAsObservable()
+            .Subscribe(_ => {
+
+            })
+            .AddTo(this);
     }
 
     // Update is called once per frame
     void Update () {
-
-        if (isOpen)
-            return;
-
-        UIController.ChangeChoice(MenuItems,choiceElement);
-
-        if (MyInput.isButtonDown()) {
-            choiceElement -= (int)MyInput.direction().y;
-
-            if(choiceElement < 0) {
-                choiceElement = 0;
-            }
-            if(choiceElement >= MenuItems.Length) {
-                choiceElement = MenuItems.Length - 1;
-            }
-        }
-
-        if(Input.GetKeyDown(KeyCode.Return) && ItemWindows[choiceElement] != null) {
-            ItemWindows[choiceElement].SetActive(true);
-
-            isOpen = true;
-        }
-
-        if(Input.GetKeyDown(KeyCode.Backspace)) {
-            this.gameObject.SetActive(false);
+        if (Input.GetKeyDown(KeyCode.Backspace)) {
+            menuWindow.SetActive(false);
         }
 	}
 }

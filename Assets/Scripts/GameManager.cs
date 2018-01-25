@@ -30,6 +30,13 @@ public class GameManager : MonoBehaviour {
     GV myGV;
     SingltonPlayerManager mySPM;
     SingltonEquipmentManager mySEM;
+    public SingltonEquipmentManager EquipmentManager
+    {
+        get
+        {
+            return mySEM;
+        }
+    }
     SingltonSkillManager mySSM;
     public SingltonSkillManager SkillManager
     {
