@@ -21,7 +21,7 @@ public class ExampleTestEquipment : MonoBehaviour {
 
 		bool isSave = true; // true → false にすることで save された値を確認できます
 		if( isSave ) {
-			myEquip.SaveDataPlayerEquipmentParam[ 0 ].ID = 9999;
+			//myEquip.SaveDataPlayerEquipmentParam[ 0 ].ID = 9999;
 			myEquip.SaveDataPlayerEquipmentParam[ 3 ].Accessory1 = "スライムピアス";
 			myEquip.SaveDataPlayerEquipmentParam[ 5 ].Shoes = "重い靴";
 

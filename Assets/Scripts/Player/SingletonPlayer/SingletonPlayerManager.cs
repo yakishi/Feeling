@@ -272,7 +272,7 @@ public sealed class SingltonPlayerManager {
         {
         }
 
-        public Status(int hp,int mp,int atk,int def,int mAtk,int mgr,int luc,int agl,SingltonSkillManager.Feel feel,int feelValue)
+        public Status(int hp,int mp,int atk,int def,int mAtk,int mgr,int luc,int agl,SingltonSkillManager.Feel feel = 0,int feelValue = 0)
         {
             HP = hp;
             MP = mp;

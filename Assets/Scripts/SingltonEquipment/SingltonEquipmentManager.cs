@@ -112,12 +112,23 @@ public sealed class SingltonEquipmentManager {
 
 		// CSVLoader を用いて CSV のデータを配列にぶち込む ( 装備リスト分 )
 		for( int equipment = 0; equipment < CSVLoader.csvId; equipment++ ) {
-			EquipmentArray[ equipment ].ID = int.Parse( myLoader.GetCSVData( key, keyData, equipment + "_ID" ) );
+			EquipmentArray[ equipment ].ID =  myLoader.GetCSVData( key, keyData, equipment + "_ID" );
 			EquipmentArray[ equipment ].Name = myLoader.GetCSVData( key, keyData, equipment + "_Name" );
 			EquipmentArray[ equipment ].Type = int.Parse( myLoader.GetCSVData( key, keyData, equipment + "_Type" ) );
 			EquipmentArray[ equipment ].Type2 = int.Parse( myLoader.GetCSVData( key, keyData, equipment + "_Type2" ) );
-
-		}
+            EquipmentArray[ equipment ].status = new SingltonPlayerManager.Status(
+                                                            int.Parse(myLoader.GetCSVData(key, keyData, equipment + "_HP")),
+                                                            int.Parse(myLoader.GetCSVData(key, keyData, equipment + "_MP")),
+                                                            int.Parse(myLoader.GetCSVData(key, keyData, equipment + "_ATK")),
+                                                            int.Parse(myLoader.GetCSVData(key, keyData, equipment + "_DEF")),
+                                                            int.Parse(myLoader.GetCSVData(key, keyData, equipment + "_MATK")),
+                                                            int.Parse(myLoader.GetCSVData(key, keyData, equipment + "_MGR")),
+                                                            int.Parse(myLoader.GetCSVData(key, keyData, equipment + "_AGL")),
+                                                            int.Parse(myLoader.GetCSVData(key, keyData, equipment + "_LUC"))
+                                                            );
+            EquipmentArray[equipment].buy = int.Parse(myLoader.GetCSVData(key, keyData, equipment + "_BUY"));
+            EquipmentArray[equipment].sell = int.Parse(myLoader.GetCSVData(key, keyData, equipment + "_SELL"));
+        }
 		
 		// 配列に入れたデータをリストにぶち込む
 		for ( int equipment = 0; equipment < CSVLoader.csvId; equipment++ ) EquipmentCsvList.Add( EquipmentArray[ equipment ] );
@@ -131,14 +142,19 @@ public sealed class SingltonEquipmentManager {
 	/// <remarks>パラメーターは,暫定的です</remarks>
 	public class EquipmentArticleList {
 		/// <summary>装備品リスト識別ID(0からの連番で管理)</summary>
-		public int ID;
+		public string ID;
 		/// <summary>装備名</summary>
 		public string Name;
 		/// <summary>0:武器,1:頭,2:体,3:靴,4:アクセサリー</summary>
 		public int Type;
 		/// <summary>(武器{0:片手剣,1:斧,2:短剣,3:杖,4:槍}),(頭{0:兜,1:帽子}),(体{0:鎧,1:ローブ})</summary>
 		public int Type2;
-
+        /// <summary> 装備の強化値 </summary>
+        public SingltonPlayerManager.Status status;
+        /// <summary> 店売りの値段</summary>
+        public int buy;
+        /// <summary> 売って時の値段</summary>
+        public int sell;
 
 	}
 	/*===============================================================*/
@@ -149,11 +165,13 @@ public sealed class SingltonEquipmentManager {
 	[ System.Serializable ]
 	public class PlayerEquipmentParam {
 		/// <summary>プレイヤー識別ID(0からの連番で管理)</summary>
-		public int ID;
+		public string ID;
 		/// <summary>武器(装備名)</summary>
 		public string Arms;
 		/// <summary>頭(装備名)</summary>
 		public string Head;
+        /// <summary> 鎧(装備名)</summary>
+        public string Armor;
 		/// <summary>足(装備名)</summary>
 		public string Shoes;
 		/// <summary>アクセサリー1(装備名)</summary>

@@ -177,7 +177,7 @@ public class BattleController : MonoBehaviour
     /// </summary>
     void createDamyData()
     {
-        int id = 0;
+        int id = 1;
         playerCount = 4;
         players = new BattlePlayer[playerCount];
         for (int i = 0; i < players.Length; ++i) {
@@ -186,7 +186,7 @@ public class BattleController : MonoBehaviour
             players[i].enabled = false;
         }
         foreach(var player in players) {
-            player.loadData(id.ToString(),gameManager);
+            player.loadData("P" + id + "_0",gameManager);
             id++;
         }
 

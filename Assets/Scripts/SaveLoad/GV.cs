@@ -426,7 +426,7 @@ public sealed class GV {
 	[Serializable]
 	public class EquipmentParam {
 		/// <summary>プレイヤー識別ID(0からの連番で管理)</summary>
-		public int ID;
+		public string ID;
 		/// <summary>武器(装備名)</summary>
 		public string Arms;
 		/// <summary>頭(装備名)</summary>
