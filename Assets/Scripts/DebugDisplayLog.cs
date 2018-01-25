@@ -4,7 +4,6 @@ using System.Collections.Generic;
 /*===============================================================*/
 /// <summary>デバッグ表示クラス:カメラオブジェクトにスクリプトを関連づけます</summary>
 public class DebugDisplayLog : MonoBehaviour {
-
 	//static string str;
 
 	private void Start( ) {
