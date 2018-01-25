@@ -105,7 +105,7 @@ public class ExampleTestSaveLoad {
 			example1.SaveDataPlayerState[ i ].SkillList.Add( "プレイヤー " + i + " にスキル" + ( i + saveTest + 10 ) + "名を追加しました。" );
 
 			// equip
-			example2.SaveDataPlayerEquipmentParam[ i ].ID = i + ( saveTest + 1000 );
+			//example2.SaveDataPlayerEquipmentParam[ i ].ID = i + ( saveTest + 1000 );
 			example2.SaveDataPlayerEquipmentParam[ i ].Accessory2 = "save test : " + saveTest + i;
 
 			// skill

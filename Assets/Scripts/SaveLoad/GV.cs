@@ -44,8 +44,7 @@ public sealed class GV {
 		gameData.PlayersSkills = new List<SkillParam>( );
 		// item
 		gameData.Items = new ItemParam( );
-		gameData.Items.Name = new List<string>( );
-		gameData.Items.Stock = new List<int>( );
+        gameData.Items.itemList = new Dictionary<string, int>();
 		// event
 		gameData.Flag = new FlagManage( );
 		gameData.Flag.EventFlag = new Dictionary<string, bool>( );
@@ -169,7 +168,7 @@ public sealed class GV {
 		SingltonEquipmentManager.Instance.SaveDataPlayerEquipmentParam.Clear( );
 		SingltonEquipmentManager.Instance.NewGame( );
 		// item
-		SingltonItemManager.Instance.SDItem.Name.Clear( );
+		SingltonItemManager.Instance.SDItem.itemList.Clear( );
 		SingltonItemManager.Instance.NewGame( );
 		// skill
 		SingltonSkillManager.Instance.SDSkill.Clear( );
@@ -285,6 +284,7 @@ public sealed class GV {
 			if ( myEquip != null ) {
 				gameData.Equipments[ i ].ID = myEquip[ i ].ID;
 				gameData.Equipments[ i ].Arms = myEquip[ i ].Arms;
+                gameData.Equipments[ i ].Armor = myEquip[i].Armor;
 				gameData.Equipments[ i ].Head = myEquip[ i ].Head;
 				gameData.Equipments[ i ].Shoes = myEquip[ i ].Shoes;
 				gameData.Equipments[ i ].Accessory1 = myEquip[ i ].Accessory1;
@@ -300,8 +300,7 @@ public sealed class GV {
 		SingltonItemManager.ItemParam myItem = SaveData.getClass<SingltonItemManager.ItemParam>( GV.SaveDataKey.ITEM_PARAM );
 
 		if( myItem != null ) {
-			gameData.Items.Name = myItem.Name;
-			gameData.Items.Stock = myItem.Stock;
+            gameData.Items.itemList = myItem.itemList;
 
 		}
 
@@ -428,11 +427,13 @@ public sealed class GV {
 	[Serializable]
 	public class EquipmentParam {
 		/// <summary>プレイヤー識別ID(0からの連番で管理)</summary>
-		public int ID;
+		public string ID;
 		/// <summary>武器(装備名)</summary>
 		public string Arms;
 		/// <summary>頭(装備名)</summary>
 		public string Head;
+        /// <summary> 鎧（装備名)</summary>
+        public string Armor;
 		/// <summary>足(装備名)</summary>
 		public string Shoes;
 		/// <summary>アクセサリー1(装備名)</summary>
@@ -459,10 +460,7 @@ public sealed class GV {
 	/// </summary>
 	[Serializable]
 	public class ItemParam {
-		/// <summary>現在所持しているアイテム一覧</summary>
-		public List<string> Name;
-		/// <summary>現在所持しているアイテムに対するアイテム所持数</summary>
-		public List<int> Stock;
+		public Dictionary<string,int> itemList;
 
 
 	}

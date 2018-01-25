@@ -60,7 +60,6 @@ public class WorldMapUI : MonoBehaviour {
             return;
         }
         
-        UIController.ChangeChoice(destinationList, choiceElement);
 
         if (MyInput.isButtonDown()) {
             choiceElement -= (int)MyInput.direction().y;
@@ -84,7 +83,6 @@ public class WorldMapUI : MonoBehaviour {
 
     void Detail()
     {
-        UIController.ChangeChoice(goOrBack, goBack);
 
         if (MyInput.isButtonDown()) {
             goBack += (int)MyInput.direction(false).x;

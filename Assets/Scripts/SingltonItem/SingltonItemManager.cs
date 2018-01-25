@@ -169,7 +169,7 @@ public sealed class SingltonItemManager {
 
 	}
 	/*===============================================================*/
-
+   
 	/*===============================================================*/
 	/// <summary>ItemParameters(Save情報)</summary>
 	/// <remarks>パラメーターは,暫定的です</remarks>
