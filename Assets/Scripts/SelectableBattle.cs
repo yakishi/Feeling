@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SelectableText : MonoBehaviour {
+public class SelectableBattle : MonoBehaviour{
 
     BattleUI battleUI;
 
@@ -14,7 +14,6 @@ public class SelectableText : MonoBehaviour {
 
     public void Select(GameObject button)
     {
-        button.GetComponent<Text>().color = Color.red;
         var name = button.GetComponentInChildren<Text>().text;
 
         if (battleUI == null) return;
@@ -34,11 +33,13 @@ public class SelectableText : MonoBehaviour {
             }
         }
 
+        SelectText.Select(button);
+
     }
 
     public void DeSelect(GameObject button)
     {
-        button.GetComponent<Text>().color = Color.white;
+        SelectText.DeSelect(button);
     }
 
     string Category(SingltonSkillManager.Category category)

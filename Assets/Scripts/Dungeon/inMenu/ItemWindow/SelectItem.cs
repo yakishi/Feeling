@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SelectItem : MonoBehaviour {
+public class SelectItem : MonoBehaviour{
 
     ItemWindow itemWindow;
 
@@ -17,19 +17,19 @@ public class SelectItem : MonoBehaviour {
 	
 	public void Select(GameObject button)
     {
-        button.GetComponent<Text>().color = Color.red;
         var name = button.GetComponentInChildren<Text>().text;
-
 
         foreach (var item in itemWindow.itemButtonList) {
             if (name == item.ItemInfo.name) {
                 text.text = item.ItemInfo.Detail;
             }
         }
+
+        SelectText.Select(button);
     }
 
     public void DeSelect(GameObject button)
     {
-        button.GetComponent<Text>().color = Color.white;
+        SelectText.DeSelect(button);
     }
 }
