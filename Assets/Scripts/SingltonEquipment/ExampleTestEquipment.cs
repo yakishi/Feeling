@@ -21,21 +21,23 @@ public class ExampleTestEquipment : MonoBehaviour {
 
 		bool isSave = true; // true → false にすることで save された値を確認できます
 		if( isSave ) {
-			//myEquip.SaveDataPlayerEquipmentParam[ 0 ].ID = 9999;
+			for( int i = 0; i < myGV.GData.Players.Count; i++ ) myEquip.SaveDataPlayerEquipmentParam[ i ].ID = ( i + 1 ).ToString( );
 			myEquip.SaveDataPlayerEquipmentParam[ 3 ].Accessory1 = "スライムピアス";
 			myEquip.SaveDataPlayerEquipmentParam[ 5 ].Shoes = "重い靴";
+			myEquip.SaveDataPlayerEquipmentParam[ 1 ].Armor = "伊狩鎧";
 
 			myGV.GameDataSave( myGV.slot );
 			myGV.DebugKeyPrint( );
 
-		}
+		} else SaveData.remove( myGV.slot );
 
 		myGV.GameDataLoad( myGV.slot );
 
 		// SAVEDATA データの取得例
 		foreach( SingltonEquipmentManager.PlayerEquipmentParam items in myEquip.SaveDataPlayerEquipmentParam ) {
-			Debug.Log( "<color='red'>SAVEDATA 装備 ID : " + items.ID + ", 武器 : " 
-				+ items.Arms + ", 頭 : " + items.Head + ", 足 : " + items.Shoes + "</color>" );
+			Debug.Log( "<color='red'>SAVEDATA 装備 ID : " + items.ID + "\n武器 : " 
+				+ items.Arms + "\n頭 : " + items.Head + "\n足 : " + items.Shoes
+				+ "\n鎧 : " + items.Armor + "</color>" );
 
 		}
 
