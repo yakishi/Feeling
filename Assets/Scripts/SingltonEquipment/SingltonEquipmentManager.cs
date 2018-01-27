@@ -82,6 +82,7 @@ public sealed class SingltonEquipmentManager {
 			foreach ( GV.EquipmentParam item in myGV.GData.Equipments ) {
 				EquipmentSaveList[ cnt ].ID = item.ID;
 				EquipmentSaveList[ cnt ].Arms = item.Arms;
+				EquipmentSaveList[ cnt ].Armor = item.Armor;
 				EquipmentSaveList[ cnt ].Head = item.Head;
 				EquipmentSaveList[ cnt ].Shoes = item.Shoes;
 				EquipmentSaveList[ cnt ].Accessory1 = item.Accessory1;

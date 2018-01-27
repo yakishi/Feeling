@@ -54,16 +54,16 @@ public class ExampleTestItem : MonoBehaviour {
 			myGV.GameDataSave( myGV.slot );
 			myGV.DebugKeyPrint( );
 
-		}
+		} else SaveData.remove( myGV.slot );
 
 		myGV.GameDataLoad( myGV.slot );
 
 		// SAVEDATA データの取得例
-		foreach(var i in myItem.SDItem.itemList.Keys)
-			Debug.Log( "<color='red'>セーブデータ\n現在所持しているアイテム : " + i
-			+ "\n現在所持しているアイテムに対するアイテム所持数 : " + myItem.SDItem.itemList[i]+ "</color>" );
+		foreach ( string key in myItem.SDItem.itemList.Keys )
+			Debug.Log( "<color='red'>セーブデータ\n現在所持しているアイテム : " + key
+			+ "\n現在所持しているアイテムに対するアイテム所持数 : " + myItem.SDItem.itemList[ key ] + "</color>" );
 
 		}
 
 
-	}
+}

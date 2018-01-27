@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UniRx;
+using System;
 
 public class SaveLoad : MonoBehaviour
 {
@@ -92,7 +93,8 @@ public class SaveLoad : MonoBehaviour
         var text = slot.GetComponentInChildren<Text>();
 
         if (isUsed) {
-            text.text = "使われている";
+			TimeSpan t = new TimeSpan( 0, 0, myGV.GData.fixedTime[ int.Parse( slot.name ) ] );
+			text.text = "使われている\nプレイ時間 : " + t;
             return;
         }
         text.text = "このスロットは使われていません";

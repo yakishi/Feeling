@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ExampleTestSaveLoad {
 
@@ -44,7 +45,7 @@ public class ExampleTestSaveLoad {
 			+ "SaveDataPlayerState[ 2 ].HP : " + example1.SaveDataPlayerState[ 2 ].EquipmentStatus.HP + "\n"
 			/* equip */
 			+ "SaveDataPlayerEquipmentParam[ 0 ].ID : " + example2.SaveDataPlayerEquipmentParam[ 0 ].ID + "\n"
-			+ "SaveDataPlayerEquipmentParam[ 1 ].Accessory2 : " + example2.SaveDataPlayerEquipmentParam[ 1 ].Accessory2 + "\n"
+			+ "SaveDataPlayerEquipmentParam[ 1 ].Armor : " + example2.SaveDataPlayerEquipmentParam[ 1 ].Armor + "\n"
 			+ "GV.slot : " + myGV.slot + "</color>" );
 
 		foreach( SingltonPlayerManager.PlayerParameters items1 in example1.SaveDataPlayerState ) {
@@ -102,8 +103,8 @@ public class ExampleTestSaveLoad {
 			example1.SaveDataPlayerState[ i ].SkillList.Add( "プレイヤー " + i + " にスキル" + ( i + saveTest + 10 ) + "名を追加しました。" );
 
 			// equip
-			//example2.SaveDataPlayerEquipmentParam[ i ].ID = i + ( saveTest + 1000 );
-			example2.SaveDataPlayerEquipmentParam[ i ].Accessory2 = "save test : " + saveTest + i;
+			example2.SaveDataPlayerEquipmentParam[ i ].ID = ( i + ( saveTest + 1000 ) ).ToString( );
+			example2.SaveDataPlayerEquipmentParam[ i ].Armor = "save test : " + saveTest + i;
 
 			// skill
 			example3.SDSkill[ i ].Name.Add( "プレイヤー " + i + " にスキル" + i + saveTest + "名を追加しました。" );
