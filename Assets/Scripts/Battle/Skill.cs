@@ -27,7 +27,6 @@ public class Skill
         // 仮で攻撃力分のHPを減らす処理を作成
         // 防御力などが入った場合ここかアクションを処理するところで行う
 
-        Debug.Log(skill.skill + ", " + skill.myCategory.ToString() + ", " + skill.myTarget + " = " + targets[0]);
         switch (skill.myCategory) {
             case SingltonSkillManager.Category.Damage:
                     ret.Add(new BattleAction()

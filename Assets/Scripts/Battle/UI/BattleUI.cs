@@ -175,14 +175,19 @@ public class BattleUI : MonoBehaviour
 
     }
 
+    [SerializeField]
+    public GameObject windowLine_Skill;
+    [SerializeField]
+    public GameObject windowLine_Item;
+
     /// <summary>
     /// スキルの各項目のPrefab
     /// </summary>
     [SerializeField]
-    GameObject skillPrefab;
+    public GameObject skillPrefab;
 
     [SerializeField]
-    GameObject itemPrefab;
+    public GameObject itemPrefab;
 
     public List<ItemButton> itemButtonList;
 
@@ -258,7 +263,6 @@ public class BattleUI : MonoBehaviour
 
         skillButtonList = new List<SkillButton>();
         itemButtonList = new List<ItemButton>();
-        InitializeGrids();
 
         tempId = "none";
         isSkillScopeAll = false;
@@ -288,6 +292,7 @@ public class BattleUI : MonoBehaviour
                     target = n;
                     UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
 
+                    battleController.audioManager.AttackSE();
                     LeanTween.alpha(target.GetComponent<RectTransform>(), 1.0f, 0.3f).setFrom(0.0f).setLoopCount(3).setLoopType(LeanTweenType.pingPong).setOnComplete(() => {
                         playerAttack(tempId);
                     });
@@ -298,6 +303,7 @@ public class BattleUI : MonoBehaviour
                 .Subscribe(_ => {
                     UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
 
+                    battleController.audioManager.AttackSE();
                     for (int i = 0; i < monsters.Length; ++i) {
                         LeanTween.alpha(monsters[i].GetComponent<RectTransform>(), 1.0f, 0.3f).setFrom(0.0f).setLoopCount(3).setLoopType(LeanTweenType.pingPong);
 
@@ -321,6 +327,7 @@ public class BattleUI : MonoBehaviour
 
                     UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
 
+                    battleController.audioManager.AttackSE();
                     LeanTween.alpha(target.GetComponent<RectTransform>(), 1.0f, 0.3f).setFrom(0.0f).setLoopCount(3).setLoopType(LeanTweenType.pingPong).setOnComplete(() => {
                         playerAttack(tempId);
                     });
@@ -331,6 +338,7 @@ public class BattleUI : MonoBehaviour
                 .Subscribe(_ => {
                     UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
 
+                    battleController.audioManager.AttackSE();
                     for (int i = 0; i < monsters.Length; ++i) {
                         LeanTween.alpha(players[i].GetComponent<RectTransform>(), 1.0f, 0.3f).setFrom(0.0f).setLoopCount(3).setLoopType(LeanTweenType.pingPong);
 
@@ -342,18 +350,20 @@ public class BattleUI : MonoBehaviour
                 });
         }
 
+        InitializeGrids();
     }
 
     void InitializeGrids()
     {
-        ActiveButton(battleController.combatGrid);
         NotActiveButton(SkillWindow);
         NotActiveButton(battleController.monsterZone);
         NotActiveButton(battleController.playerGrid);
         NotActiveButton(itemWindow);
         skillWindow.SetActive(false);
+        windowLine_Skill.SetActive(false);
         skillDetail.SetActive(false);
         itemWindow.SetActive(false);
+        windowLine_Item.SetActive(false);
         itemDetail.SetActive(false);
     }
 
@@ -407,26 +417,28 @@ public class BattleUI : MonoBehaviour
         ChangeBar();
         currentCharacter = battleController.CurrentActionCharacter;
 
-        EndDisplay();
-
         if(Input.GetKeyDown(KeyCode.Backspace) && selectMode == SelectMode.Skill) {
             UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
+            battleController.combatGrid.SetActive(true);
             BattleUI.NotActiveButton(skillWindow);
             BattleUI.ActiveButton(battleController.combatGrid,beforeSelect[beforeSelect.Count - 1].gameObject);
             beforeSelect.RemoveAt(beforeSelect.Count - 1);
             ClearSelecter();
             skillWindow.SetActive(false);
+            windowLine_Skill.SetActive(false);
             skillDetail.SetActive(false);
 
             selectMode = SelectMode.Behaviour;
         }
         if (Input.GetKeyDown(KeyCode.Backspace) && selectMode == SelectMode.Item) {
+            battleController.combatGrid.SetActive(true);
             UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
             BattleUI.NotActiveButton(itemWindow);
             BattleUI.ActiveButton(battleController.combatGrid, beforeSelect[beforeSelect.Count - 1].gameObject);
             beforeSelect.RemoveAt(beforeSelect.Count - 1);
             ClearSelecter();
             itemWindow.SetActive(false);
+            windowLine_Item.SetActive(false);
             itemDetail.SetActive(false);
 
             selectMode = SelectMode.Behaviour;
@@ -437,10 +449,12 @@ public class BattleUI : MonoBehaviour
             ClearSelecter();
             if(beforeGrid == skillWindow) {
                 skillWindow.SetActive(true);
+                windowLine_Skill.SetActive(true);
                 skillDetail.SetActive(true);
                 selectMode = SelectMode.Skill;
             }
             else {
+                battleController.combatGrid.SetActive(true);
                 selectMode = SelectMode.Behaviour;
             }
 
@@ -456,10 +470,12 @@ public class BattleUI : MonoBehaviour
             BattleUI.NotActiveButton(battleController.playerGrid);
             if (beforeGrid == skillWindow) {
                 skillWindow.SetActive(true);
+                windowLine_Skill.SetActive(true);
                 skillDetail.SetActive(true);
                 selectMode = SelectMode.Skill;
             }
             else {
+                battleController.combatGrid.SetActive(true);
                 selectMode = SelectMode.Behaviour;
             }
 
@@ -482,6 +498,7 @@ public class BattleUI : MonoBehaviour
         if (n.SkillInfo.myScope == SingltonSkillManager.Scope.OverAll) {
             NotActiveButton(skillWindow);
             skillWindow.SetActive(false);
+            windowLine_Skill.SetActive(false);
             skillDetail.SetActive(false);
             
 
@@ -511,6 +528,7 @@ public class BattleUI : MonoBehaviour
             UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
             NotActiveButton(skillWindow);
             skillWindow.SetActive(false);
+            windowLine_Skill.SetActive(false);
             skillDetail.SetActive(false);
 
             tempId = n.SkillID;
@@ -522,6 +540,7 @@ public class BattleUI : MonoBehaviour
         if (n.ItemInfo.scope == SingltonSkillManager.Scope.OverAll) {
             NotActiveButton(itemWindow);
             itemWindow.SetActive(false);
+            windowLine_Item.SetActive(false);
             itemDetail.SetActive(false);
 
 
@@ -552,6 +571,7 @@ public class BattleUI : MonoBehaviour
             UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
             NotActiveButton(itemWindow);
             itemWindow.SetActive(false);
+            windowLine_Item.SetActive(false);
             itemDetail.SetActive(false);
 
             tempId = n.ItemID;
@@ -682,19 +702,35 @@ public class BattleUI : MonoBehaviour
         turnDisplay.SetActive(false);
     }
 
-    private void EndDisplay()
+    public void BattleEndDisplay(int totalExp)
     {
         if (turnDisplay == null) turnDisplay = GameObject.Find("Turn");
 
         if (battleController.DeadType == BattleController.GroupDeadType.AllEnemyDead) {
             turnDisplay.SetActive(true);
             currentState = "敵を殲滅しました";
+            Observable.Timer(System.TimeSpan.FromMilliseconds(800.0))
+            .Take(1)
+            .Subscribe(_ => {
+                currentState = totalExp + " の経験値";
+            });
         }
         else if (battleController.DeadType == BattleController.GroupDeadType.AllPlayerDead) {
             turnDisplay.SetActive(true);
             currentState = "全滅しました";
 
         }
+    }
+
+    public void LevelUpDisplay(Dictionary<string,int> players)
+    {
+        turnDisplay.SetActive(true);
+
+        //ToDO : レベルアップ表記
+        
+        //foreach (var p in players) {
+        //    currentState = p.Key + "が Lv" + p.Value + "に上がった";
+        //}
     }
 
     private void ChangeBar()
@@ -712,18 +748,23 @@ public class BattleUI : MonoBehaviour
     static public void ActiveButton(GameObject grid,GameObject targetObj = null)
     {
         for (var i = 0; i < grid.transform.childCount; i++) {
-            grid.transform.GetChild(i).GetComponent<Button>().enabled = true;
+            if (grid.transform.GetChild(i).gameObject.activeInHierarchy) {
+                grid.transform.GetChild(i).GetComponent<Button>().enabled = true;
+            }
         }
 
         
-        for (var i = 0; i < grid.transform.childCount; i++) {
+        for (var i = 0; i < grid.transform.childCount; ++i) {
             if(targetObj == null) {
                 targetObj = grid.transform.GetChild(i).gameObject;
             }
 
-            if (grid.transform.GetChild(i).gameObject.activeSelf == true) {
+            if (targetObj.activeInHierarchy) {
                 UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(targetObj);
                 break;
+            }
+            else {
+                targetObj = null;
             }
         }
     }

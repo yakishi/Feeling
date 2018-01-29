@@ -112,26 +112,13 @@ public class PlayerManagerSaveData {
 		/// <summary>GV.PlayerParamからのデータ読込</summary>
 		public void LoadPlayer( ) {
 			int cnt = 0; // foreach カウント用変数
-			foreach ( GV.PlayerParam item in myGV.GData.Players ) {
+			foreach ( var item in myGV.GData.Players ) {
 				// item は GV.newGame( ) でファイルから読み込んでくるようですが・・・
 				// 現状, テキトウな値で初期化されています
 				// GV.PlayerParam に定義されているメンバ変数を players に入れていく
-				state[ cnt ].ID = /*item.ID*/-1;
+				//state[ cnt ].ID = item.ID;
 				state[ cnt ].Lv = item.Lv;
-				state[ cnt ].HP = item.HP;
-				state[ cnt ].MP = item.MP;
-				state[ cnt ].Atk = item.Atk;
-				state[ cnt ].Def = item.Def;
-				state[ cnt ].Matk = ( cnt + 1 ) * 1; // item に存在しないのでテキトウな値を入れる
-				state[ cnt ].Mgr = item.Mgr;
-				state[ cnt ].Agl = item.Agl;
-				state[ cnt ].Luc = item.Luc;
-				state[ cnt ].Feeling = "about"; // item に存在しないのでテキトウな値を入れる
-				state[ cnt ].Skill = "about"; // item に存在しないのでテキトウな値を入れる
-				state[ cnt ].StatusPoint = /*item.StatusPoint*/-1;
-				state[ cnt ].OverDrive = "about"; // item に存在しないのでテキトウな値を入れる
-				state[ cnt ].WEAPON01 = "about"; // item に存在しないのでテキトウな値を入れる
-				state[ cnt ].WEAPON02 = "about"; // item に存在しないのでテキトウな値を入れる
+				
 				cnt++;
 
 			}

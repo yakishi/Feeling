@@ -23,10 +23,19 @@ public class Title : MonoBehaviour
     Button loadGameButton;
 
     /// <summary>
+    /// クレジット
+    /// </summary>
+    [SerializeField]
+    Button creditButton;
+
+    /// <summary>
     /// 終了ボタン
     /// </summary>
     [SerializeField]
     Button exitButton;
+
+    [SerializeField]
+    GameObject grid;
 
 	GameObject saveUiObj;
 	bool sceneLoadOnce;
@@ -34,13 +43,6 @@ public class Title : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-
-		newGameButton.transform.GetChild( 0 ).GetComponent<Text>( ).text = "New Game";
-		newGameButton.transform.GetChild( 0 ).GetComponent<Text>( ).fontSize = 32;
-		loadGameButton.transform.GetChild( 0 ).GetComponent<Text>( ).text = "Load Game";
-		loadGameButton.transform.GetChild( 0 ).GetComponent<Text>( ).fontSize = 32;
-		exitButton.transform.GetChild( 0 ).GetComponent<Text>( ).text = "Quit Game";
-		exitButton.transform.GetChild( 0 ).GetComponent<Text>( ).fontSize = 32;
 
 		saveUiObj = newGameButton.gameObject; // 初期 null 回避
 
@@ -57,6 +59,12 @@ public class Title : MonoBehaviour
                 SaveLoad.CreateUI(SaveLoad.Type.Load, gameObject);
             })
             .AddTo(this);
+        creditButton.OnClickAsObservable()
+            .Subscribe(_ => {
+                //クレジットシーンでき次第編集
+                //SceneManager.LoadScene("Credit");
+            })
+            .AddTo(this);
         exitButton.OnClickAsObservable()
             .Subscribe(_ => {
                 // Quit パッケージ後の EXE で有効になる
@@ -69,6 +77,8 @@ public class Title : MonoBehaviour
 				#endif
             })
             .AddTo(this);
+
+        BattleUI.ActiveButton(grid, newGameButton.gameObject);
     }
 
 	void Update( ) {

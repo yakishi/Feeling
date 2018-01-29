@@ -11,9 +11,9 @@ public class BattleMonster : BattleCharacter
     /// id からデータを読み込み
     /// </summary>
     /// <param name="id"></param>
-    public override void loadData(string id,GameManager gameManager, bool dummy = false)
+    public override void loadData(string id,GameManager gameManager)
     {
-        base.loadData(id,gameManager,true);
+        base.loadData(id,gameManager);
     }
 
     public override void startAction()
@@ -25,10 +25,14 @@ public class BattleMonster : BattleCharacter
         var target = battleController.Players.MaxElement(player => player.CurrentHp);
         var skill = new Skill();
 
-        Observable.Timer(System.TimeSpan.FromMilliseconds(800.0))
+        Observable.Timer(System.TimeSpan.FromMilliseconds(1000.0))
             .Take(1)
             .Subscribe(_ => {
-                playAction(skill.use(this, new BattleCharacter[] { target}));
+
+            battleController.audioManager.AttackSE(1);
+                LeanTween.alpha(target.GetComponent<RectTransform>(), 1.0f, 0.3f).setFrom(0.0f).setLoopCount(3).setLoopType(LeanTweenType.pingPong).setOnComplete(() => {
+                    playAction(skill.use(this, new BattleCharacter[] { target }));
+                });
 
             })
             .AddTo(this);

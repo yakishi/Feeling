@@ -40,6 +40,8 @@ public class BattlePlayer : BattleCharacter
                 BattleUI.ActiveButton(battleController.monsterZone);
                 battleUI.beforeGrid = battleController.combatGrid;
 
+                battleController.combatGrid.SetActive(false);
+
                 battleUI.Mode = BattleUI.SelectMode.Monster;
             })
             .AddTo(this);
@@ -67,8 +69,10 @@ public class BattlePlayer : BattleCharacter
 
                 battleUI.beforeSelect.Add(combatButtons[2]);
                 battleUI.SkillWindow.SetActive(true);
+                battleUI.windowLine_Skill.SetActive(true);
                 battleUI.SkillDetail.SetActive(true);
                 battleUI.SkillMode();
+                battleController.combatGrid.SetActive(false);
 
                 BattleUI.NotActiveButton(battleController.combatGrid);
                 BattleUI.ActiveButton(battleUI.SkillWindow);
@@ -85,8 +89,10 @@ public class BattlePlayer : BattleCharacter
 
                 battleUI.beforeSelect.Add(combatButtons[3]);
                 battleUI.ItemWindow.SetActive(true);
+                battleUI.windowLine_Item.SetActive(true);
                 battleUI.ItemDetail.SetActive(true);
                 battleUI.ItemMode();
+                battleController.combatGrid.SetActive(false);
 
                 BattleUI.NotActiveButton(battleController.combatGrid);
                 BattleUI.ActiveButton(battleUI.ItemWindow);
@@ -137,13 +143,12 @@ public class BattlePlayer : BattleCharacter
         BattleUI.DisplayPlayerTurn(this.name);
 
         isPlayerAction = true;
-        playerSelect.Select();
         battleController.combatGrid.SetActive(true);
+        playerSelect.Select();
         
-        BattleUI.ActiveButton(battleController.combatGrid);
-        BattleUI.NotActiveButton(battleController.monsterZone);
+        BattleUI.ActiveButton(battleController.combatGrid, combatButtons[0].gameObject);
 
-        combatButtons[0].Select();
+        combatButtons[0].transform.localScale = new Vector3(1.2f, 1.2f, 1.2f);
 
         if(battleUI != null)
             battleUI.Mode = BattleUI.SelectMode.Behaviour;

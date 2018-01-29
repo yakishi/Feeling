@@ -56,8 +56,8 @@ public sealed class SingltonItemManager {
 
 		// 配列確保
 		myCsvData = new CSVDATA( );
-		myCsvData.data = new string[ 256 ];
-		myCsvData.key = new string[ 256 ];
+		myCsvData.data = new string[ 512 ];
+		myCsvData.key = new string[ 512 ];
 
 		LoadCsvItem( ); // CSV からのデータ読込
 
@@ -117,6 +117,9 @@ public sealed class SingltonItemManager {
             ItemArray[ i ].buffTime = int.Parse( myLoader.GetCSVData( myCsvData.key, myCsvData.data, "I" + i + "_DT" ) );
             ItemArray[ i ].feel = (SingltonSkillManager.Feel)Enum.ToObject(typeof(SingltonSkillManager.Feel), int.Parse(myLoader.GetCSVData(myCsvData.key, myCsvData.data, "I" + i + "_FC")));
             ItemArray[ i ].feelValue = int.Parse(myLoader.GetCSVData(myCsvData.key, myCsvData.data, "I" + i + "_FVC"));
+            ItemArray[i].buy = int.Parse(myLoader.GetCSVData(myCsvData.key, myCsvData.data, "I" + i + "_BUY"));
+            ItemArray[i].sell = int.Parse(myLoader.GetCSVData(myCsvData.key, myCsvData.data, "I" + i + "_SELL"));
+            ItemArray[i].shopFlag= int.Parse(myLoader.GetCSVData(myCsvData.key, myCsvData.data, "I" + i + "_FLAG"));
             ItemArray[ i ].Detail = myLoader.GetCSVData( myCsvData.key, myCsvData.data, "I" + i + "_DETAIL" );
 
 			ItemCsvList.Add( ItemArray[ i ] ); // 入れ込む
@@ -163,6 +166,12 @@ public sealed class SingltonItemManager {
 		public SingltonSkillManager.Feel feel;
         /// <summary>変わる感情値 </summary>
         public int feelValue;
+        /// <summary>売値</summary>
+        public int buy;
+        /// <summary>買値</summary>
+        public int sell;
+        /// <summary>ショップにいつ売られるかのフラグ </summary>
+        public int shopFlag;
         /// <summary>アイテムの詳細</summary>
         public string Detail;
 

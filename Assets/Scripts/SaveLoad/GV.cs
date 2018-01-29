@@ -37,7 +37,7 @@ public sealed class GV {
 		gameData = new GameData( );
 
 		// player
-		gameData.Players = new List<PlayerParam>( );
+		gameData.Players = new List<SingltonPlayerManager.PlayerParameters>( );
 		// equip
 		gameData.Equipments = new List<EquipmentParam>( );
 		// skill
@@ -51,7 +51,7 @@ public sealed class GV {
 
 		for( int i = 0; i < PLAYERS /* !変更しない! */; i++ ) {
 			// player
-			gameData.Players.Add( new PlayerParam( ) );
+			gameData.Players.Add( new SingltonPlayerManager.PlayerParameters( ) );
 			// skill
 			gameData.Players[ i ].SkillList = new List<string>( );
 			gameData.PlayersSkills.Add( new SkillParam( ) );
@@ -99,7 +99,7 @@ public sealed class GV {
 		#endregion
 
 		#region Player
-		public List<PlayerParam> Players;
+		public List<SingltonPlayerManager.PlayerParameters> Players;
 		public List<SkillParam> PlayersSkills;
 		//public int PartyCount;
 		#endregion
@@ -280,18 +280,9 @@ public sealed class GV {
 		for ( int i = 0; i < gameData.Players.Count; i++ ) {
 			if ( myPlayerState != null ) {
 				gameData.Players[ i ].Lv = myPlayerState[ i ].Lv;
-				gameData.Players[ i ].CFV = myPlayerState[ i ].CFV;
+				gameData.Players[ i ].currentFeel = myPlayerState[ i ].currentFeel;
 				gameData.Players[ i ].SkillList = myPlayerState[ i ].SkillList;
-				gameData.Players[ i ].HP = myPlayerState[ i ].EquipmentStatus.HP;
-				gameData.Players[ i ].MP = myPlayerState[ i ].EquipmentStatus.MP;
-				gameData.Players[ i ].Atk = myPlayerState[ i ].EquipmentStatus.Atk;
-				gameData.Players[ i ].Def = myPlayerState[ i ].EquipmentStatus.Def;
-				gameData.Players[ i ].Matk = myPlayerState[ i ].EquipmentStatus.Matk;
-				gameData.Players[ i ].Mgr = myPlayerState[ i ].EquipmentStatus.Mgr;
-				gameData.Players[ i ].Luc = myPlayerState[ i ].EquipmentStatus.Luc;
-				gameData.Players[ i ].Agl = myPlayerState[ i ].EquipmentStatus.Agl;
-				gameData.Players[ i ].Feeling = myPlayerState[ i ].EquipmentStatus.Feeling;
-				gameData.Players[ i ].FeelingValue = myPlayerState[ i ].EquipmentStatus.FeelingValue;
+                gameData.Players[i].STATUS = myPlayerState[i].STATUS;
 
 			}
 

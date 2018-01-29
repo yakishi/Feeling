@@ -175,8 +175,8 @@ public class CSVLoader
 				// 配列の入れ口をインクリメント
 				index++;
 				// Debug 出力
-				//Debug.Log( "セーブデータキー : " + name + "_" + header );
-				//DebugDisplayLog.displayLog.Add( name + "_" + header );
+				Debug.Log( "セーブデータキー : " + name + "_" + header );
+				DebugDisplayLog.displayLog.Add( name + "_" + header );
 
 			}
 
@@ -213,7 +213,7 @@ public class CSVLoader
 					idIndexCnt++;
 
 				}
-				// ID 属性を元にキーネームを変更していく
+                // ID 属性を元にキーネームを変更していく
 				keyArray[ index ] = name + "_" + header;
 				// キーネーム, キーネームに対応した CSV データ
 				keyData[ index ] = record.GetField( header );
