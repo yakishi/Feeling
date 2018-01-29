@@ -43,7 +43,7 @@ public sealed class GV {
 		// skill
 		gameData.PlayersSkills = new List<SkillParam>( );
 		// item
-		gameData.Items = new SingltonItemManager.ItemParam ( );
+		gameData.Items = new ItemParam( );
         gameData.Items.itemList = new Dictionary<string, int>();
 		// event
 		gameData.Flag = new FlagManage( );
@@ -60,6 +60,9 @@ public sealed class GV {
 			gameData.Equipments.Add( new EquipmentParam( ) );
 
 		}
+
+		// fixed time 初期化
+		initTime( );
 
 		// データのロードを行う ( 前回のデータ保持 )
 		GameDataLoad( slot );
@@ -83,12 +86,14 @@ public sealed class GV {
 	[Serializable]
 	public class GameData {
 		#region Other
-		/// <summary>プレイ時間[秒]</summary>
+		/// <summary>プレイ時間[秒]計測用</summary>
+		public int timeSecond;
+		/// <summary>save,loadされた時に格納されるプレイタイム</summary>
 		/// <remarks>
-		/// TimeSpan example = new TimeSpan( 0, 0, timeSecond );
+		/// TimeSpan t = new TimeSpan( 0, 0, gameData.fixedTime );
 		/// 上の様に変換しプレイ時間を取得します
 		/// </remarks>
-		public int timeSecond;
+		public int[ ] fixedTime;
 		/// <summary>イベントフラグ管理</summary>
 		public FlagManage Flag;
 		#endregion
@@ -104,7 +109,7 @@ public sealed class GV {
 		//public List<int> Equipments;
 		public List<EquipmentParam> Equipments;
 		/// <summary>現在所持しているアイテム一覧</summary>
-		public SingltonItemManager.ItemParam Items;
+		public ItemParam Items;
 		#endregion
 	}
 
@@ -193,6 +198,7 @@ public sealed class GV {
 		SingltonSkillManager.Instance.LoadSkill( slotIndex );
 		SingltonItemManager.Instance.LoadItem( slotIndex );
 		SingltonFlagManager.Instance.LoadFlag( slotIndex );
+		gameData.fixedTime[ slotIndex ] = gameData.timeSecond;
 
 
 	}
@@ -206,6 +212,22 @@ public sealed class GV {
 		//TimeSpan newTime = new TimeSpan( 0, 0, gameData.timeSecond[ slot ] );
 		//Debug.Log( "<color='red'>newTime : " + newTime + ", myTimeSecond : " + gameData.timeSecond[ slot ] + " </color>" );
 		if( gameData.timeSecond == -1 ) Debug.LogError( "TimeCountUp Function on the Error." );
+
+
+	}
+	/*===============================================================*/
+
+	/*===============================================================*/
+	/// <summary>固定タイムの初期化を行います</summary>
+	private void initTime( ) {
+		gameData.fixedTime = new int[ 4 ];
+		// save data 1 ～ 3 roop
+		for( int i = 0; i < 3; i++ ) {
+			SaveData.setSlot( i + 1 );
+			SaveData.load( );
+			gameData.fixedTime[ i + 1 ] = SaveData.getInt( SaveDataKey.KEY_CURRENT_TIME, 0 );
+
+		}
 
 
 	}
@@ -275,6 +297,7 @@ public sealed class GV {
 			if ( myEquip != null ) {
 				gameData.Equipments[ i ].ID = myEquip[ i ].ID;
 				gameData.Equipments[ i ].Arms = myEquip[ i ].Arms;
+				gameData.Equipments[ i ].Armor = myEquip[i].Armor;
 				gameData.Equipments[ i ].Head = myEquip[ i ].Head;
 				gameData.Equipments[ i ].Shoes = myEquip[ i ].Shoes;
 				gameData.Equipments[ i ].Accessory1 = myEquip[ i ].Accessory1;
@@ -323,10 +346,11 @@ public sealed class GV {
 		// ロードスロット + キーでプレイ時間を読み込む
 		if ( loadSlot > 0 ) {
 			gameData.timeSecond = SaveData.getInt( SaveDataKey.KEY_CURRENT_TIME, 0 );
+			gameData.fixedTime[ slot ] = gameData.timeSecond;
 
 		}
 
-		//TimeSpan t = new TimeSpan( 0, 0, gameData.timeSecond[ loadSlot ] );
+		//TimeSpan t = new TimeSpan( 0, 0, gameData.fixedTime );
 		//Debug.Log( "<color='red'>" + loadSlot + ", " + saveLoadSlot + ", playTime : " + t + "</color>" );
 
 
@@ -360,6 +384,7 @@ public sealed class GV {
 		/*===============================================================*/
 
 		SaveData.setInt( SaveDataKey.KEY_CURRENT_TIME, gameData.timeSecond );
+		gameData.fixedTime[ saveSlot ] = gameData.timeSecond;
 
 		SaveData.save( );
 
@@ -422,6 +447,8 @@ public sealed class GV {
 		public string Arms;
 		/// <summary>頭(装備名)</summary>
 		public string Head;
+		/// <summary> 鎧（装備名)</summary>
+        public string Armor;
 		/// <summary>足(装備名)</summary>
 		public string Shoes;
 		/// <summary>アクセサリー1(装備名)</summary>
@@ -446,15 +473,12 @@ public sealed class GV {
 	/// <summary>
 	/// アイテム情報
 	/// </summary>
-	//[Serializable]
-	//public class ItemParam {
-	//	/// <summary>現在所持しているアイテム一覧</summary>
-	//	public List<string> Name;
-	//	/// <summary>現在所持しているアイテムに対するアイテム所持数</summary>
-	//	public List<int> Stock;
-    //
-    //
-	//}
+	[Serializable]
+	public class ItemParam {
+		public Dictionary<string,int> itemList;
+
+
+	}
 
 	/// <summary>
 	/// イベント管理クラス
