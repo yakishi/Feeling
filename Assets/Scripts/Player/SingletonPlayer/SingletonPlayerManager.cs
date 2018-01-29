@@ -98,13 +98,15 @@ public sealed class SingltonPlayerManager {
 		
 		if( myGV.GData != null ) {
 			// 読み込んだ値を入れていきます
-			foreach ( GV.PlayerParam item in myGV.GData.Players ) {
+			foreach ( var item in myGV.GData.Players ) {
 				// GV.PlayerParam に定義されているメンバ変数を players に入れていく
 				PlayerSaveList[ cnt ].Lv = item.Lv;
-				PlayerSaveList[ cnt ].CFV = item.CFV;
+				PlayerSaveList[ cnt ].currentFeel = item.currentFeel;
 				PlayerSaveList[ cnt ].SkillList = new List<string>( );
 				PlayerSaveList[ cnt ].SkillList = item.SkillList;
-				PlayerSaveList[ cnt ].EquipmentStatus = new Status(item.HP,item.MP,item.Atk,item.Def,item.Matk,item.Mgr,item.Luc,item.Agl,item.Feeling,item.FeelingValue );
+
+                PlayerSaveList[cnt].TotalExp = item.TotalExp;
+				PlayerSaveList[ cnt ].EquipmentStatus = item.EquipmentStatus;
 				
 				cnt++;
 
@@ -140,6 +142,8 @@ public sealed class SingltonPlayerManager {
 					PlayerArray[ i, j ].RF = ( SingltonSkillManager.Feel )Enum.ToObject( typeof( SingltonSkillManager.Feel ), PlayerFeeling( PlayerArray[ i, j ].Name ) );
 
 				}
+                PlayerArray[i,j].Lv = int.Parse(myLoader.GetCSVData(myCsvData[i].key, myCsvData[i].data, "P" + (i + 1) + "_" + j + "_LV"));
+                PlayerArray[i, j].NeedTotalExp = int.Parse(myLoader.GetCSVData(myCsvData[i].key, myCsvData[i].data, "P" + (i + 1) + "_" + j + "_EXP"));
 				PlayerArray[ i, j ].STATUS = new Status( );
 				PlayerArray[ i, j ].STATUS.HP = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, "P" + ( i + 1 ) + "_" + j + "_HP" ) );
 				PlayerArray[ i, j ].STATUS.MP = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, "P" + ( i + 1 ) + "_" + j + "_MP" ) );
@@ -149,8 +153,6 @@ public sealed class SingltonPlayerManager {
 				PlayerArray[ i, j ].STATUS.Mgr = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, "P" + ( i + 1 ) + "_" + j + "_MGR" ) );
 				PlayerArray[ i, j ].STATUS.Luc = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, "P" + ( i + 1 ) + "_" + j + "_LUC" ) );
 				PlayerArray[ i, j ].STATUS.Agl = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, "P" + ( i + 1 ) + "_" + j + "_AGL" ) );
-				PlayerArray[ i, j ].STATUS.Feeling = ( SingltonSkillManager.Feel )Enum.ToObject( typeof( SingltonSkillManager.Feel ), int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, "P" + ( i + 1 ) + "_" + j + "_FEELING" ) ) );
-				PlayerArray[ i, j ].STATUS.FeelingValue = int.Parse( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, "P" + ( i + 1 ) + "_" + j + "_FEELINGVALUE" ) );
 
 				PlayerArray[ i, j ].SkillList = new List<string>( );
 				List<string> div = new List<string>( myLoader.GetCSVData( myCsvData[ i ].key, myCsvData[ i ].data, "P" + ( i + 1 ) + "_" + j + "_InitSkillList(ID/ID・・・)" ).Split( '/' ) );
@@ -225,6 +227,10 @@ public sealed class SingltonPlayerManager {
 		public string Name;
 		/// <summary>レベル(Save)</summary>
 		public int Lv;
+        /// <summary>総獲得経験値</summary>
+        public int TotalExp;
+        /// <summary>レベルアップに必要な経験値</summary>
+        public int NeedTotalExp;
 		/// <summar>標準ステータス</summary>
 		public Status STATUS;
         /// <summary>装備後ステータス</summary>
@@ -232,13 +238,32 @@ public sealed class SingltonPlayerManager {
 		/// <summary>上昇しやすい感情:RisingFeel(CSV)</summary>
 		public SingltonSkillManager.Feel RF;
 		/// <summary>現在の感情値:CurrentFeelingValue(Save)</summary>
-		public int CFV;
+		public Dictionary<SingltonSkillManager.Feel,int> currentFeel;
 		/// <summary>
 		/// 現在覚えているスキルIDリスト(Save)
 		/// レベル毎に初期で覚えているスキルIDリスト(CSV)
 		/// </summary>
 		public List<string> SkillList;
 
+        public PlayerParameters()
+        {
+            ID = "";
+            Name = "";
+            Lv = 0;
+            TotalExp = 0;
+            NeedTotalExp = 0;
+            STATUS = new Status();
+            EquipmentStatus = STATUS;
+            RF = SingltonSkillManager.Feel.Ai;
+            currentFeel = new Dictionary<SingltonSkillManager.Feel, int>();
+            currentFeel.Add(SingltonSkillManager.Feel.Ki, 0);
+            currentFeel.Add(SingltonSkillManager.Feel.Do, 0);
+            currentFeel.Add(SingltonSkillManager.Feel.Ai, 0);
+            currentFeel.Add(SingltonSkillManager.Feel.Raku, 0);
+            currentFeel.Add(SingltonSkillManager.Feel.Love, 0);
+            currentFeel.Add(SingltonSkillManager.Feel.Zou, 0);
+            SkillList = new List<string>();
+        }
 
 	}
 	/*===============================================================*/
@@ -249,8 +274,12 @@ public sealed class SingltonPlayerManager {
 	public class Status {
 		/// <summary>ヒットポイント</summary>
 		public int HP;
+        /// <summary>現在hP</summary>
+        public int currentHP;
 		/// <summary>マジックポイント</summary>
 		public int MP;
+        /// <summary>現在MP</summary>
+        public int currenMP;
 		/// <summary>攻撃力</summary>
 		public int Atk;
 		/// <summary>防御力</summary>
@@ -263,27 +292,23 @@ public sealed class SingltonPlayerManager {
 		public int Luc;
 		/// <summary>回避率</summary>
 		public int Agl;
-		/// <summary>感情</summary>
-		public SingltonSkillManager.Feel Feeling;
-		/// <summary>感情値(仮)一定以上の感情値で技を覚えるため値を保持する</summary>
-		public int FeelingValue;
 
         public Status()
         {
         }
 
-        public Status(int hp,int mp,int atk,int def,int mAtk,int mgr,int luc,int agl,SingltonSkillManager.Feel feel = 0,int feelValue = 0)
+        public Status(int hp,int mp,int atk,int def,int mAtk,int mgr,int luc,int agl)
         {
             HP = hp;
+            currentHP = hp;
             MP = mp;
+            currenMP = mp;
             Atk = atk;
             Def = def;
             Matk = mAtk;
             Mgr = mgr;
             Luc = luc;
             Agl = agl;
-            Feeling = feel;
-            FeelingValue = feelValue;
 
         }
 	}

@@ -31,7 +31,7 @@ public class ExampleTestPlayer : MonoBehaviour {
 					// 例 : P1 ～ P6 ( Player1 から Player6 ) かつ ID が 7 のデータ
 					if( example1.GetCsvDataPlayerState[ j ].ID == "P" + ( i + 1 ) + "_7" ) {
 						// 上の条件の時の, 感情値 ( CSV ) データを 現在の感情値 ( セーブデータ ) にいれる
-						example1.SaveDataPlayerState[ i ].CFV = example1.GetCsvDataPlayerState[ j ].STATUS.FeelingValue;
+						//example1.SaveDataPlayerState[ i ].CFV = example1.GetCsvDataPlayerState[ j ].STATUS.FeelingValue;
 
 					}
 
@@ -51,7 +51,7 @@ public class ExampleTestPlayer : MonoBehaviour {
 
 		int cntTest = 0;
 		foreach ( SingltonPlayerManager.PlayerParameters items in example1.SaveDataPlayerState ) {
-			Debug.Log( "-----------------------\nforeach ( セーブデータ ) 出力\n現在の感情値 : " + items.CFV + "\nHP : " +
+			Debug.Log( "-----------------------\nforeach ( セーブデータ ) 出力\n現在の感情値 : " + "\nHP : " +
 				items.EquipmentStatus.HP + "\nMP : " + items.EquipmentStatus.MP + "\n-----------------------" );
 			cntTest++;
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 /*===============================================================*/
@@ -49,7 +50,7 @@ public sealed class SingltonEnemyManager {
 
 		// CSVLoader を用いて CSV のデータを配列にぶち込む ( エネミー数分 )
 		for( int enemies = 0; enemies < CSVLoader.csvId; enemies++ ) {
-			EnemyArray[ enemies ].ID = int.Parse( myLoader.GetCSVData( key, keyData, enemies + "_ID" ) );
+			EnemyArray[ enemies ].ID = myLoader.GetCSVData( key, keyData, enemies + "_ID" );
 			EnemyArray[ enemies ].NAME = myLoader.GetCSVData( key, keyData, enemies + "_NAME" );
 			EnemyArray[ enemies ].LV = int.Parse( myLoader.GetCSVData( key, keyData, enemies + "_LV" ) );
 			EnemyArray[ enemies ].HP = int.Parse( myLoader.GetCSVData( key, keyData, enemies + "_HP" ) );
@@ -60,8 +61,9 @@ public sealed class SingltonEnemyManager {
 			EnemyArray[ enemies ].MDEF = int.Parse( myLoader.GetCSVData( key, keyData, enemies + "_MDEF" ) );
 			EnemyArray[ enemies ].SPD = int.Parse( myLoader.GetCSVData( key, keyData, enemies + "_SPD" ) );
 			EnemyArray[ enemies ].LUCKY = int.Parse( myLoader.GetCSVData( key, keyData, enemies + "_LUCKY" ) );
-			EnemyArray[ enemies ].FEELING = myLoader.GetCSVData( key, keyData, enemies + "_FEELING" );
+            EnemyArray[ enemies ].FEELING = (SingltonSkillManager.Feel)Enum.ToObject(typeof(SingltonSkillManager.Feel), int.Parse(myLoader.GetCSVData(key, keyData, enemies + "_FEELING")));
 			EnemyArray[ enemies ].DROPEXP = int.Parse( myLoader.GetCSVData( key, keyData, enemies + "_DROPEXP" ) );
+            EnemyArray[enemies].Dungeon = (Dungeon)Enum.ToObject(typeof(Dungeon), int.Parse(myLoader.GetCSVData(key, keyData, enemies + "_DUGEON")));
 
 		}
 		
@@ -78,7 +80,7 @@ public sealed class SingltonEnemyManager {
 	/// <summary>EnemyParameters</summary>
 	public class EnemyParameters {
 		/// <summary>0からの連番:敵を識別します</summary>
-		public int ID;
+		public string ID;
 		/// <summary>敵の名前</summary>
 		public string NAME;
 		/// <summary>敵のレベル</summary>
@@ -100,14 +102,25 @@ public sealed class SingltonEnemyManager {
 		/// <summary>幸運</summary>
 		public int LUCKY;
 		/// <summary>感情</summary>
-		public string FEELING;
+		public SingltonSkillManager.Feel FEELING;
 		/// <summary>敵が落とす経験値量</summary>
 		public int DROPEXP;
+        /// <summary>出現場所</summary>
+        public Dungeon Dungeon;
 
 
 	}
 	/*===============================================================*/
 
+    public enum Dungeon
+    {
+        Volcano,
+        Cave,
+        Remains,
+        SnowMountain,
+        HeavenlyCastle,
+        Temple
+    }
 
 }
 /*===============================================================*/

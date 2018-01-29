@@ -23,16 +23,19 @@ public abstract class BattleCharacter : MonoBehaviour
             return status;
         }
     }
+    private string tempId;
     public string ID
     {
         get
         {
-            return param.ID;
+            if(param != null) return param.ID;
+            return tempId;
         }
         //モンスターがデータができるまでの仮
         set
         {
-            param.ID = value;
+            if(param != null) param.ID = value;
+            tempId = value;
         }
 
     }
@@ -177,23 +180,29 @@ public abstract class BattleCharacter : MonoBehaviour
     /// id からデータを読み込み
     /// </summary>
     /// <param name="id"></param>
-    public virtual void loadData(string id, GameManager gameManager, bool dummy = false)
+    public virtual void loadData(string id, GameManager gameManager)
     {
-        //モンスター用ダミーデータ
-        if (dummy) {
-            status = new SingltonPlayerManager.Status(100, 100, 10, 10, 10, 10, 10, Random.Range(1, 20), SingltonSkillManager.Feel.Do, 20);
-            currentHp = status.HP;
-            buffList = new List<BuffManager>();
-            return;
-        }
         List<SingltonPlayerManager.PlayerParameters> playersParam = gameManager.PlayerList;
         foreach (var i in playersParam) {
             if (i.ID == id) {
                 param = i;
             }
         }
+
+       
         if (param == null) {
-            Debug.Log("Not Found ID :" + id);
+            List<SingltonEnemyManager.EnemyParameters> enemyParam = gameManager.EnemyManager.GetEnemyState;
+            param = new SingltonPlayerManager.PlayerParameters();
+            foreach(var m in enemyParam) {
+                if(m.ID == id) {
+                    param.ID = m.ID;
+                    param.Lv = m.LV;
+                    param.Name = m.NAME;
+                    param.STATUS = new SingltonPlayerManager.Status(m.HP, m.MP, m.ATK, m.DEF, m.MATK, m.MDEF, m.LUCKY, m.SPD);
+                    param.currentFeel = new Dictionary<SingltonSkillManager.Feel, int>();
+                    param.TotalExp = 15;
+                }
+            }
         }
         status = param.STATUS;
         currentHp = param.STATUS.HP;

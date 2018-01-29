@@ -29,6 +29,13 @@ public class GameManager : MonoBehaviour {
 
     GV myGV;
     SingltonPlayerManager mySPM;
+    public SingltonPlayerManager PlayerManager
+    {
+        get
+        {
+            return mySPM;
+        }
+    }
     SingltonEquipmentManager mySEM;
     public SingltonEquipmentManager EquipmentManager
     {
@@ -37,6 +44,15 @@ public class GameManager : MonoBehaviour {
             return mySEM;
         }
     }
+    SingltonEnemyManager mySEneM;
+    public SingltonEnemyManager EnemyManager
+    {
+        get
+        {
+            return mySEneM;
+        }
+    }
+
     SingltonSkillManager mySSM;
     public SingltonSkillManager SkillManager
     {
@@ -83,7 +99,8 @@ public class GameManager : MonoBehaviour {
 		// セーブデータを扱うシングルトンクラスインスタンス生成処理
 		myGV = GV.Instance;
 		mySPM = SingltonPlayerManager.Instance;
-		mySEM = SingltonEquipmentManager.Instance;
+        mySEM = SingltonEquipmentManager.Instance;
+        mySEneM = SingltonEnemyManager.Instance;
 		mySSM = SingltonSkillManager.Instance;
 		mySIM = SingltonItemManager.Instance;
 		mySFM = SingltonFlagManager.Instance;
@@ -92,14 +109,14 @@ public class GameManager : MonoBehaviour {
 		Debug.Log( "現在のシーン : " + state.ToString( ) );
 
         players = new List<SingltonPlayerManager.PlayerParameters>();
-        int cnt = 0;
+        int cnt = 1;
         foreach(var i in mySPM.GetCsvDataPlayerState) {
-            if(cnt % 11 == 0) {
+            if(i.ID == "P" + cnt + "_" + 0) {
                 players.Add(i);
+                cnt++;
             }
-
-            cnt++;
         }
+
 	}
 	/*===============================================================*/
 

@@ -9,6 +9,9 @@ public class BattleController : MonoBehaviour
 {
     [SerializeField]
     public GameManager gameManager;
+    [SerializeField]
+    public AudioManager audioManager;
+
     private Transform[] playerIconPos = new Transform[4];
     /// <summary>
     /// モンスターが配置されるグリッド
@@ -117,9 +120,6 @@ public class BattleController : MonoBehaviour
 
     void Start()
     {
-        //for(int i = 0; i < playerIconPos.Length; i++) {
-        //    playerIconPos[i] = GameObject.Find("PlayerIcon" + (i + 1)).transform;
-        //}
         monsterZone = GameObject.Find("MonsterZone");
 
         characters = new List<BattleCharacter>();
@@ -198,10 +198,11 @@ public class BattleController : MonoBehaviour
 
             monsters[i] = temp.GetComponent<BattleMonster>();
             monsters[i].transform.position = new Vector3(monsterPosX(i, monsterCount), monsterZone.transform.position.y, 0);
+            monsters[i].ID = random.ToString();
             monsters[i].GetComponent<Image>().sprite = monsterImg[random];
         }
         foreach (var monster in monsters) {
-            monster.loadData("0",gameManager,true);
+            monster.loadData(monster.ID,gameManager);
         }
 
         BattleUI.NotActiveButton(monsterZone);
@@ -294,5 +295,119 @@ public class BattleController : MonoBehaviour
         }
 
         Debug.Log("敵殲滅");
+
+        int totalEXP = 0;
+        foreach(var m in monsters) {
+            totalEXP += m.Param.TotalExp;
+        }
+
+        battleUI.BattleEndDisplay(totalEXP);
+
+        int cnt = 1;
+        bool isLevelUp = false;
+
+        Dictionary<string, int> lvUpPlayerList = new Dictionary<string, int>();
+        foreach(var p in gameManager.PlayerList) {
+            p.TotalExp += totalEXP;
+            lvUpPlayerList.Add(p.Name, p.Lv);
+            cnt++;
+        }
+
+        battleUI.LevelUpDisplay(lvUpPlayerList);
+    }
+
+    bool IsUpLevel(SingltonPlayerManager.PlayerParameters player,int cnt)
+    {
+        foreach(var p in gameManager.PlayerManager.GetCsvDataPlayerState) {
+            if(p.ID == "P" + cnt + "_"  + (player.Lv + 1)) {
+                if(p.NeedTotalExp <= player.TotalExp) {
+                    player.Lv += 1;
+
+                    player.STATUS = UpStatus(player, HighestFeel(player));
+
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    SingltonSkillManager.Feel HighestFeel(SingltonPlayerManager.PlayerParameters player)
+    {
+        SingltonSkillManager.Feel tempFeel = SingltonSkillManager.Feel.Ki;
+        int value = player.currentFeel[tempFeel];
+        foreach (var f in player.currentFeel.Keys) {
+            if(player.currentFeel[f] >= value) {
+                tempFeel = f;
+                value = player.currentFeel[f];
+            }
+        }
+
+        return tempFeel;
+    }
+
+    SingltonPlayerManager.Status UpStatus(SingltonPlayerManager.PlayerParameters player,SingltonSkillManager.Feel feel)
+    {
+        SingltonPlayerManager.Status status = player.STATUS;
+
+        switch (feel) {
+            case SingltonSkillManager.Feel.Ki:
+                status.Atk = Mathf.FloorToInt(status.Def * 1.2f);
+                status.Def = Mathf.FloorToInt(status.Def * 1.5f);
+                status.Matk = Mathf.FloorToInt(status.Def * 1.2f);
+                status.Mgr = Mathf.FloorToInt(status.Def * 1.2f);
+                status.Agl = Mathf.FloorToInt(status.Def * 1.2f);
+                status.Luc = Mathf.FloorToInt(status.Def * 1.2f);
+                break;
+            case SingltonSkillManager.Feel.Do:
+                status.Atk = Mathf.FloorToInt(status.Def * 1.5f);
+                status.Def = Mathf.FloorToInt(status.Def * 1.2f);
+                status.Matk = Mathf.FloorToInt(status.Def * 1.2f);
+                status.Mgr = Mathf.FloorToInt(status.Def * 1.2f);
+                status.Agl = Mathf.FloorToInt(status.Def * 1.2f);
+                status.Luc = Mathf.FloorToInt(status.Def * 1.2f);
+                break;
+            case SingltonSkillManager.Feel.Ai:
+                status.Atk = Mathf.FloorToInt(status.Def * 1.2f);
+                status.Def = Mathf.FloorToInt(status.Def * 1.2f);
+                status.Matk = Mathf.FloorToInt(status.Def * 1.2f);
+                status.Mgr = Mathf.FloorToInt(status.Def * 1.5f);
+                status.Agl = Mathf.FloorToInt(status.Def * 1.2f);
+                status.Luc = Mathf.FloorToInt(status.Def * 1.2f);
+                break;
+            case SingltonSkillManager.Feel.Raku:
+                status.Atk = Mathf.FloorToInt(status.Def * 1.2f);
+                status.Def = Mathf.FloorToInt(status.Def * 1.2f);
+                status.Matk = Mathf.FloorToInt(status.Def * 1.2f);
+                status.Mgr = Mathf.FloorToInt(status.Def * 1.2f);
+                status.Agl = Mathf.FloorToInt(status.Def * 1.2f);
+                status.Luc = Mathf.FloorToInt(status.Def * 1.5f);
+                break;
+            case SingltonSkillManager.Feel.Love:
+                status.Atk = Mathf.FloorToInt(status.Def * 1.2f);
+                status.Def = Mathf.FloorToInt(status.Def * 1.2f);
+                status.Matk = Mathf.FloorToInt(status.Def * 1.5f);
+                status.Mgr = Mathf.FloorToInt(status.Def * 1.2f);
+                status.Agl = Mathf.FloorToInt(status.Def * 1.2f);
+                status.Luc = Mathf.FloorToInt(status.Def * 1.2f);
+                break;
+            case SingltonSkillManager.Feel.Zou:
+                status.Atk = Mathf.FloorToInt(status.Def * 1.2f);
+                status.Def = Mathf.FloorToInt(status.Def * 1.2f);
+                status.Matk = Mathf.FloorToInt(status.Def * 1.2f);
+                status.Mgr = Mathf.FloorToInt(status.Def * 1.2f);
+                status.Agl = Mathf.FloorToInt(status.Def * 1.5f);
+                status.Luc = Mathf.FloorToInt(status.Def * 1.2f);
+                break;
+            default:
+                break;
+
+        }
+
+        status.HP += 5;
+        status.MP += 5;
+
+        return status;
     }
 }
