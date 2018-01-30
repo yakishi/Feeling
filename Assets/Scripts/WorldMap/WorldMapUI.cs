@@ -19,6 +19,9 @@ public class WorldMapUI : MonoBehaviour {
     private Button[] goOrBack = new Button[2];
     [SerializeField]
     GameObject detailGrid;
+    [SerializeField]
+    SceneName.SceneNames[] sceneNames;
+    SceneName.SceneNames targetScene;
 
     List<GameObject> beforeSelect;
 
@@ -52,7 +55,7 @@ public class WorldMapUI : MonoBehaviour {
         goOrBack[0].OnClickAsObservable()
             .Subscribe(_ => {
                 //ダンジョンへのシーン遷移
-
+                SceneController.sceneTransition(targetScene, 1.0f, SceneController.FadeType.Fade);
                 beforeSelect.Clear();
             })
             .AddTo(this);
@@ -76,7 +79,10 @@ public class WorldMapUI : MonoBehaviour {
 
     public void EnlargementDungeon(int i)
     {
-        dungeonRedPointArry[i].transform.localScale = new Vector3(1.2f, 1.2f, 1.0f);
+        if (i < dungeonRedPointArry.Length) {
+            dungeonRedPointArry[i].transform.localScale = new Vector3(1.2f, 1.2f, 1.0f);
+        }
+        targetScene = sceneNames[i];
     }
 
     public void ReductionDungeon(int i)

@@ -4,6 +4,15 @@ using UnityEngine;
 
 public class SceneName
 {
+    public enum SceneNames
+    {
+        Title,
+        WorldMap,
+        azito,
+        Battle,
+        Kazan
+    }
+
     public const string Title    = "Title";
     public const string WorldMap = "WorldMap";
     public const string Base     = "Base";

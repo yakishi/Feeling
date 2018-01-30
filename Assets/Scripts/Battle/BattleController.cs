@@ -314,6 +314,7 @@ public class BattleController : MonoBehaviour
         }
 
         battleUI.LevelUpDisplay(lvUpPlayerList);
+        Destroy(this);
     }
 
     bool IsUpLevel(SingltonPlayerManager.PlayerParameters player,int cnt)

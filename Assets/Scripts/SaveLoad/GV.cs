@@ -163,7 +163,7 @@ public sealed class GV {
 
 		// save data file delete, save prefab で任意のセーブスロットを選択すると
 		// 選択されたファイルが一旦, 削除される, その後, 初期化されたデータで保存される
-		SaveData.remove( slot );
+		//SaveData.remove( slot );
 
 		// save data を扱う各, singlton class の初期化処理
 		// player
@@ -184,8 +184,7 @@ public sealed class GV {
 		gameData.timeSecond = 0;
 
 		GameDataSave( slot );
-
-
+        SceneController.sceneTransition(SceneName.WorldMap, 2.0f, SceneController.FadeType.Fade);
 	}
 
 	/*===============================================================*/
