@@ -6,11 +6,17 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Title.unity
+    path: Assets/Scenes/TitleTest.unity
     guid: 606ed788295f27e42aa28c316186b2bb
   - enabled: 1
     path: Assets/Scenes/WorldMap.unity
     guid: 5b0081e62711ccb468db2d7a4e391c29
   - enabled: 1
-    path: Assets/Scenes/TestScenes/BatteleUITest.unity
+    path: Assets/Scenes/Battle/Battle.unity
     guid: b3a832d1e265fd94cb957c805144f3e0
+  - enabled: 1
+    path: Assets/Map/map01/azito.unity
+    guid: fde871714ff7c4c43bc23cd7460cd3f7
+  - enabled: 1
+    path: Assets/Scenes/Kazan.unity
+    guid: 09a7abaa0009ca248a6fc2dcb2dbbb4e

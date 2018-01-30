@@ -50,8 +50,9 @@ public class Title : MonoBehaviour
 
 		newGameButton.OnClickAsObservable()
             .Subscribe(_ => {
-				// セーブスロット UI 表示
-				saveUiObj = SaveLoad.CreateUI( SaveLoad.Type.Save, gameObject );
+                // セーブスロット UI 表示
+                //saveUiObj = SaveLoad.CreateUI( SaveLoad.Type.Save, gameObject );
+                myGV.newGame();
             })
             .AddTo(this);
         loadGameButton.OnClickAsObservable()
