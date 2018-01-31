@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 /// <summary>CreditUIクラス</summary>
 /// <remarks>
-/// アスペクト比,16;9または16:10の環境で正しく表示されるのを確認しています。
+/// アスペクト比,16:9の環境で正しく表示されるのを確認しています。
 /// </remarks>
 public class CreditUI {
 
@@ -70,9 +70,9 @@ public class CreditUI {
 		VerticalLayoutGroup content = ui.transform.GetChild( 0 ).GetChild( 0 ).GetComponent<VerticalLayoutGroup>( );
 		rc.sizeDelta = new Vector2( mySpriteSize.width, myWindowSize.height );
 		// content group
-		content.padding = new RectOffset( 70, 0, Mathf.RoundToInt( mySpriteSize.height ), -130 );
-		RectTransform rc2 = content.GetComponent<RectTransform>( );
-		rc2.localScale = new Vector3( 0.9f, 0.98f, 1.0f );
+		content.padding = new RectOffset( 0, 0, Mathf.RoundToInt( mySpriteSize.height ), -190 );
+		RectTransform rc2 = content.transform.GetChild( 0 ).GetComponent<RectTransform>( );
+		rc2.localScale = new Vector3( 0.84f, 0.7f, 1.0f );
 
 
 	}

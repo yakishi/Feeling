@@ -11,7 +11,7 @@ public class CreditCanvasMono : MonoBehaviour {
 	}
 
 	private void Update( ) {
-		myUI.ScrollUpDown( -0.001f /* スクロール速度 */ );
+		myUI.ScrollUpDown( -0.002f /* スクロール速度 */ );
 
 
 	}
