@@ -4,6 +4,7 @@ public class CreditCanvasMono : MonoBehaviour {
 	CreditUI myUI;
 
 	private void Start( ) {
+		CreditAudio.PlayBGM( 0 );
 		myUI = new CreditUI( );
 		myUI.CreditUiCreate( );
 
