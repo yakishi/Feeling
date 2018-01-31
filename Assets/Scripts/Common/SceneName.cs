@@ -10,7 +10,8 @@ public class SceneName
         WorldMap,
         azito,
         Battle,
-        Kazan
+        Kazan,
+		Credit
     }
 
     public const string Title    = "Title";

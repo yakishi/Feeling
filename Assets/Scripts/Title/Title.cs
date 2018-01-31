@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UniRx;
+using System;
 
 public class Title : MonoBehaviour
 {
@@ -62,9 +63,9 @@ public class Title : MonoBehaviour
             .AddTo(this);
         creditButton.OnClickAsObservable()
             .Subscribe(_ => {
-                //クレジットシーンでき次第編集
-                //SceneManager.LoadScene("Credit");
-            })
+				//クレジットシーンに遷移
+				SceneController.sceneTransition( Enum.GetName( typeof( SceneName.SceneNames), 5 ), 2.0f, SceneController.FadeType.Fade );
+			} )
             .AddTo(this);
         exitButton.OnClickAsObservable()
             .Subscribe(_ => {
@@ -87,8 +88,6 @@ public class Title : MonoBehaviour
 		if ( saveUiObj == null && sceneLoadOnce ) {
 			sceneLoadOnce = false;
 			myGV.newGame( );
-			// TODO: 仮でワールドマップに遷移
-			SceneManager.LoadScene(SceneName.WorldMap);
 
 		}
 	}
