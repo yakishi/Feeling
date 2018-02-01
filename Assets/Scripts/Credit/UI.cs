@@ -1,11 +1,16 @@
-﻿using UnityEngine;
+﻿using System;
+using UniRx;
+using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>CreditUIクラス</summary>
 /// <remarks>
-/// アスペクト比,16;9または16:10の環境で正しく表示されるのを確認しています。
+/// アスペクト比,16:9の環境で正しく表示されるのを確認しています。
 /// </remarks>
 public class CreditUI {
+
+	/// <summary>タイトルへシーン遷移する秒数</summary>
+	const int transitionTitle = 10 * 1000;
 
 	struct WindowSize {
 		public float width;
@@ -25,6 +30,11 @@ public class CreditUI {
 
 	} UI_GameObject myUG;
 
+	struct UI_LinkFlg {
+		public bool jumpOnce;
+
+	} UI_LinkFlg myUL;
+
 	/// <summary>コンストラクター</summary>
 	public CreditUI( ) {
 		// display size
@@ -34,10 +44,11 @@ public class CreditUI {
 		mySpriteSize.width = 1280.0f;
 		mySpriteSize.height = 960.0f;
 
+		myUL.jumpOnce = true;
+
 		myUG.Credit = GameObject.Find( "CreditUI" );
 
 		CameraSetting( );
-		
 
 
 	}
@@ -70,9 +81,9 @@ public class CreditUI {
 		VerticalLayoutGroup content = ui.transform.GetChild( 0 ).GetChild( 0 ).GetComponent<VerticalLayoutGroup>( );
 		rc.sizeDelta = new Vector2( mySpriteSize.width, myWindowSize.height );
 		// content group
-		content.padding = new RectOffset( 70, 0, Mathf.RoundToInt( mySpriteSize.height ), -130 );
-		RectTransform rc2 = content.GetComponent<RectTransform>( );
-		rc2.localScale = new Vector3( 0.9f, 0.98f, 1.0f );
+		content.padding = new RectOffset( 0, 0, Mathf.RoundToInt( mySpriteSize.height ), -190 );
+		RectTransform rc2 = content.transform.GetChild( 0 ).GetComponent<RectTransform>( );
+		rc2.localScale = new Vector3( 0.84f, 0.7f, 1.0f );
 
 
 	}
@@ -82,6 +93,19 @@ public class CreditUI {
 	public void ScrollUpDown( float plusORminus ) {
 		Scrollbar scroll = myUG.Credit.transform.GetChild( 2 ).GetComponent<Scrollbar>( );
 		scroll.value += plusORminus;
+		// title scene jump
+		if( scroll.value <= 0.0f && myUL.jumpOnce ) {
+			myUL.jumpOnce = false;
+			// n 秒後に jump
+			Observable.Timer( TimeSpan.FromMilliseconds( transitionTitle ) )
+				.Subscribe( _ => 
+					SceneController.sceneTransition(
+						Enum.GetName( typeof( SceneName.SceneNames ), 0 ), 2.0f, SceneController.FadeType.Fade
+
+					)
+				);
+
+		}
 
 
 	}
