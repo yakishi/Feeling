@@ -61,9 +61,8 @@ public sealed class SingltonEnemyManager {
 			EnemyArray[ enemies ].MDEF = int.Parse( myLoader.GetCSVData( key, keyData, enemies + "_MDEF" ) );
 			EnemyArray[ enemies ].SPD = int.Parse( myLoader.GetCSVData( key, keyData, enemies + "_SPD" ) );
 			EnemyArray[ enemies ].LUCKY = int.Parse( myLoader.GetCSVData( key, keyData, enemies + "_LUCKY" ) );
-            EnemyArray[ enemies ].FEELING = (SingltonSkillManager.Feel)Enum.ToObject(typeof(SingltonSkillManager.Feel), int.Parse(myLoader.GetCSVData(key, keyData, enemies + "_FEELING")));
-			EnemyArray[ enemies ].DROPEXP = int.Parse( myLoader.GetCSVData( key, keyData, enemies + "_DROPEXP" ) );
-            EnemyArray[enemies].Dungeon = (Dungeon)Enum.ToObject(typeof(Dungeon), int.Parse(myLoader.GetCSVData(key, keyData, enemies + "_DUGEON")));
+            EnemyArray[enemies].DROPEXP = int.Parse(myLoader.GetCSVData(key, keyData, enemies + "_DROPEXP"));
+            EnemyArray[enemies].Dungeon = (Dungeon)Enum.ToObject(typeof(Dungeon), int.Parse(myLoader.GetCSVData(key, keyData, enemies + "_DUNGEON")));
 
 		}
 		

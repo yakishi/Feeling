@@ -141,7 +141,9 @@ public class BattleController : MonoBehaviour
 
                     foreach (var m in monsters) {
                         if (!m.IsDead) continue;
-                        m.gameObject.SetActive(false);
+                        Image image = m.gameObject.GetComponent<Image>();
+
+                        image.color = new Color(252,252,252,0);
                     }
 
                     groupDeadType = getGroupDeadType();

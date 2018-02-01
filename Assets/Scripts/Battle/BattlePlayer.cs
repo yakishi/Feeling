@@ -38,6 +38,8 @@ public class BattlePlayer : BattleCharacter
                 battleUI.beforeSelect.Add(combatButtons[0]);
                 BattleUI.NotActiveButton(battleController.combatGrid);
                 BattleUI.ActiveButton(battleController.monsterZone);
+                BattleUI.DontSelectableDeadCharacter(battleController.monsterZone);
+
                 battleUI.beforeGrid = battleController.combatGrid;
 
                 battleController.combatGrid.SetActive(false);

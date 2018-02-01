@@ -38,9 +38,13 @@ public class Title : MonoBehaviour
     [SerializeField]
     GameObject grid;
 
+    [SerializeField]
+    GameObject audioManager;
+
 	GameObject saveUiObj;
 	bool sceneLoadOnce;
-    
+
+    GameObject[] audioClips;
     // Use this for initialization
     void Start()
     {
@@ -65,6 +69,7 @@ public class Title : MonoBehaviour
             .Subscribe(_ => {
 				//クレジットシーンに遷移
 				SceneController.sceneTransition( Enum.GetName( typeof( SceneName.SceneNames), 5 ), 2.0f, SceneController.FadeType.Fade );
+                DontDestroyOnLoad(audioManager);
 			} )
             .AddTo(this);
         exitButton.OnClickAsObservable()
@@ -81,6 +86,8 @@ public class Title : MonoBehaviour
             .AddTo(this);
 
         BattleUI.ActiveButton(grid, newGameButton.gameObject);
+
+        audioClips = GameObject.FindGameObjectsWithTag("AudioManager");
     }
 
 	void Update( ) {
@@ -90,5 +97,11 @@ public class Title : MonoBehaviour
 			myGV.newGame( );
 
 		}
+
+        if(audioClips != null) {
+            if (audioClips.Length <= 1) return;
+
+            DestroyObject(audioClips[1]);
+        }
 	}
 }

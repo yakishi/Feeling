@@ -681,6 +681,18 @@ public class BattleUI : MonoBehaviour
         defScale = Vector3.zero;
     }
 
+    static public void DontSelectableDeadCharacter(GameObject grid)
+    {
+        BattleCharacter chara;
+        for (var i = 0; i < grid.transform.childCount; i++) {
+            chara = grid.transform.GetChild(i).GetComponent<BattleCharacter>();
+
+            if (chara.IsDead) {
+                grid.transform.GetChild(i).GetComponent<Button>().enabled = false;
+            }
+        }
+    }
+
     /// <summary>
     /// ターン表記（モンスター)
     /// </summary>
