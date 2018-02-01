@@ -18,4 +18,5 @@ public class SceneName
     public const string WorldMap = "WorldMap";
     public const string Base     = "Base";
     public const string Battle   = "Battle";
+    public const string Credit   = "Credit";
 }

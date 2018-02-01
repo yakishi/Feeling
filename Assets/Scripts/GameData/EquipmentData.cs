@@ -1,11 +1,23 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
 
 [System.Serializable]
 public struct EquipmentData
 {
+    public class GUID
+    {
+        public GUID()
+        {
+
+        }
+
+        public static GUID Generate()
+        {
+            return new GUID();
+        }
+    }
+
     public readonly GUID id;
     public GUID ID { get { return id; } }
     public string name;
