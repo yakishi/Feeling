@@ -68,7 +68,7 @@ public class PrologueUI {
 
 	}
 
-	/// <summary>クレジット画面を作ります</summary>
+	/// <summary>プロローグ画面を作ります</summary>
 	public void PrologueUICreate( ) {
 		GameObject ui = myUG.Prologue;
 		RectTransform rc = ui.GetComponent<RectTransform>( );
@@ -86,7 +86,7 @@ public class PrologueUI {
 
 	}
 
-	/// <summary>クレジットスクロールの上下スクロールをコントロールします</summary>
+	/// <summary>プロローグスクロールの上下スクロールをコントロールします</summary>
 	/// <param name="plusORminus">' -0.001f 'または' 0.001f 'でUP・DOWN</param>
 	public void ScrollUpDown( float plusORminus ) {
 		Scrollbar scroll = myUG.Prologue.transform.GetChild( 2 ).GetComponent<Scrollbar>( );
