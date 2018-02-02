@@ -91,13 +91,16 @@ public class SaveLoad : MonoBehaviour
     void setText(Button slot, bool isUsed)
     {
         var text = slot.GetComponentInChildren<Text>();
+		Text saveText = slot.transform.parent.GetChild( int.Parse( slot.name ) - 1 ).GetChild( 1 ).GetComponent<Text>( );
+		if( type == Type.Save )saveText.text = "セーブ" + int.Parse( slot.name ).ToString( );
+		if( type == Type.Load )saveText.text = "ロード" + int.Parse( slot.name ).ToString( );
 
         if (isUsed) {
 			TimeSpan t = new TimeSpan( 0, 0, myGV.GData.fixedTime[ int.Parse( slot.name ) ] );
 			text.text = "使われている\nプレイ時間 : " + t;
             return;
         }
-        text.text = "このスロットは使われていません";
+        text.text = "データがありません";
     }
 
     [SerializeField]
