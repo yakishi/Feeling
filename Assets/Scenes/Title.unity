@@ -705,7 +705,7 @@ GameObject:
   - component: {fileID: 924127030}
   m_Layer: 0
   m_Name: AudioManager
-  m_TagString: Untagged
+  m_TagString: AudioManager
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -838,6 +838,7 @@ MonoBehaviour:
   creditButton: {fileID: 416352932}
   exitButton: {fileID: 1836797368}
   grid: {fileID: 1213776589}
+  audioManager: {fileID: 924127029}
 --- !u!114 &1109847020
 MonoBehaviour:
   m_ObjectHideFlags: 0
