@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 
 public class PrologueCanvasMono : MonoBehaviour {
+    [SerializeField]
+    float moveSpeed = 0.1f;
+
 	PrologueUI myUI;
 
 	private void Start( ) {
@@ -12,7 +15,7 @@ public class PrologueCanvasMono : MonoBehaviour {
 	}
 
 	private void Update( ) {
-		myUI.ScrollUpDown( -0.002f /* スクロール速度 */ );
+		myUI.ScrollUpDown( -moveSpeed * Time.deltaTime /* スクロール速度 */ );
 
 
 	}
