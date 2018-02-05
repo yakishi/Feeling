@@ -11,6 +11,7 @@ public class SaveLoad : MonoBehaviour
 {
 
     GV myGV = GV.Instance; // Save/Load クラスのインスタンスを取得
+	SaveLoadAudio mySLA;
 
     public enum Type
     {
@@ -33,6 +34,7 @@ public class SaveLoad : MonoBehaviour
 
     void Start()
     {
+		mySLA = new SaveLoadAudio( );
         var buttons = GetComponentsInChildren<Button>();
         Observable.NextFrame()
             .Subscribe(_ => {
@@ -62,9 +64,12 @@ public class SaveLoad : MonoBehaviour
                 .Subscribe(_ => {
                     myGV.slot = slotIndex; // GV 側へ通知
                     myGV.GameDataSave(slotIndex);
-                    Debug.Log("<color='red'>openSaveUI Function Called., saveSlot : " + slotIndex + "</color>");
-                    Destroy(gameObject);
-                })
+					mySLA.PlaySE( "Save", slot.transform.parent.parent.parent.GetComponent<AudioSource>( ) );
+					Debug.Log("<color='red'>openSaveUI Function Called., saveSlot : " + slotIndex + "</color>");
+					// 2 秒後に出す ( 再生し終わった後 )
+					Observable.Timer( TimeSpan.FromMilliseconds( 2000 ) )
+						.Subscribe( x => Destroy( /*this*/gameObject ) );
+				} )
                 .AddTo(this);
 
             slot.OnSelectAsObservable()
@@ -102,8 +107,11 @@ public class SaveLoad : MonoBehaviour
                     myGV.GameDataLoad(slotIndex);
                     myGV.SlotChangeParamUpdate(slotIndex);
                     new ExampleTestSaveLoad().LoadTest(); // 読込確認用
+					mySLA.PlaySE( "Load", slot.transform.parent.parent.parent.GetComponent<AudioSource>( ) );
                     Debug.Log("<color='red'>openLoadUI Function Called., loadSlot : " + slotIndex + "</color>");
-                    Destroy(/*this*/gameObject);
+					// 3 秒後に出す ( 再生し終わった後 )
+					Observable.Timer( TimeSpan.FromMilliseconds( 3000 ) )
+						.Subscribe( x => Destroy( /*this*/gameObject ) );
                 })
                 .AddTo(this);
 
