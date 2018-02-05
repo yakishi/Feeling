@@ -13,6 +13,7 @@ public class BattleUI : MonoBehaviour
         Behaviour,
         Skill,
         Item,
+        CharacterChange,
         Monster,
         Supporter
     }
@@ -230,6 +231,18 @@ public class BattleUI : MonoBehaviour
     Slider[] playerMP;
 
     [SerializeField]
+    public GameObject ChangeCharacterWindow;
+
+    [SerializeField]
+    public GameObject ChangeCharacterGrid;
+
+    [SerializeField]
+    private Text currentCharacterStatus;
+
+    [SerializeField]
+    private GameObject[] BackCharacters = new GameObject[2];
+    
+    [SerializeField]
     Text turnText;
     static private string currentState;
 
@@ -275,6 +288,7 @@ public class BattleUI : MonoBehaviour
         playerHP = new Slider[players.Length];
         playerMP = new Slider[players.Length];
         for(int i = 0; i < players.Length; i++) {
+            if (!players[i].frontMember) continue;
             playerHP[i] = players[i].transform.Find("HPBar").GetComponent<Slider>();
             playerHP[i].maxValue = players[i].Hp;
             playerHP[i].enabled = false;
@@ -318,6 +332,8 @@ public class BattleUI : MonoBehaviour
         }
 
         foreach (var n in players) {
+            if (!n.frontMember) continue;
+
             var button = n.GetComponent<Button>();
 
             button.OnClickAsObservable()
@@ -359,12 +375,14 @@ public class BattleUI : MonoBehaviour
         NotActiveButton(battleController.monsterZone);
         NotActiveButton(battleController.playerGrid);
         NotActiveButton(itemWindow);
+        NotActiveButton(ChangeCharacterGrid);
         skillWindow.SetActive(false);
         windowLine_Skill.SetActive(false);
         skillDetail.SetActive(false);
         itemWindow.SetActive(false);
         windowLine_Item.SetActive(false);
         itemDetail.SetActive(false);
+        ChangeCharacterWindow.SetActive(false);
     }
 
     public void SkillMode()
@@ -639,6 +657,51 @@ public class BattleUI : MonoBehaviour
 
     }
 
+    public void SetChangeCharacterWindow()
+    {
+        currentCharacterStatus.text = DisplayStatus(currentCharacter);
+
+        int cnt = 0;
+        foreach(var p in players) {
+            if (!p.frontMember) {
+                BackCharacters[cnt].GetComponent<Text>().text = DisplayStatus(p);
+                BackCharacters[cnt].AddComponent<BattlePlayer>().Change(p);
+                cnt++;
+            }
+        }
+
+        foreach(var chara in BackCharacters) {
+            Button button = chara.GetComponent<Button>();
+
+            button.OnClickAsObservable()
+                .Subscribe(_ => {
+                    currentCharacter.frontMember = false;
+
+                    BattleCharacter backChara = chara.GetComponent<BattleCharacter>();
+                    backChara.frontMember = true;
+                    foreach(var po in battleController.PlayerObjects) {
+                        if(currentCharacter.ID == po.GetComponent<BattleCharacter>().ID) {
+                            po.GetComponent<BattleCharacter>().Change(backChara);
+
+                            backChara.Change(currentCharacter);
+
+                            
+                        }
+                    }
+
+                })
+                .AddTo(this);
+        }
+    }
+
+    string DisplayStatus(BattleCharacter chara)
+    {
+        string str = chara.Param.Name + " : " + chara.CurrentHp + "/" + chara.Hp + "  " + chara.CurrentMp + "/" + chara.Mp + "  " + chara.Atk + "  " + chara.Def
+                     + "  " + chara.MAtk + "   " + chara.MDef + "  " + chara.Agl + "  " + chara.Luc;
+
+        return str;
+    }
+
     public void ClearWindow()
     {
         if (skillButtonList.Count != 0) {
@@ -748,6 +811,8 @@ public class BattleUI : MonoBehaviour
     private void ChangeBar()
     {
         for (int i = 0; i < players.Length; i++) {
+            if (!players[i].frontMember) continue;
+
             if (players[i].gameObject.activeSelf != false) {
                 playerHP[i].value = players[i].CurrentHp;
                 playerHP[i].gameObject.GetComponentInChildren<Text>().text = "HP : " + players[i].CurrentHp + " / " + players[i].Hp;
@@ -767,6 +832,8 @@ public class BattleUI : MonoBehaviour
 
         
         for (var i = 0; i < grid.transform.childCount; ++i) {
+            if (grid.transform.GetChild(i).tag == "Dead") continue;
+
             if(targetObj == null) {
                 targetObj = grid.transform.GetChild(i).gameObject;
             }

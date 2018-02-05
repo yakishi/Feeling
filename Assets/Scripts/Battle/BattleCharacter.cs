@@ -95,10 +95,26 @@ public abstract class BattleCharacter : MonoBehaviour
         }
     }
 
+    public int MDef
+    {
+        get
+        {
+            return status.Mgr;
+        }
+    }
+
     public int Agl {
         get
         {
             return status.Agl;
+        }
+    }
+
+    public int Luc
+    {
+        get
+        {
+            return status.Luc;
         }
     }
 
@@ -121,12 +137,16 @@ public abstract class BattleCharacter : MonoBehaviour
     public class BuffManager
     {
         private string id;
+        private BattleParam influence;
+        private int value;
         private int buffTurn;
         private int remainBuffTurn;
 
         public BuffManager(SingltonSkillManager.SkillInfo info)
         {
             id = info.ID;
+            influence = info.influence;
+            value = 5;
             buffTurn = info.DT;
             remainBuffTurn = info.DT;
         }
@@ -136,6 +156,16 @@ public abstract class BattleCharacter : MonoBehaviour
             id = info.id;
             buffTurn = info.buffTime;
             remainBuffTurn = info.buffTime;
+        }
+
+        public BattleParam getInfluence()
+        {
+            return influence;
+        }
+
+        public int Value()
+        {
+            return value;
         }
 
         public string GetSkillID
@@ -176,6 +206,23 @@ public abstract class BattleCharacter : MonoBehaviour
 
     public List<BuffManager> buffList;
 
+    [SerializeField]
+    public GlowImage img;
+
+    public bool frontMember;
+
+
+
+    public void Change(BattleCharacter battleChara)
+    {
+        param = battleChara.param;
+        status = battleChara.status;
+        currentHp = battleChara.Hp;
+        currentMp = battleChara.Mp;
+        buffList = battleChara.buffList;
+        skillList = battleChara.skillList;
+    }
+
     /// <summary>
     /// id からデータを読み込み
     /// </summary>
@@ -183,6 +230,7 @@ public abstract class BattleCharacter : MonoBehaviour
     public virtual void loadData(string id, GameManager gameManager)
     {
         List<SingltonPlayerManager.PlayerParameters> playersParam = gameManager.PlayerList;
+        int cnt = 0;
         foreach (var i in playersParam) {
             if (i.ID == id) {
                 param = i;
@@ -201,6 +249,7 @@ public abstract class BattleCharacter : MonoBehaviour
                     param.STATUS = new SingltonPlayerManager.Status(m.HP, m.MP, m.ATK, m.DEF, m.MATK, m.MDEF, m.LUCKY, m.SPD);
                     param.currentFeel = new Dictionary<SingltonSkillManager.Feel, int>();
                     param.TotalExp = 15;
+                    frontMember = true;
                 }
             }
         }
@@ -250,6 +299,25 @@ public abstract class BattleCharacter : MonoBehaviour
         }
         foreach (var n in buffList.ToArray()) {
             if (n.RemainBuffTurn <= 0) {
+
+                switch (n.getInfluence()) {
+                    case BattleParam.HP:
+                        currentHp -= n.Value();
+                        break;
+                    case BattleParam.MP:
+                        currentMp -= n.Value();
+                        break;
+                    case BattleParam.Atk:
+                        status.HP -= n.Value(); ;
+                        break;
+                    case BattleParam.Def:
+                        status.Def -= n.Value();
+                        break;
+                    case BattleParam.Agl:
+                        status.Agl -= n.Value();
+                        break;
+                }
+
                 buffList.Remove(n);
             }
         }

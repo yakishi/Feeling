@@ -15,13 +15,10 @@ public class BattlePlayer : BattleCharacter
     /// <summary>
     /// UI コントローラー的なの実装する
     /// </summary>
-    public Button[] combatButtons = new Button[6];
+    public Button[] combatButtons = new Button[5];
 
     [SerializeField]
     Text playerName;
-
-    [SerializeField]
-    public GlowImage img;
 
     [SerializeField]
     public PlayerSelect playerSelect;
@@ -29,8 +26,8 @@ public class BattlePlayer : BattleCharacter
     public override void battleStart()
     {
         base.battleStart();
+
         playerName.text = this.param.Name;
-        //. = Resources.Load("/Images/Player01") as Sprite;
         attachButton();
         combatButtons[0].OnClickAsObservable()
             .Where(_ => isPlayerAction)
@@ -53,6 +50,7 @@ public class BattlePlayer : BattleCharacter
             .Subscribe(_ => {
                 BattleCharacter targets = this;
                 var skill = new Skill();
+                skill.DefenceAction();
 
                 isPlayerAction = false;
                 playAction(skill.use(this, new BattleCharacter[] { targets }));
@@ -102,7 +100,7 @@ public class BattlePlayer : BattleCharacter
             })
             .AddTo(this);
 
-        combatButtons[5].OnClickAsObservable()
+        combatButtons[4].OnClickAsObservable()
             .Where(_ => isPlayerAction)
             .Subscribe(_ => {
                 Application.Quit();
@@ -169,7 +167,6 @@ public class BattlePlayer : BattleCharacter
         combatButtons[1] = GameObject.Find("DefButton").GetComponent<Button>();          //防御
         combatButtons[2] = GameObject.Find("SkillButton").GetComponent<Button>();        //スキル
         combatButtons[3] = GameObject.Find("ItemButton").GetComponent<Button>();         //アイテム
-        combatButtons[4] = GameObject.Find("ReplacementButton").GetComponent<Button>();  //入れ替え
-        combatButtons[5] = GameObject.Find("EscapeButton").GetComponent<Button>();       //逃げる
+        combatButtons[4] = GameObject.Find("EscapeButton").GetComponent<Button>();       //逃げる
     }
 }
