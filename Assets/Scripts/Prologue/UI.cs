@@ -98,8 +98,7 @@ public class PrologueUI {
 			Observable.Timer( TimeSpan.FromMilliseconds( transitionTitle ) )
 				.Subscribe( _ =>
 					SceneController.sceneTransition(
-						/* TODO : 仮でタイトルに移動 */
-						Enum.GetName( typeof( SceneName.SceneNames ), 0 ), 2.0f, SceneController.FadeType.Fade
+						SceneName.WorldMap, 2.0f, SceneController.FadeType.Fade
 
 					)
 				);

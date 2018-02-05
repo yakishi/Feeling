@@ -11,10 +11,12 @@ public class SceneName
         azito,
         Battle,
         Kazan,
-		Credit
+		Credit,
+		Prologue
     }
 
     public const string Title    = "Title";
+	public const string Prologue = "Prologue";
     public const string WorldMap = "WorldMap";
     public const string Base     = "Base";
     public const string Battle   = "Battle";

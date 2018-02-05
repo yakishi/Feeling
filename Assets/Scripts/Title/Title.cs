@@ -57,7 +57,7 @@ public class Title : MonoBehaviour
             .Subscribe(_ => {
                 // セーブスロット UI 表示
                 //saveUiObj = SaveLoad.CreateUI( SaveLoad.Type.Save, gameObject );
-                myGV.newGame();
+                myGV.newGame( audioManager );
             })
             .AddTo(this);
         loadGameButton.OnClickAsObservable()
@@ -92,11 +92,11 @@ public class Title : MonoBehaviour
 
 	void Update( ) {
 		// セーブスロット UI 表示 → 任意セーブスロット選択 → newGame → 任意セーブスロット削除 → SystemData 更新 → 遷移
-		if ( saveUiObj == null && sceneLoadOnce ) {
-			sceneLoadOnce = false;
-			myGV.newGame( );
+		//if ( saveUiObj == null && sceneLoadOnce ) {
+		//	sceneLoadOnce = false;
+		//	myGV.newGame( audioManager );
 
-		}
+		//}
 
         if(audioClips != null) {
             if (audioClips.Length <= 1) return;
