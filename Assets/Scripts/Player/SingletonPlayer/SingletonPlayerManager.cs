@@ -179,12 +179,12 @@ public sealed class SingltonPlayerManager {
 				return "Not Found";
 
 			}
-			case "P1_0" : { return "カイウス・スノードロップ"; }
-			case "P2_0" : { return "アイリ・スノードロップ"; }
-			case "P3_0" : { return "ディオス・スノードロップ"; }
-			case "P4_0" : { return "カリス・スノードロップ"; }
-			case "P5_0" : { return "フィリア・スノードロップ"; }
-			case "P6_0" : { return "セレーマ・スノードロップ"; }
+			case "P1_0" : { return "カイウス"; }
+			case "P2_0" : { return "アイリ"; }
+			case "P3_0" : { return "ディオス"; }
+			case "P4_0" : { return "カリス"; }
+			case "P5_0" : { return "フィリア"; }
+			case "P6_0" : { return "セレーマ"; }
 
 		}
 
@@ -237,6 +237,8 @@ public sealed class SingltonPlayerManager {
         public Status EquipmentStatus;
 		/// <summary>上昇しやすい感情:RisingFeel(CSV)</summary>
 		public SingltonSkillManager.Feel RF;
+        /// <summary>戦闘に参加するか</summary>
+        public bool frontMember;
 		/// <summary>現在の感情値:CurrentFeelingValue(Save)</summary>
 		public Dictionary<SingltonSkillManager.Feel,int> currentFeel;
 		/// <summary>
@@ -255,6 +257,7 @@ public sealed class SingltonPlayerManager {
             STATUS = new Status();
             EquipmentStatus = STATUS;
             RF = SingltonSkillManager.Feel.Ai;
+            frontMember = false;
             currentFeel = new Dictionary<SingltonSkillManager.Feel, int>();
             currentFeel.Add(SingltonSkillManager.Feel.Ki, 0);
             currentFeel.Add(SingltonSkillManager.Feel.Do, 0);

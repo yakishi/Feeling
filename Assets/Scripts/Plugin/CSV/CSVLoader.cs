@@ -198,7 +198,7 @@ public class CSVLoader
 		// 配列 ID 入れていき更新していく変数
 		string name = "";
 		// CSV データを格納していく配列
-		string[ ] keyData = new string[ 1024 ];
+		string[ ] keyData = new string[ 2048 ];
 		// レコード数カウント用
 		int recordCnt = 0;
 
@@ -213,6 +213,8 @@ public class CSVLoader
 					idIndexCnt++;
 
 				}
+
+
                 // ID 属性を元にキーネームを変更していく
 				keyArray[ index ] = name + "_" + header;
 				// キーネーム, キーネームに対応した CSV データ
