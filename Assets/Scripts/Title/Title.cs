@@ -53,8 +53,7 @@ public class Title : MonoBehaviour
     {
 		newGameButton.OnClickAsObservable()
             .Subscribe(_ => {
-                myGV.newGame();
-                SceneController.sceneTransition(SceneName.SceneNames.Prologue, 2.0f, SceneController.FadeType.Fade);
+                myGV.newGame(audioManager);
 
                 BattleUI.NotActiveButton(select);
                 

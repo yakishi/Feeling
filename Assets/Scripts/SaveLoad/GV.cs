@@ -185,7 +185,7 @@ public sealed class GV {
 		gameData.timeSecond = 0;
 
 		GameDataSave( slot );
-        SceneController.sceneTransition(SceneName.Prologue, 2.0f, SceneController.FadeType.Fade);
+        SceneController.sceneTransition(SceneName.SceneNames.Prologue, 2.0f, SceneController.FadeType.Fade);
 		UnityEngine.Object.DontDestroyOnLoad( audioManager );
 	}
 
