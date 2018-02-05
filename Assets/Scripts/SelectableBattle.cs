@@ -33,13 +33,13 @@ public class SelectableBattle : MonoBehaviour{
             }
         }
 
-        SelectText.Select(button);
+        SelectText.StaticSelect(button);
 
     }
 
     public void DeSelect(GameObject button)
     {
-        SelectText.DeSelect(button);
+        SelectText.StaticDeSelect(button);
     }
 
     string Category(SingltonSkillManager.Category category)

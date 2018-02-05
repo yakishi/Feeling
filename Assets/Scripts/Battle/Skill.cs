@@ -20,6 +20,18 @@ public class Skill
         skill = info;
     }
 
+    public void DefenceAction()
+    {
+        skill = new SingltonSkillManager.SkillInfo();
+        skill.ID = "";
+        skill.MP = 0;
+        skill.myTarget = SingltonSkillManager.Target.MySelf;
+        skill.myScope = SingltonSkillManager.Scope.Simplex;
+        skill.myCategory = SingltonSkillManager.Category.Buff;
+        skill.DT = 1;
+        skill.influence = BattleParam.Def;
+    }
+
 
     public List<BattleAction> use(BattleCharacter from, BattleCharacter[] targets)
     {
@@ -45,7 +57,7 @@ public class Skill
                     targets = targets,
                     effects = new Dictionary<BattleParam, int>
                     {
-                        {skill.influence, 5 }
+                        {skill.influence, 5}
                     }
                 });
 

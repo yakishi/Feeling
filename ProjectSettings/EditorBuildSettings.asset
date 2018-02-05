@@ -23,6 +23,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Credit.unity
     guid: fd3c004ffbd898e4996a497e7558b459
-  - enabled: 1
-    path: Assets/Scenes/Kazan.unity
-    guid: 09a7abaa0009ca248a6fc2dcb2dbbb4e
+  - enabled: 0
+    path: 
+    guid: 00000000000000000000000000000000
