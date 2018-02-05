@@ -839,6 +839,7 @@ MonoBehaviour:
   exitButton: {fileID: 1836797368}
   grid: {fileID: 1213776589}
   audioManager: {fileID: 924127029}
+  select: {fileID: 1213776589}
 --- !u!114 &1109847020
 MonoBehaviour:
   m_ObjectHideFlags: 0

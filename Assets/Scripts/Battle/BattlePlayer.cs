@@ -113,8 +113,10 @@ public class BattlePlayer : BattleCharacter
         var skill = new Skill();
         if (id != "none") {
             skill = searchSkill(id);
+            InfluenceFeel(skill.getSkillInfo.FVC);
         }
         isPlayerAction = false;
+
 
         playAction(skill.use(this, targets));
     }

@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UniRx;
+using UniRx.Triggers;
 using System;
 
 public class Title : MonoBehaviour
@@ -41,28 +42,33 @@ public class Title : MonoBehaviour
     [SerializeField]
     GameObject audioManager;
 
-	GameObject saveUiObj;
-	bool sceneLoadOnce;
+    [SerializeField]
+    GameObject select;
+
+    private GameObject saveLoad;
 
     GameObject[] audioClips;
     // Use this for initialization
     void Start()
     {
-
-		saveUiObj = newGameButton.gameObject; // 初期 null 回避
-
-		sceneLoadOnce = true; // update 中に 1 回だけ呼ばれるようにするフラグ
-
 		newGameButton.OnClickAsObservable()
             .Subscribe(_ => {
-                // セーブスロット UI 表示
-                //saveUiObj = SaveLoad.CreateUI( SaveLoad.Type.Save, gameObject );
-                myGV.newGame( audioManager );
+                myGV.newGame(audioManager);
+
+                BattleUI.NotActiveButton(select);
+                
             })
             .AddTo(this);
         loadGameButton.OnClickAsObservable()
             .Subscribe(_ => {
-                SaveLoad.CreateUI(SaveLoad.Type.Load, gameObject);
+                saveLoad = SaveLoad.CreateUI(SaveLoad.Type.Load, gameObject);
+
+                saveLoad.OnDestroyAsObservable()
+                .Subscribe(u => {
+                    BattleUI.ActiveButton(select);
+                });
+
+                BattleUI.NotActiveButton(select);
             })
             .AddTo(this);
         creditButton.OnClickAsObservable()
@@ -91,12 +97,9 @@ public class Title : MonoBehaviour
     }
 
 	void Update( ) {
-		// セーブスロット UI 表示 → 任意セーブスロット選択 → newGame → 任意セーブスロット削除 → SystemData 更新 → 遷移
-		//if ( saveUiObj == null && sceneLoadOnce ) {
-		//	sceneLoadOnce = false;
-		//	myGV.newGame( audioManager );
-
-		//}
+        if (Input.GetKeyDown(KeyCode.Backspace) && saveLoad != null) {
+            Destroy(saveLoad);
+        }
 
         if(audioClips != null) {
             if (audioClips.Length <= 1) return;

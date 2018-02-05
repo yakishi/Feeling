@@ -39,7 +39,11 @@ public class MovablePlayer : MonoBehaviour
     public bool CanMove {
         get
         {
-            return !playerEvent.IsPlayEvent || !mapManager.PlayBattle;
+            if (mapManager != null) {
+                return !playerEvent.IsPlayEvent || !mapManager.PlayBattle;
+            }
+
+            return !playerEvent.IsPlayEvent;
         }
     }
 
