@@ -9,7 +9,7 @@ using System;
 public class Title : MonoBehaviour
 {
 	
-	GV myGV = GV.Instance; // Save/Load クラスのインスタンスを取得
+	GV myGV; // Save/Load クラスのインスタンスを取得
 
     /// <summary>
     /// ゲームを新しく始めるボタン
@@ -48,7 +48,7 @@ public class Title : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-
+        myGV = GV.Instance;
 		saveUiObj = newGameButton.gameObject; // 初期 null 回避
 
 		sceneLoadOnce = true; // update 中に 1 回だけ呼ばれるようにするフラグ
