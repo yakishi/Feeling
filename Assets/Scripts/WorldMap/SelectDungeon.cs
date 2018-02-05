@@ -19,7 +19,7 @@ public class SelectDungeon : MonoBehaviour{
 
     public void Select(GameObject button)
     {
-        SelectText.Select(button);
+        SelectText.StaticSelect(button);
     }
 
 
@@ -31,6 +31,6 @@ public class SelectDungeon : MonoBehaviour{
 
     public void DeSelect(GameObject button)
     {
-        SelectText.DeSelect(button);
+        SelectText.StaticDeSelect(button);
     }
 }

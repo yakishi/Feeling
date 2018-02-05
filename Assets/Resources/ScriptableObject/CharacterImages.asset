@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Name: CharacterImages
   m_EditorClassIdentifier: 
   charaImgList:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 21300000, guid: 1015a2e7b10cc45449ec5f73dae4896b, type: 3}
+  - {fileID: 21300000, guid: bc6178d429fe9ad4b88b8b42f6efb29e, type: 3}
+  - {fileID: 21300000, guid: 53919ec19a9ec52419435c32217913fa, type: 3}
+  - {fileID: 21300000, guid: 4d1ab129a2aacbd4f90954b8af15e87c, type: 3}
+  - {fileID: 21300000, guid: c8c725fc22e976f4d9a8542c6a1ccd90, type: 3}
+  - {fileID: 21300000, guid: e8ffa224436f0524284f329dc8ecefcf, type: 3}

@@ -10,13 +10,26 @@ public class SelectText : MonoBehaviour {
 		
 	}
 
-    static public void Select(GameObject button)
+    static public void StaticSelect(GameObject button)
     {
         Text text = button.GetComponent<Text>();
         text.color = Color.red;
     }
 
-    static public void DeSelect(GameObject button)
+    public void Select(GameObject button)
+    {
+        Text text = button.GetComponent<Text>();
+        text.color = Color.red;
+    }
+
+    static public void StaticDeSelect(GameObject button)
+    {
+        Text text = button.GetComponent<Text>();
+        if (text != null)
+            text.color = Color.white;
+    }
+
+    public void DeSelect(GameObject button)
     {
         Text text = button.GetComponent<Text>();
         if (text != null)

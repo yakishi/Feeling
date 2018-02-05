@@ -16,12 +16,12 @@ public class PlayerSelect : MonoBehaviour {
     {
         defScale = player.img.transform.localScale;
         player.img.transform.localScale = player.img.transform.localScale * 1.2f;
-        player.img.glowSize = 10;
+        player.img.glowIntensitive = 10;
     }
 
     public void DeSelect()
     {
         player.img.transform.localScale = defScale;
-        player.img.glowSize = 0;
+        player.img.glowIntensitive = 0;
     }
 }

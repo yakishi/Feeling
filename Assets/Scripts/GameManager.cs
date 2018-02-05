@@ -113,6 +113,9 @@ public class GameManager : MonoBehaviour {
         foreach(var i in mySPM.GetCsvDataPlayerState) {
             if(i.ID == "P" + cnt + "_" + 0) {
                 players.Add(i);
+                if(cnt <= 4) {
+                    i.frontMember = true;
+                }
                 cnt++;
             }
         }

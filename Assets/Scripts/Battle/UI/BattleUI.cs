@@ -230,6 +230,9 @@ public class BattleUI : MonoBehaviour
     Slider[] playerMP;
 
     [SerializeField]
+    private GameObject[] BackCharacters = new GameObject[2];
+    
+    [SerializeField]
     Text turnText;
     static private string currentState;
 
@@ -275,6 +278,7 @@ public class BattleUI : MonoBehaviour
         playerHP = new Slider[players.Length];
         playerMP = new Slider[players.Length];
         for(int i = 0; i < players.Length; i++) {
+            if (!players[i].frontMember) continue;
             playerHP[i] = players[i].transform.Find("HPBar").GetComponent<Slider>();
             playerHP[i].maxValue = players[i].Hp;
             playerHP[i].enabled = false;
@@ -318,6 +322,8 @@ public class BattleUI : MonoBehaviour
         }
 
         foreach (var n in players) {
+            if (!n.frontMember) continue;
+
             var button = n.GetComponent<Button>();
 
             button.OnClickAsObservable()
@@ -639,6 +645,15 @@ public class BattleUI : MonoBehaviour
 
     }
 
+ 
+    string DisplayStatus(BattleCharacter chara)
+    {
+        string str = chara.Param.Name + " : " + chara.CurrentHp + "/" + chara.Hp + "  " + chara.CurrentMp + "/" + chara.Mp + "  " + chara.Atk + "  " + chara.Def
+                     + "  " + chara.MAtk + "   " + chara.MDef + "  " + chara.Agl + "  " + chara.Luc;
+
+        return str;
+    }
+
     public void ClearWindow()
     {
         if (skillButtonList.Count != 0) {
@@ -748,6 +763,8 @@ public class BattleUI : MonoBehaviour
     private void ChangeBar()
     {
         for (int i = 0; i < players.Length; i++) {
+            if (!players[i].frontMember) continue;
+
             if (players[i].gameObject.activeSelf != false) {
                 playerHP[i].value = players[i].CurrentHp;
                 playerHP[i].gameObject.GetComponentInChildren<Text>().text = "HP : " + players[i].CurrentHp + " / " + players[i].Hp;
@@ -767,6 +784,8 @@ public class BattleUI : MonoBehaviour
 
         
         for (var i = 0; i < grid.transform.childCount; ++i) {
+            if (grid.transform.GetChild(i).tag == "Dead") continue;
+
             if(targetObj == null) {
                 targetObj = grid.transform.GetChild(i).gameObject;
             }
