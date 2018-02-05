@@ -13,7 +13,6 @@ public class BattleUI : MonoBehaviour
         Behaviour,
         Skill,
         Item,
-        CharacterChange,
         Monster,
         Supporter
     }
@@ -231,15 +230,6 @@ public class BattleUI : MonoBehaviour
     Slider[] playerMP;
 
     [SerializeField]
-    public GameObject ChangeCharacterWindow;
-
-    [SerializeField]
-    public GameObject ChangeCharacterGrid;
-
-    [SerializeField]
-    private Text currentCharacterStatus;
-
-    [SerializeField]
     private GameObject[] BackCharacters = new GameObject[2];
     
     [SerializeField]
@@ -375,14 +365,12 @@ public class BattleUI : MonoBehaviour
         NotActiveButton(battleController.monsterZone);
         NotActiveButton(battleController.playerGrid);
         NotActiveButton(itemWindow);
-        NotActiveButton(ChangeCharacterGrid);
         skillWindow.SetActive(false);
         windowLine_Skill.SetActive(false);
         skillDetail.SetActive(false);
         itemWindow.SetActive(false);
         windowLine_Item.SetActive(false);
         itemDetail.SetActive(false);
-        ChangeCharacterWindow.SetActive(false);
     }
 
     public void SkillMode()
@@ -657,43 +645,7 @@ public class BattleUI : MonoBehaviour
 
     }
 
-    public void SetChangeCharacterWindow()
-    {
-        currentCharacterStatus.text = DisplayStatus(currentCharacter);
-
-        int cnt = 0;
-        foreach(var p in players) {
-            if (!p.frontMember) {
-                BackCharacters[cnt].GetComponent<Text>().text = DisplayStatus(p);
-                BackCharacters[cnt].AddComponent<BattlePlayer>().Change(p);
-                cnt++;
-            }
-        }
-
-        foreach(var chara in BackCharacters) {
-            Button button = chara.GetComponent<Button>();
-
-            button.OnClickAsObservable()
-                .Subscribe(_ => {
-                    currentCharacter.frontMember = false;
-
-                    BattleCharacter backChara = chara.GetComponent<BattleCharacter>();
-                    backChara.frontMember = true;
-                    foreach(var po in battleController.PlayerObjects) {
-                        if(currentCharacter.ID == po.GetComponent<BattleCharacter>().ID) {
-                            po.GetComponent<BattleCharacter>().Change(backChara);
-
-                            backChara.Change(currentCharacter);
-
-                            
-                        }
-                    }
-
-                })
-                .AddTo(this);
-        }
-    }
-
+ 
     string DisplayStatus(BattleCharacter chara)
     {
         string str = chara.Param.Name + " : " + chara.CurrentHp + "/" + chara.Hp + "  " + chara.CurrentMp + "/" + chara.Mp + "  " + chara.Atk + "  " + chara.Def
