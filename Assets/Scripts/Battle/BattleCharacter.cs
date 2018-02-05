@@ -211,17 +211,7 @@ public abstract class BattleCharacter : MonoBehaviour
 
     public bool frontMember;
 
-
-
-    public void Change(BattleCharacter battleChara)
-    {
-        param = battleChara.param;
-        status = battleChara.status;
-        currentHp = battleChara.Hp;
-        currentMp = battleChara.Mp;
-        buffList = battleChara.buffList;
-        skillList = battleChara.skillList;
-    }
+    public SingltonSkillManager.CollectionValue feelInfo;
 
     /// <summary>
     /// id からデータを読み込み
@@ -247,8 +237,8 @@ public abstract class BattleCharacter : MonoBehaviour
                     param.Lv = m.LV;
                     param.Name = m.NAME;
                     param.STATUS = new SingltonPlayerManager.Status(m.HP, m.MP, m.ATK, m.DEF, m.MATK, m.MDEF, m.LUCKY, m.SPD);
-                    param.currentFeel = new Dictionary<SingltonSkillManager.Feel, int>();
-                    param.TotalExp = 15;
+                    feelInfo = new SingltonSkillManager.CollectionValue(m.FEELING, 3);
+                    param.TotalExp = m.DROPEXP;
                     frontMember = true;
                 }
             }
@@ -339,6 +329,23 @@ public abstract class BattleCharacter : MonoBehaviour
         endAction();
         isEndAction = true;
         onEndActionSubject.OnNext(this);
+    }
+
+    public void InfluenceFeel(SingltonSkillManager.CollectionValue collection)
+    {
+        foreach(var feel in param.currentFeel.Keys) {
+            if(feel == collection.Key) {
+                int feelValue = collection.Value;
+
+                if(param.RF == feel) {
+                    feelValue = Mathf.FloorToInt((float) (feelValue * 1.2));
+                }
+
+                param.currentFeel[feel] += feelValue;
+
+                return;
+            }
+        }
     }
 
     /// <summary>

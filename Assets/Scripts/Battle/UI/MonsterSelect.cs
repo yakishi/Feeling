@@ -18,8 +18,7 @@ public class MonsterSelect : MonoBehaviour{
     {
         if (monster == null) return;
 
-        monsterSelecter = GameObject.Instantiate(prefab,battleUI.Canvas.transform);
-        monsterSelecter.transform.position = this.gameObject.transform.position + Vector3.up * 180.0f;
+        monsterSelecter = GameObject.Instantiate(prefab,gameObject.transform);
 
     }
 

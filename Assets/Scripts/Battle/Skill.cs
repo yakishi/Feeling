@@ -5,6 +5,13 @@ using UnityEngine;
 public class Skill
 {
     SingltonSkillManager.SkillInfo skill;
+    public SingltonSkillManager.SkillInfo getSkillInfo
+    {
+        get
+        {
+            return skill;
+        }
+    }
 
     public Skill()
     {
