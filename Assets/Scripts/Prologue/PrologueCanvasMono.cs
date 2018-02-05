@@ -7,7 +7,7 @@ public class PrologueCanvasMono : MonoBehaviour {
 	PrologueUI myUI;
 
 	private void Start( ) {
-		PrologueAudio.PlayBGM( 0 );
+		//PrologueAudio.PlayBGM( 0 );
 		myUI = new PrologueUI( );
 		myUI.PrologueUICreate( );
 
