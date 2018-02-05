@@ -5,11 +5,12 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UniRx;
+using UniRx.Triggers;
 
 public class SaveLoad : MonoBehaviour
 {
 
-	GV myGV = GV.Instance; // Save/Load クラスのインスタンスを取得
+    GV myGV = GV.Instance; // Save/Load クラスのインスタンスを取得
 
     public enum Type
     {
@@ -22,7 +23,7 @@ public class SaveLoad : MonoBehaviour
     /// </summary>
     [SerializeField]
     static Type type;
-	private static Type Category { set { type = value; } }
+    private static Type Category { set { type = value; } }
 
     /// <summary>
     /// セーブデータをロード
@@ -41,10 +42,10 @@ public class SaveLoad : MonoBehaviour
 
         if (type == Type.Load) {
             openLoadUI();
-			return;
+            return;
         }
         openSaveUI();
-	}
+    }
 
     void openSaveUI()
     {
@@ -59,10 +60,22 @@ public class SaveLoad : MonoBehaviour
             slot.OnClickAsObservable()
                 .Take(1)
                 .Subscribe(_ => {
-					myGV.slot = slotIndex; // GV 側へ通知
-					myGV.GameDataSave(slotIndex);
-					Debug.Log( "<color='red'>openSaveUI Function Called., saveSlot : " + slotIndex + "</color>" );
-					Destroy(gameObject);
+                    myGV.slot = slotIndex; // GV 側へ通知
+                    myGV.GameDataSave(slotIndex);
+                    Debug.Log("<color='red'>openSaveUI Function Called., saveSlot : " + slotIndex + "</color>");
+                    Destroy(gameObject);
+                })
+                .AddTo(this);
+
+            slot.OnSelectAsObservable()
+                .Subscribe(_ => {
+                    slot.gameObject.transform.localScale = new Vector3(1.2f, 1.2f, 1.2f);
+                })
+                .AddTo(this);
+
+            slot.OnDeselectAsObservable()
+                .Subscribe(_ => {
+                    slot.gameObject.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
                 })
                 .AddTo(this);
         }
@@ -85,12 +98,24 @@ public class SaveLoad : MonoBehaviour
             slot.OnClickAsObservable()
                 .Take(1)
                 .Subscribe(_ => {
-					myGV.slot = slotIndex; // GV 側へ通知
-					myGV.GameDataLoad(slotIndex);
-					myGV.SlotChangeParamUpdate( slotIndex );
-					new ExampleTestSaveLoad( ).LoadTest( ); // 読込確認用
-					Debug.Log( "<color='red'>openLoadUI Function Called., loadSlot : " + slotIndex + "</color>" );
-					Destroy(/*this*/gameObject);
+                    myGV.slot = slotIndex; // GV 側へ通知
+                    myGV.GameDataLoad(slotIndex);
+                    myGV.SlotChangeParamUpdate(slotIndex);
+                    new ExampleTestSaveLoad().LoadTest(); // 読込確認用
+                    Debug.Log("<color='red'>openLoadUI Function Called., loadSlot : " + slotIndex + "</color>");
+                    Destroy(/*this*/gameObject);
+                })
+                .AddTo(this);
+
+            slot.OnSelectAsObservable()
+                .Subscribe(_ => {
+                    slot.gameObject.transform.localScale = new Vector3(1.2f, 1.2f, 1.2f);
+                })
+                .AddTo(this);
+
+            slot.OnDeselectAsObservable()
+                .Subscribe(_ => {
+                    slot.gameObject.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
                 })
                 .AddTo(this);
         }
@@ -99,13 +124,13 @@ public class SaveLoad : MonoBehaviour
     void setText(Button slot, bool isUsed)
     {
         var text = slot.GetComponentInChildren<Text>();
-		Text saveText = slot.transform.parent.GetChild( int.Parse( slot.name ) - 1 ).GetChild( 1 ).GetComponent<Text>( );
-		if( type == Type.Save )saveText.text = "セーブ" + int.Parse( slot.name ).ToString( );
-		if( type == Type.Load )saveText.text = "ロード" + int.Parse( slot.name ).ToString( );
+        Text saveText = slot.transform.parent.GetChild(int.Parse(slot.name) - 1).GetChild(1).GetComponent<Text>();
+        if (type == Type.Save) saveText.text = "セーブ" + int.Parse(slot.name).ToString();
+        if (type == Type.Load) saveText.text = "ロード" + int.Parse(slot.name).ToString();
 
         if (isUsed) {
-			TimeSpan t = new TimeSpan( 0, 0, myGV.GData.fixedTime[ int.Parse( slot.name ) ] );
-			text.text = "使われている\nプレイ時間 : " + t;
+            TimeSpan t = new TimeSpan(0, 0, myGV.GData.fixedTime[int.Parse(slot.name)]);
+            text.text = "使われている\nプレイ時間 : " + t;
             return;
         }
         text.text = "データがありません";
@@ -113,7 +138,8 @@ public class SaveLoad : MonoBehaviour
 
     [SerializeField]
     static GameObject savePrefab;
-    static GameObject SavePrefab {
+    static GameObject SavePrefab
+    {
         get
         {
             if (savePrefab == null) {
@@ -125,7 +151,8 @@ public class SaveLoad : MonoBehaviour
 
     [SerializeField]
     static GameObject loadPrefab;
-    static GameObject LoadPrefab {
+    static GameObject LoadPrefab
+    {
         get
         {
             if (loadPrefab == null) {
@@ -137,13 +164,13 @@ public class SaveLoad : MonoBehaviour
     public static GameObject CreateUI(Type type, GameObject parent)
     {
         if (type == Type.Load) {
-			Category = Type.Load;
+            Category = Type.Load;
             return Instantiate(LoadPrefab, parent.transform, false);
         }
-        else if( type == Type.Save ) {
-			Category = Type.Save;
-			return Instantiate(SavePrefab, parent.transform, false);
-		}
-		else return null;
-	}
+        else if (type == Type.Save) {
+            Category = Type.Save;
+            return Instantiate(SavePrefab, parent.transform, false);
+        }
+        else return null;
+    }
 }
