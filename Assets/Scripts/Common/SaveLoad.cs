@@ -1,9 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UniRx;
-using System;
 
 public class SaveLoad : MonoBehaviour
 {
@@ -31,6 +32,13 @@ public class SaveLoad : MonoBehaviour
 
     void Start()
     {
+        var buttons = GetComponentsInChildren<Button>();
+        Observable.NextFrame()
+            .Subscribe(_ => {
+                EventSystem.current.SetSelectedGameObject(buttons[myGV.slot - 1].gameObject);
+            });
+
+
         if (type == Type.Load) {
             openLoadUI();
 			return;

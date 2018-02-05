@@ -11,7 +11,8 @@ public class SceneName
         azito,
         Battle,
         Kazan,
-		Credit
+		Credit,
+        Prologue
     }
 
     public const string Title    = "Title";
