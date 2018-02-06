@@ -156,8 +156,9 @@ public sealed class GV {
 	/// <summary>
 	/// ゲームを新しく始めるときに呼び出される関数
 	/// </summary>
+	/// <param name="audioManager">オーディオマネージャーの引数</param>
 	/// <remarks>Title.csのnewGameButton.OnClickAsObservable()から呼ばれる</remarks>
-	public void newGame( ) {
+	public void newGame( GameObject audioManager ) {
 
 		Debug.Log( "<color='red'>newGame Function Called.</color>" );
 
@@ -184,7 +185,8 @@ public sealed class GV {
 		gameData.timeSecond = 0;
 
 		GameDataSave( slot );
-        SceneController.sceneTransition(SceneName.WorldMap, 2.0f, SceneController.FadeType.Fade);
+        SceneController.sceneTransition(SceneName.SceneNames.Prologue, 2.0f, SceneController.FadeType.Fade);
+		UnityEngine.Object.DontDestroyOnLoad( audioManager );
 	}
 
 	/*===============================================================*/

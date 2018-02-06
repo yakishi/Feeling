@@ -75,7 +75,8 @@ public class PrologueUI {
 		VerticalLayoutGroup content = ui.transform.GetChild( 0 ).GetChild( 0 ).GetComponent<VerticalLayoutGroup>( );
 		rc.sizeDelta = new Vector2( mySpriteSize.width, myWindowSize.height );
 		// content group
-		content.padding = new RectOffset( 0, 0, Mathf.RoundToInt( mySpriteSize.height ), 0 );
+		int textSize = content.transform.GetChild( 0 ).GetChild( 0 ).GetComponent<Text>( ).text.Length * 2;
+		content.padding = new RectOffset( 0, 0, Mathf.RoundToInt( mySpriteSize.height ), textSize );
 		RectTransform rc2 = content.transform.GetChild( 0 ).GetComponent<RectTransform>( );
 		rc2.localScale = new Vector3( 1.0f, 1.0f, 1.0f );
 		// Scrollbar Vertical Group
@@ -98,8 +99,7 @@ public class PrologueUI {
 			Observable.Timer( TimeSpan.FromMilliseconds( transitionTitle ) )
 				.Subscribe( _ =>
 					SceneController.sceneTransition(
-						/* TODO : 仮でタイトルに移動 */
-						Enum.GetName( typeof( SceneName.SceneNames ), 0 ), 2.0f, SceneController.FadeType.Fade
+						SceneName.WorldMap, 2.0f, SceneController.FadeType.Fade
 
 					)
 				);

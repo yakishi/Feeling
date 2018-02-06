@@ -314,7 +314,16 @@ public sealed class SingltonSkillManager
         /// <summary>感情値補値</summary>
         public int Value;
 
+        public CollectionValue()
+        {
 
+        }
+
+        public CollectionValue(Feel feel,int value)
+        {
+            Key = feel;
+            Value = value;
+        }
     }
     /*===============================================================*/
 

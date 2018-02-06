@@ -4,12 +4,13 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UniRx;
+using UniRx.Triggers;
 using System;
 
 public class Title : MonoBehaviour
 {
 	
-	GV myGV; // Save/Load クラスのインスタンスを取得
+	GV myGV = GV.Instance; // Save/Load クラスのインスタンスを取得
 
     /// <summary>
     /// ゲームを新しく始めるボタン
@@ -41,28 +42,48 @@ public class Title : MonoBehaviour
     [SerializeField]
     GameObject audioManager;
 
-	GameObject saveUiObj;
-	bool sceneLoadOnce;
+    [SerializeField]
+    GameObject select;
+
+	private GameObject saveUiObj;
+	private bool sceneLoadOnce;
+	private bool newGameFlg; // newGame Button が押されたか否か
+	static private bool saveFlg; // セーブスロットが押されたか否か
+	/// <summary>TitleNewGameSlotButtonを押したら戻れないようにする</summary>
+	static public bool SavedFlg { set { saveFlg = value; } }
+
+	private GameObject saveLoad;
 
     GameObject[] audioClips;
     // Use this for initialization
     void Start()
     {
-        myGV = GV.Instance;
 		saveUiObj = newGameButton.gameObject; // 初期 null 回避
-
 		sceneLoadOnce = true; // update 中に 1 回だけ呼ばれるようにするフラグ
+		newGameFlg = false;
+		saveFlg = false;
 
 		newGameButton.OnClickAsObservable()
             .Subscribe(_ => {
-                // セーブスロット UI 表示
-                //saveUiObj = SaveLoad.CreateUI( SaveLoad.Type.Save, gameObject );
-                myGV.newGame();
+				// セーブスロット UI 表示
+				// newGame 時にこの処理がないと newGame 時に初期スロット 1 でセーブされる
+				saveUiObj = SaveLoad.CreateUI( SaveLoad.Type.Save, gameObject );
+				newGameFlg = true;
+				//myGV.newGame(audioManager);
+
+                BattleUI.NotActiveButton(select);
+                
             })
             .AddTo(this);
         loadGameButton.OnClickAsObservable()
             .Subscribe(_ => {
-                SaveLoad.CreateUI(SaveLoad.Type.Load, gameObject);
+                saveLoad = SaveLoad.CreateUI(SaveLoad.Type.Load, gameObject);
+
+                saveLoad.OnDestroyAsObservable()
+                .Subscribe(u => {
+                    BattleUI.ActiveButton(select);
+                });
+				BattleUI.NotActiveButton(select);
             })
             .AddTo(this);
         creditButton.OnClickAsObservable()
@@ -91,11 +112,20 @@ public class Title : MonoBehaviour
     }
 
 	void Update( ) {
+		// newGame 時にこの処理がないと newGame 時に初期スロット 1 でセーブされる
 		// セーブスロット UI 表示 → 任意セーブスロット選択 → newGame → 任意セーブスロット削除 → SystemData 更新 → 遷移
-		if ( saveUiObj == null && sceneLoadOnce ) {
+		if( saveUiObj == null && sceneLoadOnce && newGameFlg ) {
 			sceneLoadOnce = false;
-			myGV.newGame( );
+			myGV.newGame( audioManager );
 
+		}
+
+		if( Input.GetKeyDown(KeyCode.Backspace) && saveLoad != null) {
+            Destroy(saveLoad);
+        } else if( Input.GetKeyDown( KeyCode.Backspace ) && newGameFlg && !saveFlg ) {
+			newGameFlg = false;
+			Destroy( saveUiObj );
+			BattleUI.ActiveButton( grid, newGameButton.gameObject );
 		}
 
         if(audioClips != null) {
