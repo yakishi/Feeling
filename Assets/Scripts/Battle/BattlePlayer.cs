@@ -23,6 +23,9 @@ public class BattlePlayer : BattleCharacter
     [SerializeField]
     public PlayerSelect playerSelect;
 
+    [SerializeField]
+    private Image feelingStone;
+
     public override void battleStart()
     {
         base.battleStart();
@@ -180,5 +183,39 @@ public class BattlePlayer : BattleCharacter
         combatButtons[2] = GameObject.Find("SkillButton").GetComponent<Button>();        //スキル
         combatButtons[3] = GameObject.Find("ItemButton").GetComponent<Button>();         //アイテム
         combatButtons[4] = GameObject.Find("EscapeButton").GetComponent<Button>();       //逃げる
+    }
+
+    public void ChangeFeelingColor(SingltonSkillManager.Feel highestFeel)
+    {
+        if (feelingStone == null) return;
+        feelingStone.color = FeelColor(highestFeel);
+    }
+
+    Color FeelColor(SingltonSkillManager.Feel feel)
+    {
+        Color ret = Color.white;
+
+        switch (feel) {
+            case SingltonSkillManager.Feel.Ki:
+                ret = Color.green;
+                break;
+            case SingltonSkillManager.Feel.Do:
+                ret = Color.red;
+                break;
+            case SingltonSkillManager.Feel.Ai:
+                ret = Color.blue;
+                break;
+            case SingltonSkillManager.Feel.Raku:
+                ret = Color.yellow;
+                break;
+            case SingltonSkillManager.Feel.Love:
+                ret = Color.magenta;
+                break;
+            case SingltonSkillManager.Feel.Zou:
+                ret = Color.gray;
+                break;
+        }
+
+        return ret;
     }
 }

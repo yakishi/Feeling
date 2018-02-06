@@ -301,6 +301,10 @@ public class BattleController : MonoBehaviour
 
         battleUI.ClearTempSkillID();
 
+        foreach(BattlePlayer p in players) {
+            p.ChangeFeelingColor(HighestFeel(p.Param));
+        }
+
         var ret = characters
             .Where(character => character.frontMember)
             .Where(character => character.CanAction)
@@ -330,7 +334,7 @@ public class BattleController : MonoBehaviour
         }
 
         foreach(var m in monsters) {
-            m.GetComponent<Image>().color = new Color(252, 252, 252, 0);
+            Destroy(m);
         }
         Debug.Log("敵殲滅");
 
@@ -377,7 +381,7 @@ public class BattleController : MonoBehaviour
         SingltonSkillManager.Feel tempFeel = SingltonSkillManager.Feel.Ki;
         int value = player.currentFeel[tempFeel];
         foreach (var f in player.currentFeel.Keys) {
-            if(player.currentFeel[f] >= value) {
+            if(player.currentFeel[f] > value) {
                 tempFeel = f;
                 value = player.currentFeel[f];
             }
