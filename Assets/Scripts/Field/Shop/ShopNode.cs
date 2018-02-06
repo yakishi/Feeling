@@ -6,7 +6,7 @@ using UniRx;
 
 public class ShopNode : MonoBehaviour
 {
-    Button button;
+    ButtonText button;
 
     [SerializeField]
     Text itemName;
@@ -17,7 +17,8 @@ public class ShopNode : MonoBehaviour
     public string Name { get { return itemName.text; } }
     public int PageNum { get { return pageNum; } }
     public int Price { get { return int.Parse(price.text); } }
-    public Button ActionButton { get { return button;  } }
+    public ButtonText ActionButton { get { return button;  } }
+    public int MaxQuantity { private set; get; }
 
     string id;
     public string Id {
@@ -25,12 +26,16 @@ public class ShopNode : MonoBehaviour
     }
     int pageNum;
 
-    public void StoreNode(string inId, string inName, int inPrice, int inPageNum)
+    public void StoreNode(string inId, string inName, int inPrice, int inPageNum, int maxQuantity)
     {
         id = inId;
         itemName.text = inName;
         price.text = inPrice.ToString();
         pageNum = inPageNum;
-        button = GetComponent<Button>();
+        MaxQuantity = maxQuantity;
+        button = GetComponent<ButtonText>();
+        if (maxQuantity == 0) {
+            button.CanClick = false;
+        }
     }
 }
