@@ -292,6 +292,7 @@ public class BattleUI : MonoBehaviour
 
             button.OnClickAsObservable()
                 .Where(_ => selectMode == SelectMode.Monster && !isSkillScopeAll)
+                .Where(_ => !n.IsDead)
                 .Subscribe(_ => {
                     target = n;
                     UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
@@ -304,11 +305,13 @@ public class BattleUI : MonoBehaviour
 
             button.OnClickAsObservable()
                 .Where(_ => selectMode == SelectMode.Monster && isSkillScopeAll)
+                .Where(_ => !n.IsDead)
                 .Subscribe(_ => {
                     UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
 
                     battleController.audioManager.AttackSE();
                     for (int i = 0; i < monsters.Length; ++i) {
+                        if (monsters[i].IsDead) continue;
                         LeanTween.alpha(monsters[i].GetComponent<RectTransform>(), 1.0f, 0.3f).setFrom(0.0f).setLoopCount(3).setLoopType(LeanTweenType.pingPong);
 
                     }
@@ -328,6 +331,7 @@ public class BattleUI : MonoBehaviour
 
             button.OnClickAsObservable()
                 .Where(_ => selectMode == SelectMode.Supporter && !isSkillScopeAll)
+                .Where(_ => !n.IsDead)
                 .Subscribe(_ => {
                     target = n;
 
@@ -341,11 +345,13 @@ public class BattleUI : MonoBehaviour
 
             button.OnClickAsObservable()
                 .Where(_ => selectMode == SelectMode.Supporter && isSkillScopeAll)
+                .Where(_ => !n.IsDead)
                 .Subscribe(_ => {
                     UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
 
                     battleController.audioManager.AttackSE();
                     for (int i = 0; i < monsters.Length; ++i) {
+                        if (players[i].IsDead) continue;
                         LeanTween.alpha(players[i].GetComponent<RectTransform>(), 1.0f, 0.3f).setFrom(0.0f).setLoopCount(3).setLoopType(LeanTweenType.pingPong);
 
                     }
@@ -524,7 +530,7 @@ public class BattleUI : MonoBehaviour
             }else if(n.SkillInfo.myTarget == SingltonSkillManager.Target.Enemy) {
                 //モンスターセレクターを全モンスター上に表示
                 for (int i = 0; i < monsters.Length; ++i) {
-                    if (monsters[i].transform.childCount >= 1) continue;
+                    if (monsters[i].transform.childCount >= 1 || monsters[i].IsDead) continue;
                     monsterSelecter[i] = GameObject.Instantiate(monsterSelecterPrefab, monsters[i].transform);
                     monsterSelecter[i].transform.position = monsters[i].gameObject.transform.position + Vector3.up * 180.0f;
                 }
@@ -567,7 +573,7 @@ public class BattleUI : MonoBehaviour
             else if (n.ItemInfo.target == SingltonSkillManager.Target.Enemy) {
                 //モンスターセレクターを全モンスター上に表示
                 for (int i = 0; i < monsters.Length; ++i) {
-                    if (monsters[i].transform.childCount >= 1) continue;
+                    if (monsters[i].transform.childCount >= 1 || monsters[i].IsDead) continue;
                     monsterSelecter[i] = GameObject.Instantiate(monsterSelecterPrefab, monsters[i].transform);
                     monsterSelecter[i].transform.position = monsters[i].gameObject.transform.position + Vector3.up * 180.0f;
                 }
@@ -791,6 +797,7 @@ public class BattleUI : MonoBehaviour
             }
 
             if (targetObj.activeInHierarchy) {
+                
                 UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(targetObj);
                 break;
             }

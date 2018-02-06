@@ -188,7 +188,7 @@ public class BattleController : MonoBehaviour
         testList.itemList.Add("I2", 3);
         testList.itemList.Add("I3", 4);
         testList.itemList.Add("I4", 10);
-        testList.itemList.Add("I5", 6);
+        testList.itemList.Add("I6", 6);
     }
 
     /// <summary>
@@ -301,6 +301,10 @@ public class BattleController : MonoBehaviour
 
         battleUI.ClearTempSkillID();
 
+        foreach(BattlePlayer p in players) {
+            p.ChangeFeelingColor(HighestFeel(p.Param));
+        }
+
         var ret = characters
             .Where(character => character.frontMember)
             .Where(character => character.CanAction)
@@ -329,6 +333,9 @@ public class BattleController : MonoBehaviour
             return;
         }
 
+        foreach(var m in monsters) {
+            Destroy(m);
+        }
         Debug.Log("敵殲滅");
 
         int totalEXP = 0;
@@ -339,7 +346,7 @@ public class BattleController : MonoBehaviour
         battleUI.BattleEndDisplay(totalEXP);
 
         int cnt = 1;
-        bool isLevelUp = false;
+        //bool isLevelUp = false;
 
         Dictionary<string, int> lvUpPlayerList = new Dictionary<string, int>();
         foreach(var p in gameManager.PlayerList) {
@@ -374,7 +381,7 @@ public class BattleController : MonoBehaviour
         SingltonSkillManager.Feel tempFeel = SingltonSkillManager.Feel.Ki;
         int value = player.currentFeel[tempFeel];
         foreach (var f in player.currentFeel.Keys) {
-            if(player.currentFeel[f] >= value) {
+            if(player.currentFeel[f] > value) {
                 tempFeel = f;
                 value = player.currentFeel[f];
             }

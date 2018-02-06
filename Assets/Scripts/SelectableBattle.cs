@@ -20,7 +20,9 @@ public class SelectableBattle : MonoBehaviour{
         foreach(var skill in battleUI.skillButtonList) { 
             if (name == skill.SkillInfo.skill) {
                 battleUI.skillDetailText.GetComponent<Text>().text =
-                    "消費MP :" + skill.SkillInfo.MP +
+                    "属性 :" + SingltonSkillManager.FeelName(skill.SkillInfo.FVC.Key) +
+                    " +" + skill.SkillInfo.FVC.Value + 
+                    ", 消費MP :" + skill.SkillInfo.MP +
                     ", 種類 :" + Category(skill.SkillInfo.myCategory) +
                     ", 対象 :" + Target(skill.SkillInfo.myTarget) +
                     ", 範囲 :" + Scope(skill.SkillInfo.myScope);

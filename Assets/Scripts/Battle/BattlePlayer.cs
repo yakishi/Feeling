@@ -15,7 +15,7 @@ public class BattlePlayer : BattleCharacter
     /// <summary>
     /// UI コントローラー的なの実装する
     /// </summary>
-    public Button[] combatButtons = new Button[5];
+    public Button[] combatButtons;
 
     [SerializeField]
     Text playerName;
@@ -23,11 +23,16 @@ public class BattlePlayer : BattleCharacter
     [SerializeField]
     public PlayerSelect playerSelect;
 
+    [SerializeField]
+    private Image feelingStone;
+
     public override void battleStart()
     {
         base.battleStart();
 
         playerName.text = this.param.Name;
+
+        combatButtons = new Button[5];
         attachButton();
         combatButtons[0].OnClickAsObservable()
             .Where(_ => isPlayerAction)
@@ -113,7 +118,10 @@ public class BattlePlayer : BattleCharacter
         var skill = new Skill();
         if (id != "none") {
             skill = searchSkill(id);
-            InfluenceFeel(skill.getSkillInfo.FVC);
+
+            if (skill.getSkillInfo.FVC != null) {
+                InfluenceFeel(skill.getSkillInfo.FVC);
+            }
         }
         isPlayerAction = false;
 
@@ -147,7 +155,11 @@ public class BattlePlayer : BattleCharacter
         isPlayerAction = true;
         battleController.combatGrid.SetActive(true);
         playerSelect.Select();
-        
+
+        for(int i = 1; i < combatButtons.Length; i++) {
+            combatButtons[i].transform.localScale = Vector3.one;
+        }
+
         BattleUI.ActiveButton(battleController.combatGrid, combatButtons[0].gameObject);
 
         combatButtons[0].transform.localScale = new Vector3(1.2f, 1.2f, 1.2f);
@@ -160,6 +172,7 @@ public class BattlePlayer : BattleCharacter
     {
         playerSelect.DeSelect();
         battleUI.ClearWindow();
+
         base.endAction();
     }
 
@@ -170,5 +183,39 @@ public class BattlePlayer : BattleCharacter
         combatButtons[2] = GameObject.Find("SkillButton").GetComponent<Button>();        //スキル
         combatButtons[3] = GameObject.Find("ItemButton").GetComponent<Button>();         //アイテム
         combatButtons[4] = GameObject.Find("EscapeButton").GetComponent<Button>();       //逃げる
+    }
+
+    public void ChangeFeelingColor(SingltonSkillManager.Feel highestFeel)
+    {
+        if (feelingStone == null) return;
+        feelingStone.color = FeelColor(highestFeel);
+    }
+
+    Color FeelColor(SingltonSkillManager.Feel feel)
+    {
+        Color ret = Color.white;
+
+        switch (feel) {
+            case SingltonSkillManager.Feel.Ki:
+                ret = Color.green;
+                break;
+            case SingltonSkillManager.Feel.Do:
+                ret = Color.red;
+                break;
+            case SingltonSkillManager.Feel.Ai:
+                ret = Color.blue;
+                break;
+            case SingltonSkillManager.Feel.Raku:
+                ret = Color.yellow;
+                break;
+            case SingltonSkillManager.Feel.Love:
+                ret = Color.magenta;
+                break;
+            case SingltonSkillManager.Feel.Zou:
+                ret = Color.gray;
+                break;
+        }
+
+        return ret;
     }
 }
