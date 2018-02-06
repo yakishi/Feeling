@@ -237,7 +237,7 @@ public abstract class BattleCharacter : MonoBehaviour
                     param.Lv = m.LV;
                     param.Name = m.NAME;
                     param.STATUS = new SingltonPlayerManager.Status(m.HP, m.MP, m.ATK, m.DEF, m.MATK, m.MDEF, m.LUCKY, m.SPD);
-                    feelInfo = new SingltonSkillManager.CollectionValue(m.FEELING, 3);
+                    feelInfo = new SingltonSkillManager.CollectionValue(m.FEELING,  -3);
                     param.TotalExp = m.DROPEXP;
                     frontMember = true;
                 }
@@ -333,6 +333,8 @@ public abstract class BattleCharacter : MonoBehaviour
 
     public void InfluenceFeel(SingltonSkillManager.CollectionValue collection)
     {
+        DownReFeelValue(ReFeel(collection.Key), - collection.Value);
+
         foreach(var feel in param.currentFeel.Keys) {
             if(feel == collection.Key) {
                 int feelValue = collection.Value;
@@ -342,6 +344,54 @@ public abstract class BattleCharacter : MonoBehaviour
                 }
 
                 param.currentFeel[feel] += feelValue;
+
+                param.currentFeel[feel] = Mathf.Min(param.currentFeel[feel], 25);
+
+                param.currentFeel[feel] = Mathf.Max(param.currentFeel[feel], -25);
+
+                return;
+            }
+        }
+    }
+
+    SingltonSkillManager.Feel ReFeel(SingltonSkillManager.Feel feel)
+    {
+        switch (feel) {
+            case SingltonSkillManager.Feel.Ki:
+                return SingltonSkillManager.Feel.Ai;
+
+            case SingltonSkillManager.Feel.Do:
+                return SingltonSkillManager.Feel.Raku;
+
+            case SingltonSkillManager.Feel.Ai:
+                return SingltonSkillManager.Feel.Ki;
+
+            case SingltonSkillManager.Feel.Raku:
+                return SingltonSkillManager.Feel.Do;
+
+            case SingltonSkillManager.Feel.Love:
+                return SingltonSkillManager.Feel.Zou;
+
+            case SingltonSkillManager.Feel.Zou:
+                return SingltonSkillManager.Feel.Love;
+
+            default:
+                return SingltonSkillManager.Feel.Ki;
+        }
+
+
+    }
+
+    void DownReFeelValue(SingltonSkillManager.Feel feel,int value)
+    {
+        foreach (var f in param.currentFeel.Keys) {
+            if (f == feel) {
+
+                param.currentFeel[f] += value;
+
+                param.currentFeel[f] = Mathf.Min(param.currentFeel[f], 25);
+
+                param.currentFeel[f] = Mathf.Max(param.currentFeel[f], -25);
 
                 return;
             }
