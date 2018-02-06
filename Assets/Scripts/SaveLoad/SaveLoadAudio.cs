@@ -25,8 +25,8 @@ public class SaveLoadAudio {
 	void Initialize( ) {
 		// Resource 配下からの asset 読込
 		myAudioComponent.SE = Resources.LoadAll<AudioClip>( "Sounds/SE/セーブ・ロード/" );
-		for ( int i = 0; i < myAudioComponent.SE.Length; i++ )
-			Debug.Log( "AudioSE_Index : " + i + " = FileName ( " + myAudioComponent.SE[ i ].name + " )" );
+		//for( int i = 0; i < myAudioComponent.SE.Length; i++ )
+		//	Debug.Log( "AudioSE_Index : " + i + " = FileName ( " + myAudioComponent.SE[ i ].name + " )" );
 
 
 	}

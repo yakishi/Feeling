@@ -209,6 +209,31 @@ Prefab:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 224563052122397788, guid: 7fddb024595d7da4f9a9b340ff88ce16,
+        type: 2}
+      propertyPath: m_AnchorMin.y
+      value: 0.017708361
+      objectReference: {fileID: 0}
+    - target: {fileID: 224563052122397788, guid: 7fddb024595d7da4f9a9b340ff88ce16,
+        type: 2}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 224563052122397788, guid: 7fddb024595d7da4f9a9b340ff88ce16,
+        type: 2}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 224303632314574104, guid: 7fddb024595d7da4f9a9b340ff88ce16,
+        type: 2}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 224303632314574104, guid: 7fddb024595d7da4f9a9b340ff88ce16,
+        type: 2}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 224193615894774160, guid: 7fddb024595d7da4f9a9b340ff88ce16,
         type: 2}
       propertyPath: m_AnchorMin.y
@@ -233,31 +258,6 @@ Prefab:
         type: 2}
       propertyPath: m_SizeDelta.y
       value: 960
-      objectReference: {fileID: 0}
-    - target: {fileID: 224303632314574104, guid: 7fddb024595d7da4f9a9b340ff88ce16,
-        type: 2}
-      propertyPath: m_AnchorMax.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 224303632314574104, guid: 7fddb024595d7da4f9a9b340ff88ce16,
-        type: 2}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 224563052122397788, guid: 7fddb024595d7da4f9a9b340ff88ce16,
-        type: 2}
-      propertyPath: m_AnchorMin.y
-      value: 0.017708361
-      objectReference: {fileID: 0}
-    - target: {fileID: 224563052122397788, guid: 7fddb024595d7da4f9a9b340ff88ce16,
-        type: 2}
-      propertyPath: m_AnchorMax.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 224563052122397788, guid: 7fddb024595d7da4f9a9b340ff88ce16,
-        type: 2}
-      propertyPath: m_AnchorMax.y
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 224476131676115370, guid: 7fddb024595d7da4f9a9b340ff88ce16,
         type: 2}
@@ -415,7 +415,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 324ed4ea8f32f6146851b96b8ab08505, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 0.1
+  variableSpeed: 3
 --- !u!1 &1437704619
 GameObject:
   m_ObjectHideFlags: 0
