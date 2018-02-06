@@ -345,6 +345,8 @@ public abstract class BattleCharacter : MonoBehaviour
 
                 param.currentFeel[feel] += feelValue;
 
+                Debug.Log(feel+ " : " + feelValue);
+
                 param.currentFeel[feel] = Mathf.Min(param.currentFeel[feel], 25);
 
                 param.currentFeel[feel] = Mathf.Max(param.currentFeel[feel], -25);
@@ -388,6 +390,8 @@ public abstract class BattleCharacter : MonoBehaviour
             if (f == feel) {
 
                 param.currentFeel[f] += value;
+
+                Debug.Log(f + " : " + value);
 
                 param.currentFeel[f] = Mathf.Min(param.currentFeel[f], 25);
 
