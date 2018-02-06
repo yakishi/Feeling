@@ -303,11 +303,11 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1120534384810022, guid: b72da3405d13e014095bd9d6fc3ec5e0, type: 2}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1386786781009142, guid: b72da3405d13e014095bd9d6fc3ec5e0, type: 2}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: b72da3405d13e014095bd9d6fc3ec5e0, type: 2}

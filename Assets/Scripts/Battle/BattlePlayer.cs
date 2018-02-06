@@ -15,7 +15,7 @@ public class BattlePlayer : BattleCharacter
     /// <summary>
     /// UI コントローラー的なの実装する
     /// </summary>
-    public Button[] combatButtons = new Button[5];
+    public Button[] combatButtons;
 
     [SerializeField]
     Text playerName;
@@ -28,6 +28,8 @@ public class BattlePlayer : BattleCharacter
         base.battleStart();
 
         playerName.text = this.param.Name;
+
+        combatButtons = new Button[5];
         attachButton();
         combatButtons[0].OnClickAsObservable()
             .Where(_ => isPlayerAction)
@@ -113,7 +115,10 @@ public class BattlePlayer : BattleCharacter
         var skill = new Skill();
         if (id != "none") {
             skill = searchSkill(id);
-            InfluenceFeel(skill.getSkillInfo.FVC);
+
+            if (skill.getSkillInfo.FVC != null) {
+                InfluenceFeel(skill.getSkillInfo.FVC);
+            }
         }
         isPlayerAction = false;
 
@@ -147,7 +152,11 @@ public class BattlePlayer : BattleCharacter
         isPlayerAction = true;
         battleController.combatGrid.SetActive(true);
         playerSelect.Select();
-        
+
+        for(int i = 1; i < combatButtons.Length; i++) {
+            combatButtons[i].transform.localScale = Vector3.one;
+        }
+
         BattleUI.ActiveButton(battleController.combatGrid, combatButtons[0].gameObject);
 
         combatButtons[0].transform.localScale = new Vector3(1.2f, 1.2f, 1.2f);
@@ -160,6 +169,7 @@ public class BattlePlayer : BattleCharacter
     {
         playerSelect.DeSelect();
         battleUI.ClearWindow();
+
         base.endAction();
     }
 

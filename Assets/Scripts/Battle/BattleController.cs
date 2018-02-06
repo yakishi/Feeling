@@ -188,7 +188,7 @@ public class BattleController : MonoBehaviour
         testList.itemList.Add("I2", 3);
         testList.itemList.Add("I3", 4);
         testList.itemList.Add("I4", 10);
-        testList.itemList.Add("I5", 6);
+        testList.itemList.Add("I6", 6);
     }
 
     /// <summary>
@@ -329,6 +329,9 @@ public class BattleController : MonoBehaviour
             return;
         }
 
+        foreach(var m in monsters) {
+            m.GetComponent<Image>().color = new Color(252, 252, 252, 0);
+        }
         Debug.Log("敵殲滅");
 
         int totalEXP = 0;
@@ -339,7 +342,7 @@ public class BattleController : MonoBehaviour
         battleUI.BattleEndDisplay(totalEXP);
 
         int cnt = 1;
-        bool isLevelUp = false;
+        //bool isLevelUp = false;
 
         Dictionary<string, int> lvUpPlayerList = new Dictionary<string, int>();
         foreach(var p in gameManager.PlayerList) {

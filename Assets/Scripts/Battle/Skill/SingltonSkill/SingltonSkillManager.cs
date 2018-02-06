@@ -340,6 +340,25 @@ public sealed class SingltonSkillManager
     }
     /*===============================================================*/
 
+    static public string FeelName(SingltonSkillManager.Feel feel)
+    {
+        switch (feel) {
+            case SingltonSkillManager.Feel.Ki:
+                return "喜";
+            case SingltonSkillManager.Feel.Do:
+                return "怒";
+            case SingltonSkillManager.Feel.Ai:
+                return "哀";
+            case SingltonSkillManager.Feel.Raku:
+                return "楽";
+            case SingltonSkillManager.Feel.Love:
+                return "愛";
+            case SingltonSkillManager.Feel.Zou:
+                return "憎";
+            default:
+                return "Missing";
+        }
+    }
 
 }
 /*===============================================================*/
