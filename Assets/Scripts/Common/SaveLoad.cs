@@ -11,6 +11,7 @@ public class SaveLoad : MonoBehaviour
 {
 
     GV myGV = GV.Instance; // Save/Load クラスのインスタンスを取得
+	SaveLoadAudio mySLA;
 
     public enum Type
     {
@@ -33,6 +34,7 @@ public class SaveLoad : MonoBehaviour
 
     void Start()
     {
+		mySLA = new SaveLoadAudio( );
         var buttons = GetComponentsInChildren<Button>();
         Observable.NextFrame()
             .Subscribe(_ => {
@@ -62,9 +64,14 @@ public class SaveLoad : MonoBehaviour
                 .Subscribe(_ => {
                     myGV.slot = slotIndex; // GV 側へ通知
                     myGV.GameDataSave(slotIndex);
-                    Debug.Log("<color='red'>openSaveUI Function Called., saveSlot : " + slotIndex + "</color>");
-                    Destroy(gameObject);
-                })
+					mySLA.PlaySE( "Save", slot.transform.parent.parent.parent.GetComponent<AudioSource>( ) );
+					Debug.Log("<color='red'>openSaveUI Function Called., saveSlot : " + slotIndex + "</color>");
+					// 2 秒後に出す ( 再生し終わった後 )
+					Observable.Timer( TimeSpan.FromMilliseconds( 2000 ) )
+						.Subscribe( x => { if( slot != null ) Destroy( /*this*/gameObject ); } );
+					Title.SavedFlg = true; // Title newGame slot button を押したら戻れないようにする
+
+				} )
                 .AddTo(this);
 
             slot.OnSelectAsObservable()
@@ -88,22 +95,33 @@ public class SaveLoad : MonoBehaviour
             var slot = saveSlots[i];
             var isUsed = usedSave[i];
 
-            if (!isUsed) {
-                slot.enabled = false;
-            }
+			//if( !isUsed ) {
+			//	slot.enabled = false;
+			//}
 
-            int slotIndex = i + 1;
+			int slotIndex = i + 1;
 
             setText(slot, isUsed);
             slot.OnClickAsObservable()
                 .Take(1)
                 .Subscribe(_ => {
-                    myGV.slot = slotIndex; // GV 側へ通知
-                    myGV.GameDataLoad(slotIndex);
-                    myGV.SlotChangeParamUpdate(slotIndex);
-                    new ExampleTestSaveLoad().LoadTest(); // 読込確認用
-                    Debug.Log("<color='red'>openLoadUI Function Called., loadSlot : " + slotIndex + "</color>");
-                    Destroy(/*this*/gameObject);
+					Text btnTxt = slot.transform.parent.GetChild( slotIndex - 1 ).GetChild( 0 ).GetComponent<Text>( );
+					if( btnTxt.text != "データがありません" ) {
+						myGV.slot = slotIndex; // GV 側へ通知
+						myGV.GameDataLoad(slotIndex);
+						myGV.SlotChangeParamUpdate(slotIndex);
+						new ExampleTestSaveLoad().LoadTest(); // 読込確認用
+						mySLA.PlaySE( "Load", slot.transform.parent.parent.parent.GetComponent<AudioSource>( ) );
+						Debug.Log("<color='red'>openLoadUI Function Called., loadSlot : " + slotIndex + "</color>");
+						// 3 秒後に出す ( 再生し終わった後 )
+						Observable.Timer( TimeSpan.FromMilliseconds( 3000 ) )
+							.Subscribe( x => { if( slot != null ) Destroy( /*this*/gameObject ); } );
+
+					} else {
+						btnTxt.text = "選択不可能です";
+						mySLA.PlaySE( "Cancel2", slot.transform.parent.parent.parent.GetComponent<AudioSource>( ) );
+
+					}
                 })
                 .AddTo(this);
 

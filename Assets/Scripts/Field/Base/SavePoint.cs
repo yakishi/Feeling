@@ -3,23 +3,35 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UniRx;
+using UniRx.Triggers;
 
 public class SavePoint : FieldEvent {
 
-    GV gv;
+	GV gv;
+	GameObject saveLoad;
 
-    private void Start()
-    {
-        gv = GV.Instance;
-    }
+	private void Start( ) {
+		gv = GV.Instance;
+	}
 
-    public override void EventAction(PlayerEvent player)
-    {
-        base.EventAction(player);
-        GameObject canvas = GameObject.Find("Canvas");
+	private void Update( ) {
+		if(Input.GetKeyDown(KeyCode.Backspace) && saveLoad != null){
+			Destroy(saveLoad);
+		}
+	}
 
-        SaveLoad.CreateUI(SaveLoad.Type.Save,canvas);
+	public override void EventAction( PlayerEvent player ) {
+		base.EventAction( player );
+		GameObject canvas = GameObject.Find( "Canvas" );
 
-        EventSystem.current.SetSelectedGameObject(canvas.transform.GetChild(0).gameObject);
-    }
+		saveLoad = SaveLoad.CreateUI( SaveLoad.Type.Save, canvas );
+
+		saveLoad.OnDestroyAsObservable( )
+		.Subscribe( d => {
+			player.endEvent( );
+		} )
+		.AddTo( this );
+
+		EventSystem.current.SetSelectedGameObject( canvas.transform.GetChild( 0 ).gameObject );
+	}
 }

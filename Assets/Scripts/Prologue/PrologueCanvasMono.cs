@@ -2,7 +2,8 @@
 
 public class PrologueCanvasMono : MonoBehaviour {
     [SerializeField]
-    float moveSpeed = 0.1f;
+	float variableSpeed = 3.0f;
+    const float fixedMoveSpeed = 0.1f;
 
 	PrologueUI myUI;
 
@@ -15,7 +16,7 @@ public class PrologueCanvasMono : MonoBehaviour {
 	}
 
 	private void Update( ) {
-		myUI.ScrollUpDown( -moveSpeed * Time.deltaTime /* スクロール速度 */ );
+		myUI.ScrollUpDown( ( Time.deltaTime * -fixedMoveSpeed ) / variableSpeed /* スクロール速度 */ );
 
 
 	}

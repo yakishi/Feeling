@@ -45,15 +45,31 @@ public class Title : MonoBehaviour
     [SerializeField]
     GameObject select;
 
-    private GameObject saveLoad;
+	private GameObject saveUiObj;
+	private bool sceneLoadOnce;
+	private bool newGameFlg; // newGame Button が押されたか否か
+	static private bool saveFlg; // セーブスロットが押されたか否か
+	/// <summary>TitleNewGameSlotButtonを押したら戻れないようにする</summary>
+	static public bool SavedFlg { set { saveFlg = value; } }
+
+	private GameObject saveLoad;
 
     GameObject[] audioClips;
     // Use this for initialization
     void Start()
     {
+		saveUiObj = newGameButton.gameObject; // 初期 null 回避
+		sceneLoadOnce = true; // update 中に 1 回だけ呼ばれるようにするフラグ
+		newGameFlg = false;
+		saveFlg = false;
+
 		newGameButton.OnClickAsObservable()
             .Subscribe(_ => {
-                myGV.newGame(audioManager);
+				// セーブスロット UI 表示
+				// newGame 時にこの処理がないと newGame 時に初期スロット 1 でセーブされる
+				saveUiObj = SaveLoad.CreateUI( SaveLoad.Type.Save, gameObject );
+				newGameFlg = true;
+				//myGV.newGame(audioManager);
 
                 BattleUI.NotActiveButton(select);
                 
@@ -67,8 +83,7 @@ public class Title : MonoBehaviour
                 .Subscribe(u => {
                     BattleUI.ActiveButton(select);
                 });
-
-                BattleUI.NotActiveButton(select);
+				BattleUI.NotActiveButton(select);
             })
             .AddTo(this);
         creditButton.OnClickAsObservable()
@@ -97,9 +112,21 @@ public class Title : MonoBehaviour
     }
 
 	void Update( ) {
-        if (Input.GetKeyDown(KeyCode.Backspace) && saveLoad != null) {
+		// newGame 時にこの処理がないと newGame 時に初期スロット 1 でセーブされる
+		// セーブスロット UI 表示 → 任意セーブスロット選択 → newGame → 任意セーブスロット削除 → SystemData 更新 → 遷移
+		if( saveUiObj == null && sceneLoadOnce && newGameFlg ) {
+			sceneLoadOnce = false;
+			myGV.newGame( audioManager );
+
+		}
+
+		if( Input.GetKeyDown(KeyCode.Backspace) && saveLoad != null) {
             Destroy(saveLoad);
-        }
+        } else if( Input.GetKeyDown( KeyCode.Backspace ) && newGameFlg && !saveFlg ) {
+			newGameFlg = false;
+			Destroy( saveUiObj );
+			BattleUI.ActiveButton( grid, newGameButton.gameObject );
+		}
 
         if(audioClips != null) {
             if (audioClips.Length <= 1) return;
