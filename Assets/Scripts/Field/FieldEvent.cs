@@ -8,7 +8,7 @@ public class FieldEvent : MonoBehaviour
     /// 触れた時に自動的にイベントが始まるか
     /// </summary>
     [SerializeField]
-    protected bool isAuto;
+    protected bool isAuto = false;
     public bool IsAuto { get { return isAuto; } }
 
     [SerializeField]
@@ -19,7 +19,7 @@ public class FieldEvent : MonoBehaviour
     /// </summary>
     PlayerEvent target;
 
-    void Start()
+    protected virtual void Start()
     {
         if (hideSprite) {
             GetComponent<SpriteRenderer>().color = Color.clear;

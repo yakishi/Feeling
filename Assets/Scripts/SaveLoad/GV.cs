@@ -110,8 +110,10 @@ public sealed class GV {
 		public List<EquipmentParam> Equipments;
 		/// <summary>現在所持しているアイテム一覧</summary>
 		public ItemParam Items;
-		#endregion
-	}
+        #endregion
+
+        public int possessionGolds = 1500;
+    }
 
 	// ゲームデータを読み込むときは先にセーブデータのロードまたはnewGame で関数を初期化して使用
 	private GameData gameData;
