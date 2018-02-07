@@ -197,7 +197,7 @@ public class ShopBase : MonoBehaviour
 
     protected virtual void Update()
     {
-        myGoldsText.text = GV.Instance.GData.possessionGolds.ToString() + " G";
+        myGoldsText.text = SingltonItemManager.Instance.SDItem.possessionGolds.ToString() + " G";
 
         bool isReturn = false;
         if (Input.GetButtonDown("Cancel")) {
