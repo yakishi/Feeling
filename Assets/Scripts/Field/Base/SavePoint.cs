@@ -10,7 +10,8 @@ public class SavePoint : FieldEvent {
 	GV gv;
 	GameObject saveLoad;
 
-	private void Start( ) {
+	protected override void Start( ) {
+        base.Start();
 		gv = GV.Instance;
 	}
 
