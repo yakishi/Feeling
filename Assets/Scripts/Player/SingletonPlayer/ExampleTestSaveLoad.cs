@@ -46,6 +46,8 @@ public class ExampleTestSaveLoad {
 			/* equip */
 			+ "SaveDataPlayerEquipmentParam[ 0 ].ID : " + example2.SaveDataPlayerEquipmentParam[ 0 ].ID + "\n"
 			+ "SaveDataPlayerEquipmentParam[ 1 ].Armor : " + example2.SaveDataPlayerEquipmentParam[ 1 ].Armor + "\n"
+			/* item */
+			+ "example4.SDItem.possessionGolds : " + example4.SDItem.possessionGolds + "\n"
 			+ "GV.slot : " + myGV.slot + "</color>" );
 
 		foreach( SingltonPlayerManager.PlayerParameters items1 in example1.SaveDataPlayerState ) {

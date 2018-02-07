@@ -14,7 +14,8 @@ public class ItemShop : ShopBase
 
     protected override List<ShopNode> createBuyItems()
     {
-        var possessionGolds = GV.Instance.GData.possessionGolds;
+        //var possessionGolds = GV.Instance.GData.possessionGolds;
+		int possessionGolds = SingltonItemManager.Instance.SDItem.possessionGolds;
         var items = SingltonItemManager.Instance
         .CDItem
         // 現在進行用のフラグが不明なため1のみ販売
@@ -76,12 +77,12 @@ public class ItemShop : ShopBase
                 items[info.id] = info.quantity;
             }
 
-            GV.Instance.GData.possessionGolds -= info.quantity * info.prize;
+            SingltonItemManager.Instance.SDItem.possessionGolds -= info.quantity * info.prize;
             return;
         }
 
         items[info.id] -= info.quantity;
-        GV.Instance.GData.possessionGolds += info.quantity * info.prize;
+        SingltonItemManager.Instance.SDItem.possessionGolds += info.quantity * info.prize;
     }
 
     protected override void Update()

@@ -48,6 +48,8 @@ public sealed class GV {
 		// event
 		gameData.Flag = new FlagManage( );
 		gameData.Flag.EventFlag = new Dictionary<string, bool>( );
+		// spawn
+		gameData.spawnPlayer = new SpawnScene( );
 
 		for( int i = 0; i < PLAYERS /* !変更しない! */; i++ ) {
 			// player
@@ -96,6 +98,8 @@ public sealed class GV {
 		public int[ ] fixedTime;
 		/// <summary>イベントフラグ管理</summary>
 		public FlagManage Flag;
+		/// <summary>出現場所(プレイヤー)</summary>
+		public SpawnScene spawnPlayer;
 		#endregion
 
 		#region Player
@@ -112,7 +116,7 @@ public sealed class GV {
 		public ItemParam Items;
         #endregion
 
-        public int possessionGolds = 1500;
+
     }
 
 	// ゲームデータを読み込むときは先にセーブデータのロードまたはnewGame で関数を初期化して使用
@@ -183,6 +187,8 @@ public sealed class GV {
 		SingltonSkillManager.Instance.NewGame( );
 		// Event
 		SingltonFlagManager.Instance.NewGame( );
+		// Spawn
+		SingltonSceneManage.Instance.NewGame( );
 		// time
 		gameData.timeSecond = 0;
 
@@ -201,7 +207,11 @@ public sealed class GV {
 		SingltonSkillManager.Instance.LoadSkill( slotIndex );
 		SingltonItemManager.Instance.LoadItem( slotIndex );
 		SingltonFlagManager.Instance.LoadFlag( slotIndex );
+		SingltonSceneManage.Instance.LoadSpawn( slotIndex );
 		gameData.fixedTime[ slotIndex ] = gameData.timeSecond;
+
+		// Scene 遷移
+		SingltonSceneManage.Instance.SceneTranslation( SingltonSceneManage.Instance.SDSpawn.currentSpawnPlayer );
 
 
 	}
@@ -254,9 +264,11 @@ public sealed class GV {
 		public const string PRAYER_PARAM = "PLAYER_PARAM";
 		public const string EQUIPMENT_PARAM = "EQUIPMENT_PARAM";
 		public const string ITEM_PARAM = "ITEM_PARAM";
+		public const string ITEM_PARAM2 = "ITEM_PARAM2";
 		public const string SKILL_PARAM = "SKILL_PARAM";
 		public const string KEY_CURRENT_TIME = "KEY_CURRENT_TIME";
 		public const string FLAG_PARAM = "FLAG_PARAM";
+		public const string SPAWN_PARAM = "SPAWN_PARAM";
 
 
 	}
@@ -313,10 +325,17 @@ public sealed class GV {
 
 		/*===============================================================*/
 		// アイテム情報読込
+		// Dictionary Type
 		Dictionary<string, int> myItem = SaveData.getDictionary<string, int>( GV.SaveDataKey.ITEM_PARAM );
+		// Class Type
+		SingltonItemManager.ItemParam myItem2 = SaveData.getClass<SingltonItemManager.ItemParam>( GV.SaveDataKey.ITEM_PARAM2 );
 
 		if( myItem != null ) {
 			gameData.Items.itemList = myItem;
+
+		}
+		if( myItem2 != null ) {
+			gameData.Items.possessionGolds = myItem2.possessionGolds;
 
 		}
 
@@ -346,8 +365,20 @@ public sealed class GV {
 
 		/*===============================================================*/
 
+		/*===============================================================*/
+		// 出現場所情報読込
+		SingltonSceneManage.SpawnScene mySpawn = SaveData.getClass<SingltonSceneManage.SpawnScene>( GV.SaveDataKey.SPAWN_PARAM );
+
+		if( mySpawn != null ) {
+			if( mySpawn.currentSpawnPlayer != "" ) gameData.spawnPlayer.currentSpawnPlayer = mySpawn.currentSpawnPlayer;
+			else if( mySpawn.currentSpawnPlayer == "" ) gameData.spawnPlayer.currentSpawnPlayer = "spawn place not  been saved.";
+
+		}
+
+		/*===============================================================*/
+
 		// ロードスロット + キーでプレイ時間を読み込む
-		if ( loadSlot > 0 ) {
+		if( loadSlot > 0 ) {
 			gameData.timeSecond = SaveData.getInt( SaveDataKey.KEY_CURRENT_TIME, 0 );
 			gameData.fixedTime[ slot ] = gameData.timeSecond;
 
@@ -380,7 +411,9 @@ public sealed class GV {
 		SaveData.setList( SaveDataKey.EQUIPMENT_PARAM, SingltonEquipmentManager.Instance.SaveDataPlayerEquipmentParam ); // プレイヤー装備パラメーター
 		SaveData.setList( SaveDataKey.SKILL_PARAM, SingltonSkillManager.Instance.SDSkill ); // プレイヤースキルパラメーター
 		SaveData.setDictionary( SaveDataKey.ITEM_PARAM, SingltonItemManager.Instance.SDItem.itemList ); // アイテムパラメーター
+		SaveData.setClass( SaveDataKey.ITEM_PARAM2, SingltonItemManager.Instance.SDItem ); // アイテムパラメーター 2 Dictionary 以外のデータ
 		SaveData.setDictionary( SaveDataKey.FLAG_PARAM, SingltonFlagManager.Instance.SDFlg.EventFlag ); // イベントパラメーター
+		SaveData.setClass( SaveDataKey.SPAWN_PARAM, SingltonSceneManage.Instance.SDSpawn ); // 出現場所パラメーター
 		
 
 		// セーブデータへの値セット部 END
@@ -479,6 +512,8 @@ public sealed class GV {
 	[Serializable]
 	public class ItemParam {
 		public Dictionary<string,int> itemList;
+		/// <summary>所持金</summary>
+		public int possessionGolds;
 
 
 	}
@@ -493,6 +528,19 @@ public sealed class GV {
 
 
 	}
+
+	/*===============================================================*/
+	/// <summary>
+	/// プレイヤー出現管理クラス
+	/// </summary>
+	[System.Serializable]
+	public class SpawnScene {
+		/// <summary>現在のプレイヤー出現場所(SceneName指定)</summary>
+		public string currentSpawnPlayer;
+
+
+	}
+	/*===============================================================*/
 
 	// パラメーター部 END
 	/*===============================================================*/

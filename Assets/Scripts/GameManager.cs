@@ -79,6 +79,7 @@ public class GameManager : MonoBehaviour {
         }
     }
 	SingltonFlagManager mySFM;
+	SingltonSceneManage mySSpawnM;
 
     public SingltonItemManager.ItemParam possessionItem;
 
@@ -104,6 +105,7 @@ public class GameManager : MonoBehaviour {
 		mySSM = SingltonSkillManager.Instance;
 		mySIM = SingltonItemManager.Instance;
 		mySFM = SingltonFlagManager.Instance;
+		mySSpawnM = SingltonSceneManage.Instance;
 
 		Application.targetFrameRate = 60; // 60 FPS に設定
 		Debug.Log( "現在のシーン : " + state.ToString( ) );
@@ -119,7 +121,6 @@ public class GameManager : MonoBehaviour {
                 cnt++;
             }
         }
-
 	}
 	/*===============================================================*/
 

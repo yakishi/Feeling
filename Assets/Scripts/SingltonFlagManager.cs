@@ -7,7 +7,7 @@ public sealed class SingltonFlagManager {
 	private FlagManage myFM;
 	GV myGV;
 
-	/// <summary>セーブデータから読み込まれたイベントパラメーターを取得またはセット</summary>
+	/// <summary>セーブデータから読み込まれたイベントパラメーターを取得またはセット・ゲット</summary>
 	public FlagManage SDFlg { get { return myFM; } set { myFM = value; } }
 	/// <summary>Singlton</summary>
 	public static SingltonFlagManager Instance { get { return mInstance; } }
