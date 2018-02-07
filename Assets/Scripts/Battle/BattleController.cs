@@ -360,7 +360,7 @@ public class BattleController : MonoBehaviour
             cnt++;
         }
 
-        GV.Instance.GData.possessionGolds += dropGolds;
+        SingltonItemManager.Instance.SDItem.possessionGolds += dropGolds;
         battleUI.LevelUpDisplay(lvUpPlayerList);
         SceneController.startFade(fade => {
             Destroy(transform.parent.gameObject);
