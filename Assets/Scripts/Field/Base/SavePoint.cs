@@ -4,14 +4,17 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UniRx;
 using UniRx.Triggers;
+using UnityEngine.SceneManagement;
 
 public class SavePoint : FieldEvent {
 
 	GV gv;
+	SingltonSceneManage SSpawnM;
 	GameObject saveLoad;
 
 	private void Start( ) {
 		gv = GV.Instance;
+		SSpawnM = SingltonSceneManage.Instance;
 	}
 
 	private void Update( ) {
@@ -23,6 +26,9 @@ public class SavePoint : FieldEvent {
 	public override void EventAction( PlayerEvent player ) {
 		base.EventAction( player );
 		GameObject canvas = GameObject.Find( "Canvas" );
+
+		// 現在のシーンを格納する
+		SSpawnM.SDSpawn.currentSpawnPlayer = SceneManager.GetActiveScene( ).name;
 
 		saveLoad = SaveLoad.CreateUI( SaveLoad.Type.Save, canvas );
 
