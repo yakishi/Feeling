@@ -141,12 +141,6 @@ public class BattlePlayer : BattleCharacter
             }
         }
         
-        foreach(var i in battleController.gameManager.ItemManager.CDItem) {
-            if(i.id == id) {
-                var temp = new Skill();
-            }
-        }
-
         return new Skill(skill);
     }
 

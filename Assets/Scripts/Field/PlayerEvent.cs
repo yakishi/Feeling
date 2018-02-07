@@ -38,13 +38,13 @@ public class PlayerEvent : MonoBehaviour
             var hitEvent = hitObject.collider.GetComponent<FieldEvent>();
             if (hitEvent != null) {
                 if (hitEvent.IsAuto) {
-                    hitEvent.EventAction(this);
                     isPlayEvent = true;
+                    hitEvent.EventAction(this);
                 }
-                else if (Input.GetButtonDown("Submit")) {
+                else if (Input.GetButtonDown("Submit") && movablePlayer.CanMove) {
                     // 自動イベントじゃない時,決定ボタンを押したらイベント
-                    hitEvent.EventAction(this);
                     isPlayEvent = true;
+                    hitEvent.EventAction(this);
                 }
             }
         }

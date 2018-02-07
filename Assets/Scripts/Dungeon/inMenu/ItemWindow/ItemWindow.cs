@@ -96,7 +96,7 @@ public class ItemWindow : MonoBehaviour {
                         if (child.name == "itemNumber") child.GetComponent<Text>().text = info[id].ToString();
                     }
 
-                    BattleUI.ItemButton temp = new BattleUI.ItemButton(item, info[id], tempObject);
+                    BattleUI.ItemButton temp = new BattleUI.ItemButton(item, tempObject);
                     itemButtonList.Add(temp);
                 }
             }

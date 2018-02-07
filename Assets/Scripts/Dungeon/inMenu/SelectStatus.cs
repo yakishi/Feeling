@@ -12,7 +12,6 @@ public class SelectStatus : MonoBehaviour
     private Text Lv;
     private Slider HP;
     private Slider MP;
-    private Slider EXP;
     private Text TotalEXP;
     private Text ATK;
     private Text MATK;
@@ -42,7 +41,6 @@ public class SelectStatus : MonoBehaviour
         Lv = NAME.transform.Find("Level").GetComponent<Text>();
         HP = GameObject.Find("HPBar").GetComponent<Slider>();
         MP = GameObject.Find("MPBar").GetComponent<Slider>();
-        EXP = GameObject.Find("EXPBar").GetComponent<Slider>();
         TotalEXP = GameObject.Find("Value").GetComponent<Text>();
         ATK = GameObject.Find("ATKValue").GetComponent<Text>();
         MATK = GameObject.Find("MATKValue").GetComponent<Text>();
@@ -63,7 +61,7 @@ public class SelectStatus : MonoBehaviour
         UIController.DisplayText(Lv, "Lv" + player.Lv);
         UIController.DisplaySlider(HP, player.STATUS.HP);
         UIController.DisplaySlider(MP, player.STATUS.MP);
-        //UIController.DisplayText(TotalEXP, player.TotalEXP);
+        UIController.DisplayText(TotalEXP, player.TotalExp);
         UIController.DisplayText(ATK, player.STATUS.Atk);
         UIController.DisplayText(MATK, player.STATUS.Matk);
         UIController.DisplayText(DEF, player.STATUS.Def);
