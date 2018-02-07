@@ -4,11 +4,6 @@ using UnityEngine;
 using UniRx;
 using UniRx.Triggers;
 
-/*
- * TODO : バトルの読み込み
- *        エンカウントするモンスターのロード
- */
-
 public class MapManager : MonoBehaviour
 {
     /// <summary>
@@ -48,21 +43,24 @@ public class MapManager : MonoBehaviour
                     return;
                 }
                 movableDistance += length;
-                Debug.Log(movableDistance);
 
                 if (nextEncount <= movableDistance) {
-                    SceneController.startFade(() => {
+                    playBattle = true;
+                    SceneController.startFade((fade) => {
                         battleController = Instantiate(battleControllerPrefab).GetComponentInChildren<BattleController>();
-                        playBattle = true;
-                    }, 1.0f);
+                        battleController.Initialzie();
+                        battleController.OnDestroyAsObservable()
+                            .Subscribe(_ => {
+                                nextEncount = Random.Range(encountMin, encountMax);
+                                movableDistance = 0.0f;
+
+                                playBattle = false;
+                            });
+
+                        fade.endWait();
+                    }, 1.0f, true);
                 }
             });
 
-        // TODO : BattleController でバトル終了の実装後アンコメント
-        battleController.OnDestroyAsObservable()
-            .Subscribe(_ => {
-                nextEncount = Random.Range(encountMin, encountMax);
-                playBattle = false;
-            });
     }
 }

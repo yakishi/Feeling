@@ -49,7 +49,7 @@ public class SceneController
         }
 
         Instance.fade.fadeTime = fadeTime;
-        Instance.fade.onEndFadeInAsObservable()
+        Instance.fade.onEndFadeAsObservable()
             .Take(1)
             .Subscribe(_ => {
                 SceneManager.LoadScene(sceneName);
@@ -63,18 +63,19 @@ public class SceneController
         sceneTransition(name, fadeTime, type);
     }
 
-    public static void startFade(Action fadeOutAction, float fadeTime)
+    public static Fade startFade(Action<Fade> fadeOutAction, float fadeTime, bool isWait = false)
     {
         Instance.fade.fadeTime = fadeTime;
-        Instance.fade.onEndFadeInAsObservable()
+        Instance.fade.onEndFadeAsObservable()
             .Take(1)
             .Subscribe(_ => {
                 if (fadeOutAction != null) {
-                    fadeOutAction();
+                    fadeOutAction(Instance.fade);
                 }
             });
-        Instance.fade.startFade();
+        Instance.fade.startFade(isWait);
 
+        return Instance.fade;
     }
 }
 

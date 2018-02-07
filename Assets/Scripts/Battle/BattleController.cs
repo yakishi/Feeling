@@ -51,8 +51,7 @@ public class BattleController : MonoBehaviour
 
     int playerCount;
     int monsterCount;
-    public int MonsterCount
-    {
+    public int MonsterCount {
         get
         {
             return monsterCount;
@@ -60,8 +59,7 @@ public class BattleController : MonoBehaviour
     }
 
     BattleCharacter currentActionCharacter;
-    public BattleCharacter CurrentActionCharacter
-    {
+    public BattleCharacter CurrentActionCharacter {
         get
         {
             return currentActionCharacter;
@@ -84,8 +82,7 @@ public class BattleController : MonoBehaviour
         }
     }
     GameObject[] playerObjects;
-    public GameObject[] PlayerObjects
-    {
+    public GameObject[] PlayerObjects {
         get
         {
             return playerObjects;
@@ -99,6 +96,9 @@ public class BattleController : MonoBehaviour
             return monsters;
         }
     }
+
+    int dropGolds = 0;
+
     /// <summary>
     /// 仮データ用モンスターイメージ
     /// </summary>
@@ -106,8 +106,7 @@ public class BattleController : MonoBehaviour
     Sprite[] monsterImg = new Sprite[4];
 
     GroupDeadType groupDeadType = GroupDeadType.None;
-    public GroupDeadType DeadType
-    {
+    public GroupDeadType DeadType {
         get
         {
             return groupDeadType;
@@ -116,8 +115,7 @@ public class BattleController : MonoBehaviour
 
     //仮
     List<SingltonSkillManager.SkillInfo> skillList;
-    public List<SingltonSkillManager.SkillInfo> SkillList
-    {
+    public List<SingltonSkillManager.SkillInfo> SkillList {
         get
         {
             return skillList;
@@ -130,6 +128,10 @@ public class BattleController : MonoBehaviour
     public CharacterImage charaImgList;
 
     void Start()
+    {
+    }
+
+    public void Initialzie()
     {
         monsterZone = GameObject.Find("MonsterZone");
 
@@ -146,8 +148,8 @@ public class BattleController : MonoBehaviour
             character.onEndActionAsObservable()
                 .Where(c => character.frontMember)
                 .Subscribe(c => {
-                    //死亡処理
-                    foreach(var p in players) {
+                        //死亡処理
+                        foreach (var p in players) {
                         if (!p.IsDead) continue;
                         p.gameObject.SetActive(false);
                     }
@@ -156,15 +158,19 @@ public class BattleController : MonoBehaviour
                         if (!m.IsDead) continue;
                         Image image = m.gameObject.GetComponent<Image>();
 
-                        image.color = new Color(252,252,252,0);
+                        image.color = new Color(252, 252, 252, 0);
                         m.frontMember = false;
                         m.gameObject.tag = "Dead";
                     }
 
                     groupDeadType = getGroupDeadType();
+                    Debug.Log(groupDeadType);
                     if (groupDeadType == GroupDeadType.None) {
                         Observable.NextFrame().Subscribe(_ => {
                             currentActionCharacter = getNextActionCharacter();
+                            if (currentActionCharacter == null) {
+                                return;
+                            }
                             currentActionCharacter.startAction();
                         });
                         return;
@@ -197,26 +203,23 @@ public class BattleController : MonoBehaviour
     void createDamyData()
     {
         int id = 1;
-        playerCount = 6;
+        playerCount = 4;
         players = new BattlePlayer[playerCount];
         playerObjects = new GameObject[4];
         for (int i = 0; i < 4; ++i) {
 
             playerObjects[i] = Instantiate(battlePlayerPrefab, playerGrid.transform);
             players[i] = playerObjects[i].GetComponent<BattlePlayer>();
-            
+
             players[i].enabled = false;
         }
 
-        players[4] = new BattlePlayer();
-        players[5] = new BattlePlayer();
-
         foreach (var player in players) {
-            player.loadData("P" + id + "_0",gameManager);
+            player.loadData("P" + id + "_0", gameManager);
             if (player != null) {
                 player.img.sprite = charaImgList.charaImgList[id - 1];
             }
-            if(id <= 4) {
+            if (id <= 4) {
                 player.frontMember = true;
             }
 
@@ -235,7 +238,8 @@ public class BattleController : MonoBehaviour
             monsters[i].GetComponent<Image>().sprite = monsterImg[random];
         }
         foreach (var monster in monsters) {
-            monster.loadData(monster.ID,gameManager);
+            monster.loadData(monster.ID, gameManager);
+            dropGolds += monster.Hp;
         }
 
         BattleUI.NotActiveButton(monsterZone);
@@ -249,6 +253,7 @@ public class BattleController : MonoBehaviour
             if (characters[i] == null) continue;
             characters[i].gameObject.name = i.ToString();
         }
+        battleUI.Initialize();
     }
 
     /// <summary>
@@ -260,7 +265,7 @@ public class BattleController : MonoBehaviour
     float monsterPosX(float i, int monsterCount)
     {
         float posX;
-        float zoneWidth = monsterZone.transform.position.x * 2; 
+        float zoneWidth = monsterZone.transform.position.x * 2;
         posX = (zoneWidth / monsterCount) / 2;
 
         return posX + (zoneWidth / monsterCount) * i;
@@ -301,7 +306,7 @@ public class BattleController : MonoBehaviour
 
         battleUI.ClearTempSkillID();
 
-        foreach(BattlePlayer p in players) {
+        foreach (BattlePlayer p in players) {
             p.ChangeFeelingColor(HighestFeel(p.Param));
         }
 
@@ -333,13 +338,13 @@ public class BattleController : MonoBehaviour
             return;
         }
 
-        foreach(var m in monsters) {
+        foreach (var m in monsters) {
             Destroy(m);
         }
         Debug.Log("敵殲滅");
 
         int totalEXP = 0;
-        foreach(var m in monsters) {
+        foreach (var m in monsters) {
             totalEXP += m.Param.TotalExp;
         }
 
@@ -349,21 +354,24 @@ public class BattleController : MonoBehaviour
         //bool isLevelUp = false;
 
         Dictionary<string, int> lvUpPlayerList = new Dictionary<string, int>();
-        foreach(var p in gameManager.PlayerList) {
+        foreach (var p in gameManager.PlayerList) {
             p.TotalExp += totalEXP;
             lvUpPlayerList.Add(p.Name, p.Lv);
             cnt++;
         }
 
+        GV.Instance.GData.possessionGolds += dropGolds;
         battleUI.LevelUpDisplay(lvUpPlayerList);
-        Destroy(this);
+        SceneController.startFade(fade => {
+            Destroy(transform.parent.gameObject);
+        }, 1.0f);
     }
 
-    bool IsUpLevel(SingltonPlayerManager.PlayerParameters player,int cnt)
+    bool IsUpLevel(SingltonPlayerManager.PlayerParameters player, int cnt)
     {
-        foreach(var p in gameManager.PlayerManager.GetCsvDataPlayerState) {
-            if(p.ID == "P" + cnt + "_"  + (player.Lv + 1)) {
-                if(p.NeedTotalExp <= player.TotalExp) {
+        foreach (var p in gameManager.PlayerManager.GetCsvDataPlayerState) {
+            if (p.ID == "P" + cnt + "_" + (player.Lv + 1)) {
+                if (p.NeedTotalExp <= player.TotalExp) {
                     player.Lv += 1;
 
                     player.STATUS = UpStatus(player, HighestFeel(player));
@@ -381,7 +389,7 @@ public class BattleController : MonoBehaviour
         SingltonSkillManager.Feel tempFeel = SingltonSkillManager.Feel.Ki;
         int value = player.currentFeel[tempFeel];
         foreach (var f in player.currentFeel.Keys) {
-            if(player.currentFeel[f] > value) {
+            if (player.currentFeel[f] > value) {
                 tempFeel = f;
                 value = player.currentFeel[f];
             }
@@ -390,7 +398,7 @@ public class BattleController : MonoBehaviour
         return tempFeel;
     }
 
-    SingltonPlayerManager.Status UpStatus(SingltonPlayerManager.PlayerParameters player,SingltonSkillManager.Feel feel)
+    SingltonPlayerManager.Status UpStatus(SingltonPlayerManager.PlayerParameters player, SingltonSkillManager.Feel feel)
     {
         SingltonPlayerManager.Status status = player.STATUS;
 

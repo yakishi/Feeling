@@ -22,6 +22,10 @@ public class BattleMonster : BattleCharacter
         battleController.combatGrid.SetActive(false);
 
         // 一番HPの高いキャラクターを攻撃
+        if (battleController.Monsters.Count(monster => !monster.IsDead) == 0) {
+            endAction();
+            return;
+        }
         var target = battleController.Players.MaxElement(player => player.CurrentHp);
         var skill = new Skill();
         
