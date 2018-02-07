@@ -220,7 +220,6 @@ public abstract class BattleCharacter : MonoBehaviour
     public virtual void loadData(string id, GameManager gameManager)
     {
         List<SingltonPlayerManager.PlayerParameters> playersParam = gameManager.PlayerList;
-        int cnt = 0;
         foreach (var i in playersParam) {
             if (i.ID == id) {
                 param = i;
@@ -345,11 +344,18 @@ public abstract class BattleCharacter : MonoBehaviour
 
                 param.currentFeel[feel] += feelValue;
 
-                Debug.Log(feel+ " : " + feelValue);
+                //Debug.Log(feel+ " : " + feelValue);
+                //
+                //param.currentFeel[feel] = Mathf.Min(param.currentFeel[feel], 25);
+                //
+                //param.currentFeel[feel] = Mathf.Max(param.currentFeel[feel], -25);
 
-                param.currentFeel[feel] = Mathf.Min(param.currentFeel[feel], 25);
-
-                param.currentFeel[feel] = Mathf.Max(param.currentFeel[feel], -25);
+                if (param.currentFeel[feel] > 25) {
+                    param.currentFeel[feel] = 25;
+                }
+                else if (param.currentFeel[feel] < -25) {
+                    param.currentFeel[feel] = -25;
+                }
 
                 return;
             }
@@ -391,11 +397,16 @@ public abstract class BattleCharacter : MonoBehaviour
 
                 param.currentFeel[f] += value;
 
-                Debug.Log(f + " : " + value);
+                //param.currentFeel[f] = Mathf.Min(param.currentFeel[f], 25);
+                //
+                //param.currentFeel[f] = Mathf.Max(param.currentFeel[f], -25);
 
-                param.currentFeel[f] = Mathf.Min(param.currentFeel[f], 25);
-
-                param.currentFeel[f] = Mathf.Max(param.currentFeel[f], -25);
+                if(param.currentFeel[f] > 25) {
+                    param.currentFeel[f] = 25;
+                }
+                else if(param.currentFeel[f] < -25) {
+                    param.currentFeel[f] = -25;
+                }
 
                 return;
             }

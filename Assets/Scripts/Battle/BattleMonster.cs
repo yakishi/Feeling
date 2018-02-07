@@ -18,7 +18,7 @@ public class BattleMonster : BattleCharacter
 
     public override void startAction()
     {
-        BattleUI.DisplayMonsterTurn(this.name);
+        BattleUI.DisplayMonsterTurn(this.param.Name);
         battleController.combatGrid.SetActive(false);
 
         // 一番HPの高いキャラクターを攻撃

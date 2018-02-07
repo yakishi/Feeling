@@ -97,13 +97,11 @@ public class BattleUI : MonoBehaviour
     public struct ItemButton
     {
         private SingltonItemManager.ItemList itemInfo;
-        private int itemNumber;
         private GameObject buttonObject;
 
-        public ItemButton(SingltonItemManager.ItemList info,int number, GameObject button)
+        public ItemButton(SingltonItemManager.ItemList info, GameObject button)
         {
             itemInfo = info;
-            itemNumber = number;
             buttonObject = button;
         }
 
@@ -228,9 +226,6 @@ public class BattleUI : MonoBehaviour
     /// プレイヤーのMPバー
     /// </summary>
     Slider[] playerMP;
-
-    [SerializeField]
-    private GameObject[] BackCharacters = new GameObject[2];
     
     [SerializeField]
     Text turnText;
@@ -642,7 +637,7 @@ public class BattleUI : MonoBehaviour
                         if (child.name == "itemNumber") child.GetComponent<Text>().text = info[id].ToString();
                     }
 
-                    ItemButton temp = new ItemButton(item, info[id], tempObject);
+                    ItemButton temp = new ItemButton(item, tempObject);
                     itemButtonList.Add(temp);
                 }
             }

@@ -8,13 +8,11 @@ using UnityEngine.SceneManagement;
 
 public class SavePoint : FieldEvent {
 
-	GV gv;
 	SingltonSceneManage SSpawnM;
 	GameObject saveLoad;
 
 	protected override void Start( ) {
         base.Start();
-		gv = GV.Instance;
 		SSpawnM = SingltonSceneManage.Instance;
 	}
 

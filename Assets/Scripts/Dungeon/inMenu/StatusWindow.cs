@@ -5,7 +5,6 @@ using UnityEngine.UI;
 
 public class StatusWindow :MonoBehaviour {
 
-    private GameObject[] selectIcon = new GameObject[4];        //キャラクター切り替えオブジェクト
     private Vector3 defScale;
 
     [SerializeField]
