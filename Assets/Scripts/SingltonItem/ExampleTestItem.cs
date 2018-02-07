@@ -51,6 +51,8 @@ public class ExampleTestItem : MonoBehaviour {
 
 			}
 
+			myItem.SDItem.possessionGolds = 1500;
+
 			myGV.GameDataSave( myGV.slot );
 			myGV.DebugKeyPrint( );
 
@@ -61,7 +63,9 @@ public class ExampleTestItem : MonoBehaviour {
 		// SAVEDATA データの取得例
 		foreach ( string key in myItem.SDItem.itemList.Keys )
 			Debug.Log( "<color='red'>セーブデータ\n現在所持しているアイテム : " + key
-			+ "\n現在所持しているアイテムに対するアイテム所持数 : " + myItem.SDItem.itemList[ key ] + "</color>" );
+			+ "\n現在所持しているアイテムに対するアイテム所持数 : " + myItem.SDItem.itemList[ key ]
+			+ "\n現在所持している所持金 : " + myItem.SDItem.possessionGolds
+			+ "</color>" );
 
 		}
 

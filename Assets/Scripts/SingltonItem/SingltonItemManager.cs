@@ -71,6 +71,7 @@ public sealed class SingltonItemManager {
 	public void NewGame( ) {
         // Save 情報 Item のインスタンス生成
         ItemSaveList.itemList = new Dictionary<string, int>();
+		ItemSaveList.possessionGolds = 0;
 
 
 	}
@@ -86,6 +87,7 @@ public sealed class SingltonItemManager {
 		if ( myGV.GData != null ) {
             // 読み込んだ値を入れていきます
             ItemSaveList.itemList = myGV.GData.Items.itemList;
+			ItemSaveList.possessionGolds = myGV.GData.Items.possessionGolds;
 
 		}
 
@@ -185,8 +187,11 @@ public sealed class SingltonItemManager {
 	[System.Serializable]
 	public class ItemParam {
         /// <summary>現在所持しているアイテム一覧</summary>
-        
         public Dictionary<string, int> itemList;
+		/// <summary>所持金</summary>
+		public int possessionGolds;
+
+
 	}
 	/*===============================================================*/
 
