@@ -40,7 +40,7 @@ public class MovablePlayer : MonoBehaviour
         get
         {
             if (mapManager != null) {
-                return !playerEvent.IsPlayEvent || !mapManager.PlayBattle;
+                return !playerEvent.IsPlayEvent && !mapManager.PlayBattle;
             }
 
             return !playerEvent.IsPlayEvent;
@@ -69,6 +69,9 @@ public class MovablePlayer : MonoBehaviour
                 onMoveSubject.OnNext(rigidbody2d.velocity.magnitude * Time.deltaTime);
                 updateDirection();
             }
+        }
+        else {
+            rigidbody2d.velocity = Vector2.zero;
         }
     }
 

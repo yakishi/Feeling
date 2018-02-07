@@ -254,8 +254,7 @@ public class BattleUI : MonoBehaviour
     public List<Button> beforeSelect;
     Vector3 defScale;
 
-    // Use this for initialization
-    void Start()
+    public void Initialize()
     {
         selectMode = SelectMode.None;
         characters = battleController.Characters;
@@ -277,7 +276,7 @@ public class BattleUI : MonoBehaviour
 
         playerHP = new Slider[players.Length];
         playerMP = new Slider[players.Length];
-        for(int i = 0; i < players.Length; i++) {
+        for (int i = 0; i < players.Length; i++) {
             if (!players[i].frontMember) continue;
             playerHP[i] = players[i].transform.Find("HPBar").GetComponent<Slider>();
             playerHP[i].maxValue = players[i].Hp;
@@ -650,7 +649,6 @@ public class BattleUI : MonoBehaviour
         }
 
     }
-
  
     string DisplayStatus(BattleCharacter chara)
     {

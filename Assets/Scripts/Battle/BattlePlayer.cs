@@ -108,7 +108,9 @@ public class BattlePlayer : BattleCharacter
         combatButtons[4].OnClickAsObservable()
             .Where(_ => isPlayerAction)
             .Subscribe(_ => {
-                Application.Quit();
+                SceneController.startFade((fade) => {
+                    Destroy(battleController.transform.parent.gameObject);
+                }, 1.0f);
             })
             .AddTo(this);
     }

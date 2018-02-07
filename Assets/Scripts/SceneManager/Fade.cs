@@ -12,20 +12,22 @@ public class Fade : MonoBehaviour
     [SerializeField]
     Image FadeImage;
 
-    Subject<Unit> onEndFadeSubject = new Subject<Unit>();
-    Subject<Unit> onEndFadeInSubject = new Subject<Unit>();
+    Subject<Fade> onEndFadeSubject = new Subject<Fade>();
+    Subject<Fade> onEndFadeInSubject = new Subject<Fade>();
 
     public float fadeTime = 1.0f;
 
     public float alpha { set; get; }
+    bool wait;
 
     void Start()
     {
         DontDestroyOnLoad(this);
     }
 
-    public void startFade()
+    public void startFade(bool isWait = false)
     {
+        wait = isWait;
         StartCoroutine(fadeFunc());
     }
 
@@ -37,8 +39,11 @@ public class Fade : MonoBehaviour
         {
             yield return null;
         }
-
-        onEndFadeInSubject.OnNext(Unit.Default);
+        Debug.Log("D");
+        onEndFadeSubject.OnNext(this);
+        while (wait) {
+            yield return null;
+        }
 
         alpha = 1.0f;
         while (!fadeIn())
@@ -46,7 +51,7 @@ public class Fade : MonoBehaviour
             yield return null;
         }
 
-        onEndFadeSubject.OnNext(Unit.Default);
+        onEndFadeInSubject.OnNext(this);
     }
 
     /// <summary>
@@ -84,13 +89,17 @@ public class Fade : MonoBehaviour
         return alpha == 1.0f;
     }
 
-    public IObservable<Unit> onEndFadeAsObservable()
+    public IObservable<Fade> onEndFadeAsObservable()
     {
         return onEndFadeSubject;
     }
 
-    public IObservable<Unit> onEndFadeInAsObservable()
+    public IObservable<Fade> onEndFadeInAsObservable()
     {
         return onEndFadeInSubject;
+    }
+    public void endWait()
+    {
+        wait = false;
     }
 }
