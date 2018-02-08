@@ -21,8 +21,6 @@ public class ItemWindow : MonoBehaviour {
     [SerializeField]
     GameObject prefab;
 
-    //テスト用
-    SingltonItemManager.ItemParam testList;
 
     // Use this for initialization
     void Start () {
@@ -33,15 +31,6 @@ public class ItemWindow : MonoBehaviour {
     {
         itemButtonList = new List<BattleUI.ItemButton>();
         selectMode = SelectMode.List;
-
-        testList = new SingltonItemManager.ItemParam();
-        testList.itemList = new Dictionary<string, int>();
-        testList.itemList.Add("I0", 5);
-        testList.itemList.Add("I1", 10);
-        testList.itemList.Add("I2", 3);
-        testList.itemList.Add("I3", 4);
-        testList.itemList.Add("I4", 10);
-        testList.itemList.Add("I5", 6);
 
         SetItemList();
 
@@ -85,7 +74,7 @@ public class ItemWindow : MonoBehaviour {
     {
         Dictionary<string, int> info = new Dictionary<string, int>();
 
-        if(testList.itemList != null) info = testList.itemList;
+        info = GV.Instance.GData.Items.itemList;
 
         foreach (string id in info.Keys) {
             foreach (var item in menu.gameManager.ItemManager.CDItem) {

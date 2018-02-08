@@ -249,6 +249,8 @@ public class BattleUI : MonoBehaviour
     public List<Button> beforeSelect;
     Vector3 defScale;
 
+    bool useItem;
+
     public void Initialize()
     {
         selectMode = SelectMode.None;
@@ -268,6 +270,7 @@ public class BattleUI : MonoBehaviour
 
         players = battleController.Players;
         monsters = battleController.Monsters;
+        useItem = false;
 
         playerHP = new Slider[players.Length];
         playerMP = new Slider[players.Length];
@@ -293,7 +296,12 @@ public class BattleUI : MonoBehaviour
 
                     battleController.audioManager.AttackSE();
                     LeanTween.alpha(target.GetComponent<RectTransform>(), 1.0f, 0.3f).setFrom(0.0f).setLoopCount(3).setLoopType(LeanTweenType.pingPong).setOnComplete(() => {
-                        playerAttack(tempId);
+                        if (!useItem) {
+                            playerAttack(tempId);
+                        }
+                        else {
+                            UseItem(tempId);
+                        }
                     });
                 });
 
@@ -309,7 +317,12 @@ public class BattleUI : MonoBehaviour
                         LeanTween.alpha(monsters[i].GetComponent<RectTransform>(), 1.0f, 0.3f).setFrom(0.0f).setLoopCount(3).setLoopType(LeanTweenType.pingPong);
 
                     }
-                    currentCharacter.GetComponent<BattlePlayer>().attackAction(monsters, tempId);
+                    if (!useItem) {
+                        currentCharacter.GetComponent<BattlePlayer>().attackAction(monsters, tempId);
+                    }
+                    else {
+                        currentCharacter.GetComponent<BattlePlayer>().useItem(monsters, tempId);
+                    }
                     ClearSelecter();
                     isSkillScopeAll = false;
                     selectMode = SelectMode.Behaviour;
@@ -333,7 +346,12 @@ public class BattleUI : MonoBehaviour
 
                     battleController.audioManager.AttackSE();
                     LeanTween.alpha(target.GetComponent<RectTransform>(), 1.0f, 0.3f).setFrom(0.0f).setLoopCount(3).setLoopType(LeanTweenType.pingPong).setOnComplete(() => {
-                        playerAttack(tempId);
+                        if (!useItem) {
+                            playerAttack(tempId);
+                        }
+                        else {
+                            UseItem(tempId);
+                        }
                     });
                 });
 
@@ -349,7 +367,12 @@ public class BattleUI : MonoBehaviour
                         LeanTween.alpha(players[i].GetComponent<RectTransform>(), 1.0f, 0.3f).setFrom(0.0f).setLoopCount(3).setLoopType(LeanTweenType.pingPong);
 
                     }
-                    currentCharacter.GetComponent<BattlePlayer>().attackAction(players, tempId);
+                    if (!useItem) {
+                        currentCharacter.GetComponent<BattlePlayer>().attackAction(players, tempId);
+                    }
+                    else {
+                        currentCharacter.GetComponent<BattlePlayer>().useItem(players, tempId);
+                    }
                     ClearSelecter();
                     isSkillScopeAll = false;
                     selectMode = SelectMode.Behaviour;
@@ -412,7 +435,7 @@ public class BattleUI : MonoBehaviour
                     DecisionScope(n);
                     DecisionTarget(n.ItemInfo.target);
 
-                    cutNumber(n.ItemInfo);
+                    useItem = true;
                 });
         }
     }
@@ -436,7 +459,8 @@ public class BattleUI : MonoBehaviour
 
             selectMode = SelectMode.Behaviour;
         }
-        if (Input.GetKeyDown(KeyCode.Backspace) && selectMode == SelectMode.Item) {
+        if (Input.GetKeyDown(KeyCode.Backspace) && selectMode == SelectMode.Item) { 
+            useItem = false;
             battleController.combatGrid.SetActive(true);
             UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
             BattleUI.NotActiveButton(itemWindow);
@@ -603,7 +627,7 @@ public class BattleUI : MonoBehaviour
         }
     }
 
-    void cutNumber(SingltonItemManager.ItemList item)
+    public void cutNumber(SingltonItemManager.ItemList item)
     {
         List<string> tempList = new List<string>(battleController.testList.itemList.Keys);
         foreach (var i in tempList) {
@@ -673,6 +697,11 @@ public class BattleUI : MonoBehaviour
     void playerAttack(string skillId)
     {
         currentCharacter.GetComponent<BattlePlayer>().attackAction(new BattleCharacter[] { target }, skillId);
+    }
+
+    void UseItem(string itemId)
+    {
+        currentCharacter.GetComponent<BattlePlayer>().useItem(new BattleCharacter[] { target }, itemId);
     }
 
     public void ClearSelecter()

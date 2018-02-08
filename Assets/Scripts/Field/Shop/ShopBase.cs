@@ -99,6 +99,7 @@ public class ShopBase : MonoBehaviour
                 group.interactable = true;
                 decisionAction(quantity.getInfo(), isBuy);
                 var createItemList = createItems();
+                showQuantityUI = false;
 
                 if (createItemList.Count == 0) {
                     return;
@@ -282,6 +283,6 @@ public class ShopBase : MonoBehaviour
 
     protected virtual void exit()
     {
-        Destroy(this);
+        Destroy(this.gameObject);
     }
 }
