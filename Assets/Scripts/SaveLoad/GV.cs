@@ -371,7 +371,7 @@ public sealed class GV {
 
 		if( mySpawn != null ) {
 			if( mySpawn.currentSpawnPlayer != "" ) gameData.spawnPlayer.currentSpawnPlayer = mySpawn.currentSpawnPlayer;
-			else if( mySpawn.currentSpawnPlayer == "" ) gameData.spawnPlayer.currentSpawnPlayer = "spawn place not  been saved.";
+			else if( mySpawn.currentSpawnPlayer == "" ) gameData.spawnPlayer.currentSpawnPlayer =  "azito";
 
 		}
 

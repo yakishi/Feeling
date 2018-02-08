@@ -25,6 +25,7 @@ public class SaveLoad : MonoBehaviour
     [SerializeField]
     static Type type;
     private static Type Category { set { type = value; } }
+    CanvasGroup canvasGroup;
 
     /// <summary>
     /// セーブデータをロード
@@ -34,6 +35,7 @@ public class SaveLoad : MonoBehaviour
 
     void Start()
     {
+        canvasGroup = gameObject.AddComponent<CanvasGroup>();
 		mySLA = new SaveLoadAudio( );
         var buttons = GetComponentsInChildren<Button>();
         Observable.NextFrame()
@@ -62,6 +64,7 @@ public class SaveLoad : MonoBehaviour
             slot.OnClickAsObservable()
                 .Take(1)
                 .Subscribe(_ => {
+                    canvasGroup.interactable = false;
                     myGV.slot = slotIndex; // GV 側へ通知
                     myGV.GameDataSave(slotIndex);
 					mySLA.PlaySE( "Save", slot.transform.parent.parent.parent.GetComponent<AudioSource>( ) );
@@ -105,7 +108,8 @@ public class SaveLoad : MonoBehaviour
             slot.OnClickAsObservable()
                 .Take(1)
                 .Subscribe(_ => {
-					Text btnTxt = slot.transform.parent.GetChild( slotIndex - 1 ).GetChild( 0 ).GetComponent<Text>( );
+                    canvasGroup.interactable = false;
+                    Text btnTxt = slot.transform.parent.GetChild( slotIndex - 1 ).GetChild( 0 ).GetComponent<Text>( );
 					if( btnTxt.text != "データがありません" ) {
 						myGV.slot = slotIndex; // GV 側へ通知
 						myGV.GameDataLoad(slotIndex);
