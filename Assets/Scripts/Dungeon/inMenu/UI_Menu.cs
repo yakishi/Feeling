@@ -6,6 +6,12 @@ using UniRx;
 
 public class UI_Menu : MonoBehaviour {
     [SerializeField]
+    PlayerEvent player;
+
+    [SerializeField]
+    MapManager map;
+
+    [SerializeField]
     public GameManager gameManager;
 
     [SerializeField]
@@ -28,6 +34,7 @@ public class UI_Menu : MonoBehaviour {
 
     [System.NonSerialized]
     public SingltonPlayerManager.PlayerParameters[] playerList = new SingltonPlayerManager.PlayerParameters[4];
+    [SerializeField]
     private Button[] MenuItems = new Button[4];      //メニューの項目
 
     public List<GameObject> beforeTarget;
@@ -38,12 +45,6 @@ public class UI_Menu : MonoBehaviour {
         playerList[1] = gameManager.PlayerList[1];
         playerList[2] = gameManager.PlayerList[2];
         playerList[3] = gameManager.PlayerList[3];
-
-        MenuItems[0] = GameObject.Find("Items").GetComponent<Button>();
-        MenuItems[1] = GameObject.Find("Status").GetComponent<Button>();
-        MenuItems[2] = GameObject.Find("Equipments").GetComponent<Button>();
-        MenuItems[3] = GameObject.Find("BackTitle").GetComponent<Button>();
-
         Initialize();
         beforeTarget = new List<GameObject>();
 
@@ -92,15 +93,24 @@ public class UI_Menu : MonoBehaviour {
 
         MenuItems[3].OnClickAsObservable()
             .Subscribe(_ => {
-
+                SceneController.sceneTransition(SceneName.SceneNames.Title, 2.0f, SceneController.FadeType.Fade);
             })
             .AddTo(this);
     }
 
     // Update is called once per frame
     void Update () {
+        if (map.PlayBattle) return;
+
+        if (Input.GetKeyDown(KeyCode.Return)) {
+            menuWindow.SetActive(true);
+            player.StartEvent();
+            UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(MenuItems[0].gameObject);
+        }
+
         if (Input.GetKeyDown(KeyCode.Backspace)) {
             menuWindow.SetActive(false);
+            player.endEvent();
         }
 	}
 }

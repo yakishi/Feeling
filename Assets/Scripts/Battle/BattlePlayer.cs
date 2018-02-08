@@ -89,7 +89,7 @@ public class BattlePlayer : BattleCharacter
             .Where(_ => isPlayerAction)
             .Subscribe(_ => {
                 if(battleUI.itemButtonList.Count == 0) {
-                    battleUI.SetItem(battleController.testList.itemList);
+                    battleUI.SetItem(GV.Instance.GData.Items.itemList);
                 }
 
                 battleUI.beforeSelect.Add(combatButtons[3]);
@@ -131,6 +131,18 @@ public class BattlePlayer : BattleCharacter
         playAction(skill.use(this, targets));
     }
 
+    public void useItem(BattleCharacter[] targets, string id = "none")
+    {
+        SingltonItemManager.ItemList info = SerchItem(id);
+        var skill = new Skill();
+
+
+        isPlayerAction = false;
+
+        battleUI.cutNumber(info);
+        playAction(skill.ItemUse(this, targets, info));
+    }
+
     Skill searchSkill(string id)
     {
         SingltonSkillManager.SkillInfo skill = new SingltonSkillManager.SkillInfo();
@@ -142,6 +154,19 @@ public class BattlePlayer : BattleCharacter
         }
         
         return new Skill(skill);
+    }
+
+    SingltonItemManager.ItemList SerchItem(string id)
+    {
+        SingltonItemManager.ItemList item = new SingltonItemManager.ItemList();
+
+        foreach(var i in battleController.gameManager.ItemManager.CDItem) {
+            if(i.id == id) {
+                item = i;
+            } 
+        }
+
+        return item;
     }
 
     public override void startAction()

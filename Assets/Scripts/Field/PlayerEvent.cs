@@ -50,6 +50,11 @@ public class PlayerEvent : MonoBehaviour
         }
     }
 
+    public void StartEvent()
+    {
+        isPlayEvent = true;
+    }
+
     /// <summary>
     /// イベント終了時に呼び出す
     /// </summary>

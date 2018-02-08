@@ -75,6 +75,9 @@ public class TreasureBox : FieldEvent {
             .Subscribe(_ => {
                 textBox.SetActive(false);
                 gameObject.GetComponent<SpriteRenderer>().sprite = openImg;
+
+                SceneController.sceneTransition(SceneName.SceneNames.azito, 2.0f, SceneController.FadeType.Fade);
+
                 player.endEvent();
                 return;
             });

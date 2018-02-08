@@ -13,6 +13,9 @@ public class MapManager : MonoBehaviour
     MovablePlayer player;
 
     [SerializeField]
+    AudioSource BGMSource;
+
+    [SerializeField]
     GameObject battleControllerPrefab;
     BattleController battleController;
 
@@ -46,6 +49,7 @@ public class MapManager : MonoBehaviour
 
                 if (nextEncount <= movableDistance) {
                     playBattle = true;
+                    BGMSource.Stop();
                     SceneController.startFade((fade) => {
                         battleController = Instantiate(battleControllerPrefab).GetComponentInChildren<BattleController>();
                         battleController.Initialzie();
@@ -54,6 +58,7 @@ public class MapManager : MonoBehaviour
                                 nextEncount = Random.Range(encountMin, encountMax);
                                 movableDistance = 0.0f;
 
+                                BGMSource.Play();
                                 playBattle = false;
                             });
 

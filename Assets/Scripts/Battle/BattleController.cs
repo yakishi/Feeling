@@ -187,14 +187,6 @@ public class BattleController : MonoBehaviour
         currentActionCharacter.startAction();
 
         skillList = SingltonSkillManager.Instance.CDSkill;
-        testList = new SingltonItemManager.ItemParam();
-        testList.itemList = new Dictionary<string, int>();
-        testList.itemList.Add("I0", 5);
-        testList.itemList.Add("I1", 10);
-        testList.itemList.Add("I2", 3);
-        testList.itemList.Add("I3", 4);
-        testList.itemList.Add("I4", 10);
-        testList.itemList.Add("I6", 6);
     }
 
     /// <summary>

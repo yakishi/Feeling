@@ -120,8 +120,6 @@ public class Title : MonoBehaviour
 			//SingltonItemManager.Instance.SDItem.possessionGolds = 2048;
 
 		}
-		// Title load 時 bgm 引き継ぎ
-		if ( saveLoad == null ) DontDestroyOnLoad( audioManager );
 
 		if( Input.GetKeyDown(KeyCode.Backspace) && saveLoad != null) {
             Destroy(saveLoad);

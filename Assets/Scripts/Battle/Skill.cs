@@ -53,7 +53,7 @@ public class Skill
                         targets = targets,
                         effects = new Dictionary<BattleParam, int>
                         {
-                            { BattleParam.HP, -from.Atk }
+                            { BattleParam.HP, (int)(-(from.Atk * skill.ADV + from.MAtk * skill.MDV)) }
                         }
                     });
                 break;
@@ -108,7 +108,7 @@ public class Skill
                     targets = targets,
                     effects = new Dictionary<BattleParam, int>
                         {
-                            { item.param, item.value }
+                            { item.param, -item.value }
                         }
                 });
                 break;

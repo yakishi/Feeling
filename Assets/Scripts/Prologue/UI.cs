@@ -98,6 +98,8 @@ public class PrologueUI {
 			// n 秒後に jump
 			Observable.Timer( TimeSpan.FromMilliseconds( transitionTitle ) )
 				.Subscribe( _ =>
+                    
+
 					SceneController.sceneTransition(
 						SceneName.WorldMap, 2.0f, SceneController.FadeType.Fade
 
