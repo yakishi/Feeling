@@ -6,6 +6,7 @@ TagManager:
   tags:
   - AudioManager
   - Dead
+  - Selecter
   layers:
   - Default
   - TransparentFX
