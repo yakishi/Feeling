@@ -658,6 +658,8 @@ public class BattleUI : MonoBehaviour
         foreach(string id in info.Keys) {
             foreach(var item in battleController.gameManager.ItemManager.CDItem) {
                 if(id == item.id) {
+                    if (info[id] <= 0) return;
+
                     GameObject tempObject = Instantiate(itemPrefab, itemWindow.transform);
                     foreach(Transform child in tempObject.transform) {
                         if (child.name == "itemName") child.GetComponent<Text>().text = item.name;
@@ -694,6 +696,8 @@ public class BattleUI : MonoBehaviour
             foreach (Transform n in itemWindow.transform) {
                 GameObject.Destroy(n.gameObject);
             }
+
+            itemDetail.GetComponentInChildren<Text>().text = "説明";
         }
     }
 
