@@ -1595,7 +1595,7 @@ MonoBehaviour:
   hideSprite: 0
   openImg: {fileID: 21300000, guid: 0716c7d1e629e3f4db61919a4b373203, type: 3}
   textBox: {fileID: 2063986341}
-  itemId: I0
+  itemId: I1
   isEndDungeon: 0
 --- !u!61 &1410637187
 BoxCollider2D:

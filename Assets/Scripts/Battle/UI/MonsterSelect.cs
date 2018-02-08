@@ -18,8 +18,10 @@ public class MonsterSelect : MonoBehaviour{
     {
         if (monster == null) return;
 
-        monsterSelecter = GameObject.Instantiate(prefab,gameObject.transform);
 
+        if(transform.childCount < 1) { 
+            monsterSelecter = GameObject.Instantiate(prefab, gameObject.transform);
+        }
     }
 
     public void Deselect()

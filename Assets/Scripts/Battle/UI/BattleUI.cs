@@ -550,7 +550,7 @@ public class BattleUI : MonoBehaviour
                 for (int i = 0; i < monsters.Length; ++i) {
                     if (monsters[i].transform.childCount >= 1 || monsters[i].IsDead) continue;
                     monsterSelecter[i] = GameObject.Instantiate(monsterSelecterPrefab, monsters[i].transform);
-                    monsterSelecter[i].transform.position = monsters[i].gameObject.transform.position + Vector3.up * 180.0f;
+                    //monsterSelecter[i].transform.position = monsters[i].gameObject.transform.position + Vector3.up * 180.0f;
                 }
             }
         }
@@ -593,7 +593,7 @@ public class BattleUI : MonoBehaviour
                 for (int i = 0; i < monsters.Length; ++i) {
                     if (monsters[i].transform.childCount >= 1 || monsters[i].IsDead) continue;
                     monsterSelecter[i] = GameObject.Instantiate(monsterSelecterPrefab, monsters[i].transform);
-                    monsterSelecter[i].transform.position = monsters[i].gameObject.transform.position + Vector3.up * 180.0f;
+                    //monsterSelecter[i].transform.position = monsters[i].gameObject.transform.position + Vector3.up * 180.0f;
                 }
             }
         }
@@ -631,10 +631,11 @@ public class BattleUI : MonoBehaviour
 
     public void cutNumber(SingltonItemManager.ItemList item)
     {
-        List<string> tempList = new List<string>(battleController.testList.itemList.Keys);
-        foreach (var i in tempList) {
+        List<string> itemLists = new List<string>(GV.Instance.GData.Items.itemList.Keys);
+
+        foreach (var i in itemLists) {
             if(item.id == i) {
-                battleController.testList.itemList[i] -= 1;
+                GV.Instance.GData.Items.itemList[i]--;
             }
         }
     }

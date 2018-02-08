@@ -48,18 +48,23 @@ public class TreasureBox : FieldEvent {
 
                 itemName = i.name;
                 bool newItem = true;
-                foreach(var haveItem in GV.Instance.GData.Items.itemList.Keys) {
-                    if(GV.Instance.GData.Items.itemList[haveItem] + 1 > i.max) {
-                        textBox.SetActive(true);
-                        text.text = itemName + " を手に入れようとしたが このアイテムは以上持てない/n戻しておこう";
+                List<string> itemList = new List<string>(GV.Instance.GData.Items.itemList.Keys);
 
-                        player.endEvent();
-                        return;
+                foreach (var haveItem in itemList) {
+                    if (haveItem == itemId) {
+
+                        if (GV.Instance.GData.Items.itemList[haveItem] + 1 > i.max) {
+                            textBox.SetActive(true);
+                            text.text = itemName + " を手に入れようとしたが このアイテムは以上持てない/n戻しておこう";
+
+                            player.endEvent();
+                            return;
+                        }
+
+                        GV.Instance.GData.Items.itemList[haveItem] += 1;
+                        newItem = false;
+                        break;
                     }
-
-                    GV.Instance.GData.Items.itemList[haveItem] += 1;
-                    newItem = false;
-                    break;
                 }
 
                 if (newItem) {
