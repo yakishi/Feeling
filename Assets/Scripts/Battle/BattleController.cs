@@ -327,6 +327,7 @@ public class BattleController : MonoBehaviour
     {
         if (deadType == GroupDeadType.AllPlayerDead) {
             Debug.Log("プレイヤー全滅");
+            SceneController.sceneTransition(SceneName.SceneNames.azito, 2.0f, SceneController.FadeType.Fade);
             return;
         }
 

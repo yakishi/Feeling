@@ -16,6 +16,8 @@ public class Skill
     public Skill()
     {
         skill = new SingltonSkillManager.SkillInfo();
+        skill.ADV = 1.0f;
+        skill.MDV = 0.0f;
         skill.MP = 0;
         skill.myTarget = SingltonSkillManager.Target.Enemy;
         skill.myScope = SingltonSkillManager.Scope.Simplex;

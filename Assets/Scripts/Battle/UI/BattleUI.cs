@@ -616,10 +616,12 @@ public class BattleUI : MonoBehaviour
     {
         if (target == SingltonSkillManager.Target.Enemy) {
             ActiveButton(battleController.monsterZone);
+            BattleUI.DontSelectableDeadCharacter(battleController.monsterZone);
             selectMode = SelectMode.Monster;
         }
         else if (target == SingltonSkillManager.Target.Supporter) {
             ActiveButton(battleController.playerGrid);
+            BattleUI.DontSelectableDeadCharacter(battleController.playerGrid);
             selectMode = SelectMode.Supporter;
         }
         else if(target == SingltonSkillManager.Target.MySelf) {

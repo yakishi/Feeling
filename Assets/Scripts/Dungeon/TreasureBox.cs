@@ -17,6 +17,8 @@ public class TreasureBox : FieldEvent {
     string itemId;
 
     bool isOpen;
+    [SerializeField]
+    bool isEndDungeon;
 
     protected override void Start()
     {
@@ -75,9 +77,9 @@ public class TreasureBox : FieldEvent {
             .Subscribe(_ => {
                 textBox.SetActive(false);
                 gameObject.GetComponent<SpriteRenderer>().sprite = openImg;
-
-                SceneController.sceneTransition(SceneName.SceneNames.azito, 2.0f, SceneController.FadeType.Fade);
-
+                if (isEndDungeon) {
+                    SceneController.sceneTransition(SceneName.SceneNames.azito, 2.0f, SceneController.FadeType.Fade);
+                }
                 player.endEvent();
                 return;
             });
