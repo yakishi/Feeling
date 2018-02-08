@@ -20,10 +20,4 @@ public class ShopEvent : FieldEvent
                 player.endEvent();
             });
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
 }
